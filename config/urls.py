@@ -1,5 +1,5 @@
 """
-URL configuration for Student Career Helper.
+URL configuration for Project7.
 """
 from django.contrib import admin
 from django.urls import path, include

@@ -1,5 +1,5 @@
 """
-WSGI config for Student Career Helper project.
+WSGI config for Project7 project.
 """
 import os
 from django.core.wsgi import get_wsgi_application

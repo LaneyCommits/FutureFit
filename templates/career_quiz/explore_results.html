@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Your Explore Results – FutureFit{% endblock %}
+
+{% block content %}
+<section class="page-section results-page explore-results-page">
+    <h1 class="page-title">Your majors & career fit</h1>
+
+    {% if error %}
+    <p class="results-error">{% if message %}{{ message }}{% else %}Something went wrong. Please <a href="{% url 'career_quiz_explore' %}">take the explore quiz again</a>.{% endif %}</p>
+    {% else %}
+    <p class="page-intro">Based on your answers, here are majors and job categories that match your interests and personality—plus sample careers to explore.</p>
+
+    {% if scores %}
+    <div id="quiz-calculating" class="quiz-calculating">
+        <div class="quiz-calculating-inner">
+            <div class="quiz-calc-spinner"></div>
+            <p class="quiz-calc-text">Calculating your profile...</p>
+            <p class="quiz-calc-percent" id="quiz-calc-percent">0%</p>
+        </div>
+    </div>
+    <div id="quiz-chart-container" class="quiz-chart-container" style="display: none;">
+        <h2 class="quiz-chart-title">Your profile at a glance</h2>
+        <div class="quiz-chart-wrap">
+            <canvas id="quiz-pie-chart" class="quiz-pie-chart" width="280" height="280"></canvas>
+            <ul class="quiz-chart-legend" id="quiz-chart-legend"></ul>
+        </div>
+    </div>
+    <script type="application/json" id="quiz-scores-json">{{ scores_json|safe }}</script>
+    <script src="{% static 'js/quiz-results-chart.js' %}"></script>
+    {% endif %}
+
+    {% if explore_summary %}
+    <div class="results-summary">
+        <h2 class="results-summary-title">Why these fit you</h2>
+        <p class="results-summary-text">{{ explore_summary }}</p>
+    </div>
+    {% endif %}
+
+    {% if suggested_majors %}
+    <div class="explore-section">
+        <h2 class="explore-section-title">Suggested majors for you</h2>
+        <p class="explore-section-desc">See jobs tailored to each major using your same quiz answers—no need to retake the quiz. Or retake the quiz for a specific major if you prefer.</p>
+        <ul class="explore-majors-list">
+            {% for key, label, desc, score in suggested_majors %}
+            <li class="explore-major-item">
+                <a href="{% url 'career_quiz_results_for_major' key %}" class="explore-major-link">
+                    <span class="explore-major-name">{{ label }}</span>
+                    <span class="explore-major-desc">{{ desc }}</span>
+                    <span class="explore-major-cta">See jobs for this major &rarr;</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if scores %}
+    <div class="explore-section scores-section">
+        <h2 class="explore-section-title">Your top job categories</h2>
+        <p class="explore-section-desc">These work styles and interests showed up strongest in your answers.</p>
+        <ul class="scores-list">
+            {% for cat_key, score, name, desc in scores %}
+            <li><strong>{{ name }}</strong> — {{ score }} point{{ score|pluralize }}. {{ desc }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if suggestions %}
+    <div class="explore-section">
+        <h2 class="explore-section-title">Sample careers that might fit</h2>
+        <p class="explore-section-desc">A mix of roles across majors that match your profile. Use &quot;Learn more&quot; to explore, or pick a major above to see jobs focused on that degree.</p>
+        <div class="career-cards">
+            {% for s in suggestions %}
+            <div class="career-card">
+                <span class="career-card-rank">{% if s.compatibility_rank == 1 %}Best match{% else %}#{{ s.compatibility_rank }}{% endif %}</span>
+                <h3 class="career-card-title">{{ s.title }}</h3>
+                <p class="career-card-desc">{{ s.description }}</p>
+                <details class="career-learn-more">
+                    <summary class="career-learn-more-trigger">
+                        <span class="career-learn-more-label">Learn more</span>
+                        <span class="career-learn-more-arrow" aria-hidden="true">&#9660;</span>
+                    </summary>
+                    <div class="career-learn-more-content">
+                        <p>{{ s.learn_more }}</p>
+                    </div>
+                </details>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="explore-actions">
+        <a href="{% url 'career_quiz_explore' %}" class="btn btn-secondary">Retake explore quiz</a>
+        <a href="{% url 'career_quiz_home' %}" class="btn btn-secondary">Back to quiz home</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,23 +1,67 @@
 {% extends "base.html" %}
-{% block title %}Quiz Results – Student Career Helper{% endblock %}
+{% load static %}
+{% block title %}Quiz Results – FutureFit{% endblock %}
 
 {% block content %}
 <section class="page-section results-page">
     <h1 class="page-title">Your Career Suggestions</h1>
 
     {% if error %}
-    <p class="results-error">{% if message %}{{ message }}{% else %}Something went wrong. Please <a href="{% url 'career_quiz_take' %}">take the quiz again</a>.{% endif %}</p>
+    <p class="results-error">{% if message %}{{ message }}{% else %}Something went wrong. Please <a href="{% url 'career_quiz_major' %}">pick your major</a> and <a href="{% url 'career_quiz_take' %}">take the quiz again</a>.{% endif %}</p>
+    {% else %}
+    {% if from_explore %}
+    <p class="results-from-explore-note">These results use your <strong>explore quiz</strong> answers—no need to retake the quiz.</p>
+    {% endif %}
+    {% if major %}
+    <p class="results-major">Roles that fit <strong>{{ major.label }}</strong> and your interests & personality:</p>
     {% else %}
     <p class="page-intro">Based on your answers, here are careers that might fit your interests and personality.</p>
+    {% endif %}
+
+    {% if scores %}
+    <div id="quiz-calculating" class="quiz-calculating">
+      <div class="quiz-calculating-inner">
+        <div class="quiz-calc-spinner"></div>
+        <p class="quiz-calc-text">Calculating your profile...</p>
+        <p class="quiz-calc-percent" id="quiz-calc-percent">0%</p>
+      </div>
+    </div>
+    <div id="quiz-chart-container" class="quiz-chart-container" style="display: none;">
+      <h2 class="quiz-chart-title">Your profile at a glance</h2>
+      <div class="quiz-chart-wrap">
+        <canvas id="quiz-pie-chart" class="quiz-pie-chart" width="280" height="280"></canvas>
+        <ul class="quiz-chart-legend" id="quiz-chart-legend"></ul>
+      </div>
+    </div>
+    <script type="application/json" id="quiz-scores-json">{{ scores_json|safe }}</script>
+    <script src="{% static 'js/quiz-results-chart.js' %}"></script>
+    {% endif %}
 
     <div class="career-cards">
         {% for s in suggestions %}
         <div class="career-card">
+            <span class="career-card-rank" aria-label="Match rank {{ s.compatibility_rank }}">{% if s.compatibility_rank == 1 %}Best match{% else %}#{{ s.compatibility_rank }}{% endif %}</span>
             <h3 class="career-card-title">{{ s.title }}</h3>
             <p class="career-card-desc">{{ s.description }}</p>
+            <details class="career-learn-more">
+                <summary class="career-learn-more-trigger">
+                    <span class="career-learn-more-label">Learn more</span>
+                    <span class="career-learn-more-arrow" aria-hidden="true">▼</span>
+                </summary>
+                <div class="career-learn-more-content">
+                    <p>{{ s.learn_more }}</p>
+                </div>
+            </details>
         </div>
         {% endfor %}
     </div>
+
+    {% if results_summary %}
+    <div class="results-summary">
+        <h2 class="results-summary-title">Why these roles fit you</h2>
+        <p class="results-summary-text">{{ results_summary }}</p>
+    </div>
+    {% endif %}
 
     {% if scores %}
     <div class="scores-section">
@@ -30,7 +74,13 @@
     </div>
     {% endif %}
 
-    <a href="{% url 'career_quiz_take' %}" class="btn btn-secondary">Retake the quiz</a>
+    <div class="results-actions">
+        {% if from_explore %}
+        <a href="{% url 'career_quiz_explore_results' %}" class="btn btn-secondary">Back to explore results</a>
+        {% else %}
+        <a href="{% url 'career_quiz_major' %}" class="btn btn-secondary">Pick a different major & retake quiz</a>
+        {% endif %}
+    </div>
     {% endif %}
 </section>
 {% endblock %}

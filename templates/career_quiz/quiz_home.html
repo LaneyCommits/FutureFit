@@ -1,11 +1,28 @@
 {% extends "base.html" %}
-{% block title %}Career Quiz – Student Career Helper{% endblock %}
+{% block title %}Career Quiz – FutureFit{% endblock %}
 
 {% block content %}
 <section class="page-section quiz-intro">
-    <h1 class="page-title">Career Discovery Quiz</h1>
-    <p class="page-intro">Not sure what career path fits you? This short quiz uses your likes, dislikes, and personality to suggest careers that might be a good fit.</p>
-    <p class="quiz-meta">8 questions · About 2 minutes</p>
-    <a href="{% url 'career_quiz_take' %}" class="btn btn-primary">Start the quiz</a>
+    <div class="page-banner page-banner--quiz">
+        <h1 class="page-title">Career Discovery Quiz</h1>
+        <p class="page-intro">How much time do you have?</p>
+    </div>
+
+    <div class="quiz-options-cards">
+        <a href="{% url 'career_quiz_home' %}?length=short" class="card card-link quiz-option-card">
+            <span class="card-icon" aria-hidden="true">⏱</span>
+            <h2 class="card-title">Short quiz</h2>
+            <p class="card-desc">10 questions, about 3 minutes. Quick snapshot of your interests and style—results are less tailored but still useful for exploring.</p>
+            <span class="card-cta">Use short quiz &rarr;</span>
+        </a>
+        <a href="{% url 'career_quiz_home' %}?length=full" class="card card-link quiz-option-card">
+            <span class="card-icon" aria-hidden="true">📋</span>
+            <h2 class="card-title">Full quiz</h2>
+            <p class="card-desc">25 questions, about 6–7 minutes. More accurate, research-backed match to majors and careers. Best if you want detailed results.</p>
+            <span class="card-cta">Use full quiz &rarr;</span>
+        </a>
+    </div>
+
+    <p class="quiz-meta">Short = 10 questions (~3 min). Full = 25 questions (~6–7 min).</p>
 </section>
 {% endblock %}

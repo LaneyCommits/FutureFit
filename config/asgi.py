@@ -1,5 +1,5 @@
 """
-ASGI config for Student Career Helper project.
+ASGI config for Project7 project.
 """
 import os
 from django.core.asgi import get_asgi_application

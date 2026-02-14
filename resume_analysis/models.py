@@ -1,3 +1,3 @@
 from django.db import models
 
-# Optional: add models later for saving analyses or user accounts
+# No models yet; app serves home page and static content.

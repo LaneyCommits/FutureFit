@@ -1,17 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Take the Quiz – FutureFit{% endblock %}
+{% load static %}
+{% block title %}Explore Majors & Careers – FutureFit{% endblock %}
 
 {% block content %}
 <section class="page-section quiz-page">
-    <h1 class="page-title">Career Discovery Quiz</h1>
-    {% if major %}
-    <p class="quiz-major-badge">Exploring careers for: <strong>{{ major.label }}</strong></p>
-    {% endif %}
-    <p class="page-intro">Answer each question honestly. Questions cover your interests, Big Five personality, teamwork, and work-style preferences (based on O*NET and job-match research). There are no wrong answers.</p>
+    <h1 class="page-title">Explore majors & careers</h1>
+    <p class="quiz-major-badge explore-badge">No major required—we'll suggest majors and job categories that fit you.</p>
+    <p class="page-intro">Answer each question honestly. Same 25 questions as the major-based quiz: interests, personality, teamwork, and work-style fit. There are no wrong answers.</p>
 
-    <form method="post" action="{% url 'career_quiz_results' %}" class="quiz-form">
+    <form method="post" action="{% url 'career_quiz_explore_results' %}" class="quiz-form">
         {% csrf_token %}
-        {% if major %}<input type="hidden" name="major" value="{{ major.key }}">{% endif %}
         {% for q in questions %}
         <fieldset class="quiz-question">
             <legend class="quiz-question-legend">{{ forloop.counter }}. {{ q.text }}</legend>

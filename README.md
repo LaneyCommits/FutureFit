@@ -1,11 +1,11 @@
-# Student Career Helper
+# Project7
 
-A Django full-stack web app that helps students with **resume gap analysis** (resume vs. job listing) and **career discovery** via a short quiz based on likes, dislikes, and personality.
+**Project7** is a Django web app that helps students get from campus to career. The name comes from seven moves that actually help: know your resume gaps, discover careers that fit your personality, tailor your story, beat ATS, explore roles by type, get AI feedback, and take the next step.
 
 ## Features
 
-- **Resume Gap Analysis** — Paste your resume and a job description to see which skills and requirements are missing so you can tailor your application.
-- **Career Discovery Quiz** — Answer 8 questions about your preferences and personality to get personalized career suggestions.
+- **Resume Gap Analysis** — Paste your resume and a job description (or a job type like "Database Administrator") to see gaps and get AI tailoring and ATS tips.
+- **Career Discovery Quiz** — Take a short quiz by major or explore majors and careers; get personalized job suggestions.
 
 ## Setup
 
@@ -76,7 +76,7 @@ Project7/
 ```bash
 git init
 git add .
-git commit -m "Initial commit: Student Career Helper Django app"
+git commit -m "Initial commit: Project7 Django app"
 git branch -M main
 git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
 git push -u origin main
@@ -84,13 +84,7 @@ git push -u origin main
 
 The included `.gitignore` excludes `venv/`, `db.sqlite3`, `__pycache__/`, and other files you typically don’t want in the repo.
 
-## Optional: production settings
 
-For production, set environment variables:
-
-- `DJANGO_SECRET_KEY` — a long random secret key
-- `DJANGO_DEBUG=False`
-- Add your host to `ALLOWED_HOSTS` in `config/settings.py` or via env
 
 ## License
 

@@ -1,23 +1,60 @@
 {% extends "base.html" %}
-{% block title %}Home – Student Career Helper{% endblock %}
+{% load static %}
+{% block title %}Home – FutureFit{% endblock %}
+{% block body_class %}page-home{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <h1 class="hero-title">Your career journey starts here</h1>
-    <p class="hero-subtitle">Two tools to help you land the right role and find the right path.</p>
-    <div class="hero-cards">
-        <a href="{% url 'gap_analysis' %}" class="card card-link">
-            <span class="card-icon" aria-hidden="true">📄</span>
-            <h2 class="card-title">Resume Gap Analysis</h2>
-            <p class="card-desc">Paste your resume and a job listing. We’ll show you what’s missing so you can tailor your application.</p>
-            <span class="card-cta">Try it →</span>
-        </a>
-        <a href="{% url 'career_quiz_home' %}" class="card card-link">
-            <span class="card-icon" aria-hidden="true">🎯</span>
-            <h2 class="card-title">Career Discovery Quiz</h2>
-            <p class="card-desc">Not sure which career fits you? Answer a short quiz based on your likes, dislikes, and personality.</p>
-            <span class="card-cta">Take the quiz →</span>
-        </a>
+<!-- Hero: background image, headline, sub, two CTAs -->
+<section class="block block--hero block--hero-with-bg">
+    <div class="block-inner">
+        <p class="hero-badge">Built for students</p>
+        <h1 class="block-hero-title">A better way to find your path from campus to career</h1>
+        <p class="block-hero-sub">Discover careers that fit your personality with a short quiz. No sign-up required—just answer a few questions and explore paths that match you.</p>
+        <div class="block-hero-buttons">
+            <a href="{% url 'career_quiz_home' %}" class="btn btn-primary btn-hero-primary">Take the quiz <span class="btn-arrow" aria-hidden="true">→</span></a>
+            <a href="{% url 'career_quiz_about' %}" class="btn btn-hero-secondary">See how it works <span class="btn-arrow btn-arrow--outline" aria-hidden="true">▶</span></a>
+        </div>
+    </div>
+</section>
+
+<!-- How it works block -->
+<section class="block block--dark" id="how-it-works">
+    <div class="block-inner block-inner--narrow">
+        <h2 class="block-title block-title--light">Eliminate the guesswork in career planning</h2>
+        <p class="block-desc block-desc--light">FutureFit matches you to majors and careers based on your interests and personality. One quiz, clear results—so you can focus on the paths that actually fit you.</p>
+        <a href="{% url 'career_quiz_home' %}" class="btn btn-light">Take the quiz <span class="btn-arrow" aria-hidden="true">→</span></a>
+    </div>
+</section>
+
+<!-- Why FutureFit -->
+<section class="block block--cream block--why">
+    <div class="block-inner block-inner--narrow">
+        <h2 class="block-title">Why FutureFit?</h2>
+        <p class="block-desc block-desc--why">FutureFit helps students explore majors, build resumes, and identify skill gaps between their resume and real job opportunities, without the pressure of having it all figured out.</p>
+        <a href="{% url 'career_quiz_home' %}" class="btn btn-primary">Take the quiz <span class="btn-arrow" aria-hidden="true">→</span></a>
+    </div>
+</section>
+
+<!-- Feature cards: three cards with accent square, title, description -->
+<section class="block block--features">
+    <div class="block-inner">
+        <div class="feature-cards">
+            <article class="feature-card">
+                <span class="feature-card-accent feature-card-accent--teal" aria-hidden="true"></span>
+                <h3 class="feature-card-title">Discover</h3>
+                <p class="feature-card-desc">Get matched to majors and careers based on your interests—not just grades.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-card-accent feature-card-accent--peach" aria-hidden="true"></span>
+                <h3 class="feature-card-title">Personalized</h3>
+                <p class="feature-card-desc">Results tailored to you, with roles and next steps you can act on.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-card-accent feature-card-accent--coral" aria-hidden="true"></span>
+                <h3 class="feature-card-title">Free</h3>
+                <p class="feature-card-desc">No sign-up, no paywall. Built for students, always free.</p>
+            </article>
+        </div>
     </div>
 </section>
 {% endblock %}
