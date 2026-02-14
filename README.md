@@ -1,4 +1,4 @@
-# Project7
+# FutureFit
 
 **Project7** is a Django web app that helps students get from campus to career. The name comes from seven moves that actually help: know your resume gaps, discover careers that fit your personality, tailor your story, beat ATS, explore roles by type, get AI feedback, and take the next step.
 
