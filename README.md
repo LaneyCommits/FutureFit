@@ -1,6 +1,6 @@
 # FutureFit
 
-**Project7** is a Django web app that helps students get from campus to career. The name comes from seven moves that actually help: know your resume gaps, discover careers that fit your personality, tailor your story, beat ATS, explore roles by type, get AI feedback, and take the next step.
+**FutureFit** is a Django web app that helps students get from campus to career. *You don't have to know yet* — discover careers that fit your personality with a short quiz, explore majors and roles, and take the next step.
 
 ## Features
 
@@ -12,7 +12,7 @@
 ### 1. Clone or download the project
 
 ```bash
-cd Project7
+cd FutureFit
 ```
 
 ### 2. Create and activate a virtual environment
@@ -57,7 +57,7 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
 ## Project structure
 
 ```
-Project7/
+FutureFit/
 ├── config/             # Django project settings
 ├── resume_analysis/     # Gap analysis app (views, forms, analysis logic)
 ├── career_quiz/        # Career quiz app (questions, scoring, results)
@@ -76,9 +76,9 @@ Project7/
 ```bash
 git init
 git add .
-git commit -m "Initial commit: Project7 Django app"
+git commit -m "Initial commit: FutureFit Django app"
 git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git remote add origin https://github.com/YOUR_USERNAME/FutureFit.git
 git push -u origin main
 ```
 
