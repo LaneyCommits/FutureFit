@@ -54,6 +54,23 @@ python manage.py runserver
 
 Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
 
+## Run on GitHub Pages (static site)
+
+FutureFit includes a **static version** in the `docs/` folder that runs entirely in the browser—no server needed. To host it on GitHub Pages:
+
+1. Push your repo to GitHub.
+2. Go to **Settings → Pages** in your repository.
+3. Under **Source**, choose **Deploy from a branch**.
+4. Select branch **main** and folder **/ (root)** or **/docs**.
+   - If you choose **/docs**, the site is built from the `docs/` folder.
+5. Click **Save**. Your site will be live at `https://YOUR_USERNAME.github.io/FutureFit/` in a few minutes.
+
+To update the quiz data before deploying, run:
+
+```bash
+python3 scripts/export_quiz_json.py > docs/js/quiz-data.json
+```
+
 ## Project structure
 
 ```
@@ -61,8 +78,10 @@ FutureFit/
 ├── config/             # Django project settings
 ├── resume_analysis/     # Gap analysis app (views, forms, analysis logic)
 ├── career_quiz/        # Career quiz app (questions, scoring, results)
-├── templates/           # Base and app templates
+├── docs/               # Static site for GitHub Pages (quiz, home, about)
+├── templates/          # Base and app templates
 ├── static/css/         # Styles
+├── scripts/            # export_quiz_json.py for static site data
 ├── manage.py
 ├── requirements.txt
 └── README.md
