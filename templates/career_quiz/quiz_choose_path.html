@@ -1,28 +1,33 @@
 {% extends "base.html" %}
 {% block title %}Choose Your Path – FutureFit{% endblock %}
+{% block body_class %}quiz-page-wrap{% endblock %}
 
 {% block content %}
-<section class="page-section quiz-intro">
-    <div class="page-banner page-banner--quiz">
-        <h1 class="page-title">Choose your path</h1>
-        <p class="page-intro">{% if quiz_short %}Short quiz (10 questions) selected.{% else %}Full quiz (25 questions) selected.{% endif %}</p>
+<section class="block block--hero block--hero-with-bg quiz-hero">
+    <div class="block-inner">
+        <p class="hero-badge">{% if quiz_short %}Short quiz · 10 questions{% else %}Full quiz · 25 questions{% endif %}</p>
+        <h1 class="block-hero-title">Choose your path</h1>
+        <p class="block-hero-sub">You don't need to know your major to get started. That's the whole point.</p>
     </div>
+</section>
 
-    <div class="quiz-options-cards">
-        <a href="{% url 'career_quiz_major' %}" class="card card-link quiz-option-card">
-            <span class="card-icon" aria-hidden="true">&#127891;</span>
-            <h2 class="card-title">I have a major in mind</h2>
-            <p class="card-desc">Pick your major, then take the quiz. We suggest <strong>jobs within your degree</strong> that match your personality and interests.</p>
-            <span class="card-cta">Pick my major & start quiz &rarr;</span>
-        </a>
-        <a href="{% url 'career_quiz_explore' %}" class="card card-link quiz-option-card">
-            <span class="card-icon" aria-hidden="true">&#128218;</span>
-            <h2 class="card-title">I'm not sure what I want</h2>
-            <p class="card-desc">Take a broader quiz with the same questions. We'll suggest <strong>majors and job categories</strong> that fit you, plus sample careers—no major required.</p>
-            <span class="card-cta">Explore majors & careers &rarr;</span>
-        </a>
+<section class="block quiz-choices-section">
+    <div class="block-inner">
+        <div class="quiz-choice-cards">
+            <a href="{% url 'career_quiz_major' %}" class="quiz-choice-card reveal">
+                <div class="quiz-choice-icon">🎓</div>
+                <h3 class="quiz-choice-title">I have a major in mind</h3>
+                <p class="quiz-choice-desc">Pick your major, then take the quiz. You'll get <strong>job suggestions that fit both your degree and your personality.</strong></p>
+                <span class="quiz-choice-cta">Pick my major & start <span class="btn-arrow" aria-hidden="true">→</span></span>
+            </a>
+            <a href="{% url 'career_quiz_explore' %}" class="quiz-choice-card reveal reveal-delay-1">
+                <div class="quiz-choice-icon">🧭</div>
+                <h3 class="quiz-choice-title">I'm not sure what I want</h3>
+                <p class="quiz-choice-desc">Take the quiz without choosing a major. We'll suggest <strong>majors and job categories that fit you</strong>, plus sample careers to explore.</p>
+                <span class="quiz-choice-cta">Explore majors & careers <span class="btn-arrow" aria-hidden="true">→</span></span>
+            </a>
+        </div>
+        <p class="quiz-back-link"><a href="{% url 'career_quiz_home' %}">← Change quiz length</a></p>
     </div>
-
-    <p class="quiz-meta"><a href="{% url 'career_quiz_home' %}">← Choose a different quiz length</a></p>
 </section>
 {% endblock %}

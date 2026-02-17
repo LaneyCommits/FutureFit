@@ -17,59 +17,9 @@
     return DATA;
   }
 
-  function getNav() {
-    return `<header class="site-header">
-      <div class="header-inner">
-        <div class="brand">
-          <a href="index.html" class="logo">FutureFit</a>
-          <span class="brand-divider" aria-hidden="true"></span>
-          <p class="site-tagline">You don't have to know yet</p>
-        </div>
-        <nav class="nav">
-          <a href="index.html" class="nav-link">Home</a>
-          <a href="about.html" class="nav-link">About</a>
-          <a href="resume.html" class="nav-link nav-link--active">Resume</a>
-          <a href="quiz.html" class="btn btn-header">Take the quiz</a>
-        </nav>
-      </div>
-    </header>`;
-  }
-
-  function getFooter() {
-    return `<footer class="site-footer">
-      <div class="footer-inner">
-        <div class="footer-brand">
-          <p class="footer-logo">FutureFit</p>
-          <p class="footer-tagline">You don't have to know yet.</p>
-          <p class="footer-desc">A free career exploration tool built for college students who are still figuring it out — and that's completely okay.</p>
-        </div>
-        <div class="footer-links">
-          <div>
-            <p class="footer-col-title">Explore</p>
-            <ul class="footer-col-list">
-              <li><a href="quiz.html">Career quiz</a></li>
-              <li><a href="about.html">How it works</a></li>
-              <li><a href="resume.html">Resume builder</a></li>
-            </ul>
-          </div>
-          <div>
-            <p class="footer-col-title">Resume tools</p>
-            <ul class="footer-col-list">
-              <li><a href="resume-templates.html">Templates</a></li>
-              <li><a href="resume-tips.html">Tips & advice</a></li>
-              <li><a href="resume-ai-tools.html">AI gap analysis</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>Built for students. Always free. No sign-up required.</p>
-      </div>
-    </footer>`;
-  }
-
-  function majorCardHTML(key, t) {
-    return `<a href="resume-template.html?major=${key}" class="resume-major-card">
+  function majorCardHTML(key, t, idx) {
+    var delayClass = (typeof idx === 'number' && idx < 6) ? ' reveal-delay-' + idx : '';
+    return `<a href="resume-template.html?major=${key}" class="resume-major-card reveal${delayClass}" data-keywords="${t.label.toLowerCase()} ${t.focus.toLowerCase()}">
       <span class="resume-major-icon">${t.icon}</span>
       <h3 class="resume-major-label">${t.label}</h3>
       <p class="resume-major-focus">${t.focus}</p>
@@ -81,7 +31,7 @@
   window.renderResumeHome = async function (el) {
     const data = await loadData();
     const templates = data.templates;
-    const majorCards = Object.entries(templates).map(([k, t]) => majorCardHTML(k, t)).join('');
+    const majorCards = Object.entries(templates).map(([k, t], i) => majorCardHTML(k, t, i)).join('');
 
     el.innerHTML = `
     <section class="block block--hero block--hero-with-bg resume-hero">
@@ -139,19 +89,51 @@
   window.renderResumeTemplates = async function (el) {
     const data = await loadData();
     const templates = data.templates;
-    const majorCards = Object.entries(templates).map(([k, t]) => majorCardHTML(k, t)).join('');
+    const count = Object.keys(templates).length;
+    const majorCards = Object.entries(templates).map(([k, t], i) => majorCardHTML(k, t, i)).join('');
 
     el.innerHTML = `
-    <div class="page-banner page-banner--resume">
-      <h1 class="page-title">Resume Templates by Major</h1>
-      <p class="page-intro">Every field has different expectations. Pick your major to get a template with the right sections, formatting, and sample content—ready to download as a PDF.</p>
-    </div>
-    <section class="page-section">
-      <div class="resume-major-grid">${majorCards}</div>
+    <section class="block block--hero block--hero-with-bg resume-hero resume-hero--compact">
+      <div class="block-inner">
+        <p class="hero-badge">${count} majors · free downloads</p>
+        <h1 class="block-hero-title">Resume Templates by Major</h1>
+        <p class="block-hero-sub">Every field has different expectations. Pick your major to get a template with the right sections, formatting, and sample content — ready to download as a PDF.</p>
+      </div>
     </section>
-    <div style="text-align:center; margin: 1rem 0 2rem;">
-      <a href="resume-tips.html" class="btn btn-secondary">Resume tips & advice →</a>
-    </div>`;
+    <section class="block resume-templates-section">
+      <div class="block-inner">
+        <div class="resume-search-wrap reveal">
+          <span class="resume-search-icon" aria-hidden="true">🔍</span>
+          <input type="text" class="resume-search-input" id="resume-search" placeholder="Search majors..." autocomplete="off">
+        </div>
+        <div class="resume-major-grid" id="resume-major-grid">${majorCards}</div>
+        <p class="resume-no-results" id="resume-no-results">No templates match your search. Try a different keyword.</p>
+        <p class="resume-back-link"><a href="resume-tips.html">Resume tips & advice →</a></p>
+      </div>
+    </section>`;
+
+    // Search filter
+    var input = document.getElementById('resume-search');
+    var grid = document.getElementById('resume-major-grid');
+    var noResults = document.getElementById('resume-no-results');
+    if (input && grid) {
+      var cards = grid.querySelectorAll('.resume-major-card');
+      input.addEventListener('input', function() {
+        var q = this.value.trim().toLowerCase();
+        var visible = 0;
+        cards.forEach(function(card) {
+          var kw = card.getAttribute('data-keywords') || '';
+          var match = !q || kw.indexOf(q) !== -1;
+          card.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        noResults.style.display = visible === 0 ? 'block' : 'none';
+      });
+    }
+
+    requestAnimationFrame(function() {
+      if (typeof initReveal === 'function') initReveal();
+    });
   };
 
   /* ---- Resume Template Detail ---- */
@@ -197,57 +179,76 @@
     const sectionsListHTML = t.sections.map(s => `<li>${s}</li>`).join('');
 
     el.innerHTML = `
-    <div class="page-banner page-banner--resume">
-      <h1 class="page-title">${t.icon} ${t.label} Resume</h1>
-      <p class="page-intro">${t.focus} — tailored format and sample content for ${t.label} students.</p>
-    </div>
-    <section class="page-section">
-      <div class="resume-quickstart">
-        <div class="resume-quickstart-steps">
-          <span class="resume-qs-step"><span class="resume-qs-num">1</span> Click any text to edit</span>
-          <span class="resume-qs-step"><span class="resume-qs-num">2</span> Add your info</span>
-          <span class="resume-qs-step"><span class="resume-qs-num">3</span> Use AI tools to polish</span>
-          <span class="resume-qs-step"><span class="resume-qs-num">4</span> Download as PDF</span>
-        </div>
+    <section class="block block--hero block--hero-with-bg resume-hero resume-hero--compact">
+      <div class="block-inner">
+        <p class="hero-badge">${t.label} · editable template</p>
+        <h1 class="block-hero-title">${t.icon} ${t.label} Resume</h1>
+        <p class="block-hero-sub">${t.focus} — tailored format and sample content for ${t.label} students.</p>
       </div>
-      <div class="resume-detail-layout">
-        <div class="resume-preview-wrap">
-          <div class="resume-preview" id="resumePreview">
-            <div class="resume-paper">
-              <div class="rp-header">
-                <div class="rp-name" contenteditable="true">Your Name</div>
-                <div class="rp-contact" contenteditable="true">email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname</div>
-              </div>
-              ${sectionsHTML}
-            </div>
+    </section>
+    <section class="block resume-detail-section">
+      <div class="block-inner">
+        <div class="resume-quickstart reveal" id="resume-quickstart">
+          <div class="resume-quickstart-steps">
+            <span class="resume-qs-step"><span class="resume-qs-num">1</span> Click any text to edit</span>
+            <span class="resume-qs-step"><span class="resume-qs-num">2</span> Add your info</span>
+            <span class="resume-qs-step"><span class="resume-qs-num">3</span> Use AI tools to polish</span>
+            <span class="resume-qs-step"><span class="resume-qs-num">4</span> Download as PDF</span>
           </div>
-          <div class="resume-preview-actions">
-            <button class="btn btn-primary" id="downloadPdfBtn">Download as PDF <span aria-hidden="true">↓</span></button>
-            <button class="btn btn-teal" id="reviewBtn">Review my resume <span aria-hidden="true">✦</span></button>
-            <button class="btn btn-secondary" id="resetBtn">Reset template</button>
-          </div>
-          <div id="reviewResults" class="review-results" style="display:none;"></div>
         </div>
-        <aside class="resume-detail-sidebar">
-          <div class="resume-sidebar-card">
-            <h3 class="ai-sidebar-title">AI Resume Assistant <span class="ai-badge">Free</span></h3>
-            <div id="aiKeySetup"></div>
-            <div id="aiTools" class="ai-sidebar-wrap"></div>
+        <div class="resume-detail-layout">
+          <div class="resume-preview-wrap reveal">
+            <div class="resume-preview" id="resumePreview">
+              <div class="resume-paper">
+                <div class="rp-header">
+                  <div class="rp-name" contenteditable="true">Your Name</div>
+                  <div class="rp-contact" contenteditable="true">email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname</div>
+                </div>
+                ${sectionsHTML}
+              </div>
+            </div>
+            <div class="resume-preview-actions">
+              <button class="btn btn-primary" id="downloadPdfBtn">Download as PDF <span aria-hidden="true">↓</span></button>
+              <button class="btn btn-teal" id="reviewBtn">Review my resume <span aria-hidden="true">✦</span></button>
+              <button class="btn btn-secondary" id="resetBtn">Reset template</button>
+            </div>
+            <div id="reviewResults" class="review-results" style="display:none;"></div>
           </div>
-          <div class="resume-sidebar-card resume-sidebar-card--compact">
-            <details class="resume-details" open>
-              <summary class="resume-details-toggle">Tips for ${t.label}</summary>
-              <ul class="resume-sidebar-tips">${tipsHTML}</ul>
-            </details>
-            <details class="resume-details">
-              <summary class="resume-details-toggle">Recommended sections</summary>
-              <ol class="resume-sidebar-sections">${sectionsListHTML}</ol>
-            </details>
-          </div>
-          <a href="resume-templates.html" class="btn btn-secondary" style="width:100%; text-align:center;">← Back to all templates</a>
-        </aside>
+          <aside class="resume-detail-sidebar reveal reveal-delay-1">
+            <div class="resume-sidebar-card">
+              <h3 class="ai-sidebar-title">AI Resume Assistant <span class="ai-badge">Free</span></h3>
+              <div id="aiKeySetup"></div>
+              <div id="aiTools" class="ai-sidebar-wrap"></div>
+            </div>
+            <div class="resume-sidebar-card resume-sidebar-card--compact">
+              <details class="resume-details" open>
+                <summary class="resume-details-toggle">Tips for ${t.label}</summary>
+                <ul class="resume-sidebar-tips">${tipsHTML}</ul>
+              </details>
+              <details class="resume-details">
+                <summary class="resume-details-toggle">Recommended sections</summary>
+                <ol class="resume-sidebar-sections">${sectionsListHTML}</ol>
+              </details>
+            </div>
+            <a href="resume-templates.html" class="btn btn-secondary" style="width:100%; text-align:center;">← Back to all templates</a>
+          </aside>
+        </div>
       </div>
     </section>`;
+
+    // Quickstart step animation
+    var qs = document.getElementById('resume-quickstart');
+    if (qs && 'IntersectionObserver' in window) {
+      var qsObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            qs.classList.add('is-animated');
+            qsObs.unobserve(qs);
+          }
+        });
+      }, { threshold: 0.3 });
+      qsObs.observe(qs);
+    }
 
     // PDF download
     const preview = document.getElementById('resumePreview');
@@ -366,7 +367,6 @@
         (improvementsHTML ? '<div class="review-section"><h4 class="review-section-title review-section-title--fix">Suggested improvements</h4>' + improvementsHTML + '</div>' : '') +
         (missingHTML ? '<div class="review-section"><h4 class="review-section-title">Consider adding</h4><div class="gap-keywords">' + missingHTML + '</div></div>' : '');
 
-      // Draw mini score ring
       var canvas = document.getElementById('reviewChart');
       if (canvas) {
         var ctx = canvas.getContext('2d');
@@ -403,6 +403,10 @@
         aiTools.appendChild(ResumeAI.createSkillsSuggester(t.label));
       });
     }
+
+    requestAnimationFrame(function() {
+      if (typeof initReveal === 'function') initReveal();
+    });
   };
 
   /* ---- Resume Tips ---- */
@@ -410,127 +414,143 @@
     const data = await loadData();
     const tips = data.tips;
 
-    const tipsCards = tips.map((tip, i) => `
-      <div class="resume-tip-card">
-        <span class="resume-tip-number">${i + 1}</span>
+    const tipsCards = tips.map((tip, i) => {
+      var delayClass = i < 3 ? ' reveal-delay-' + i : '';
+      return `
+      <div class="resume-tip-card reveal${delayClass}">
+        <span class="resume-tip-number" data-target="${i + 1}">${i + 1}</span>
         <h3 class="resume-tip-title">${tip.title}</h3>
         <p class="resume-tip-desc">${tip.desc}</p>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     el.innerHTML = `
-    <div class="page-banner page-banner--resume">
-      <h1 class="page-title">Resume Tips & Best Practices</h1>
-      <p class="page-intro">Expert advice to help you write a resume that stands out. Whether you're starting from scratch or polishing a draft, these tips will help.</p>
-    </div>
-    <section class="page-section">
-      <div class="resume-tips-grid">${tipsCards}</div>
+    <section class="block block--hero block--hero-with-bg resume-hero resume-hero--compact">
+      <div class="block-inner">
+        <p class="hero-badge">${tips.length} expert tips</p>
+        <h1 class="block-hero-title">Resume Tips & Best Practices</h1>
+        <p class="block-hero-sub">Expert advice to help you write a resume that stands out. Whether you're starting from scratch or polishing a draft, these tips will help.</p>
+      </div>
     </section>
-    <section class="block block--cream" style="margin-top: 1rem;">
+    <section class="block resume-tips-section">
+      <div class="block-inner">
+        <div class="resume-tips-grid" id="resume-tips-grid">${tipsCards}</div>
+      </div>
+    </section>
+    <section class="block block--cream reveal">
       <div class="block-inner block-inner--narrow">
         <h2 class="block-title">Want tips specific to your major?</h2>
         <p class="block-desc block-desc--why">Every field has different resume expectations. Browse our templates to see section recommendations, sample bullets, and formatting advice tailored to your degree.</p>
         <a href="resume-templates.html" class="btn btn-primary">Browse templates by major <span class="btn-arrow" aria-hidden="true">→</span></a>
       </div>
     </section>
-    <section class="page-section">
-      <div class="resume-verbs-section">
-        <h2 class="page-title" style="text-align:center;">Power action verbs</h2>
-        <p class="page-intro" style="text-align:center; margin: 0 auto 2rem;">Start your bullet points with these strong verbs to make your achievements stand out.</p>
+    <section class="block resume-verbs-section-block">
+      <div class="block-inner">
+        <h2 class="block-title reveal" style="text-align:center; margin-bottom: 0.35rem;">Power action verbs</h2>
+        <p class="block-desc reveal" style="text-align:center; margin-bottom: 2rem;">Start your bullet points with these strong verbs to make your achievements stand out.</p>
         <div class="resume-verbs-grid">
-          <div class="resume-verb-group"><h4 class="resume-verb-category">Leadership</h4><p class="resume-verb-list">Led, Managed, Directed, Supervised, Coordinated, Spearheaded, Mentored, Delegated</p></div>
-          <div class="resume-verb-group"><h4 class="resume-verb-category">Achievement</h4><p class="resume-verb-list">Achieved, Exceeded, Improved, Increased, Reduced, Streamlined, Resolved, Delivered</p></div>
-          <div class="resume-verb-group"><h4 class="resume-verb-category">Creation</h4><p class="resume-verb-list">Designed, Developed, Created, Built, Launched, Established, Implemented, Initiated</p></div>
-          <div class="resume-verb-group"><h4 class="resume-verb-category">Analysis</h4><p class="resume-verb-list">Analyzed, Researched, Evaluated, Assessed, Investigated, Identified, Calculated, Forecasted</p></div>
-          <div class="resume-verb-group"><h4 class="resume-verb-category">Communication</h4><p class="resume-verb-list">Presented, Authored, Edited, Negotiated, Collaborated, Advocated, Facilitated, Persuaded</p></div>
-          <div class="resume-verb-group"><h4 class="resume-verb-category">Technical</h4><p class="resume-verb-list">Programmed, Engineered, Automated, Configured, Debugged, Optimized, Deployed, Integrated</p></div>
+          <div class="resume-verb-group reveal"><h4 class="resume-verb-category">Leadership</h4><p class="resume-verb-list">Led, Managed, Directed, Supervised, Coordinated, Spearheaded, Mentored, Delegated</p></div>
+          <div class="resume-verb-group reveal reveal-delay-1"><h4 class="resume-verb-category">Achievement</h4><p class="resume-verb-list">Achieved, Exceeded, Improved, Increased, Reduced, Streamlined, Resolved, Delivered</p></div>
+          <div class="resume-verb-group reveal reveal-delay-2"><h4 class="resume-verb-category">Creation</h4><p class="resume-verb-list">Designed, Developed, Created, Built, Launched, Established, Implemented, Initiated</p></div>
+          <div class="resume-verb-group reveal reveal-delay-3"><h4 class="resume-verb-category">Analysis</h4><p class="resume-verb-list">Analyzed, Researched, Evaluated, Assessed, Investigated, Identified, Calculated, Forecasted</p></div>
+          <div class="resume-verb-group reveal"><h4 class="resume-verb-category">Communication</h4><p class="resume-verb-list">Presented, Authored, Edited, Negotiated, Collaborated, Advocated, Facilitated, Persuaded</p></div>
+          <div class="resume-verb-group reveal reveal-delay-1"><h4 class="resume-verb-category">Technical</h4><p class="resume-verb-list">Programmed, Engineered, Automated, Configured, Debugged, Optimized, Deployed, Integrated</p></div>
         </div>
       </div>
     </section>
-    <div style="text-align:center; margin: 0 0 2rem;">
-      <a href="resume.html" class="btn btn-secondary">← Back to Resume Builder</a>
-    </div>`;
+    <p class="resume-back-link"><a href="resume.html">← Back to Resume Builder</a></p>`;
+
+    // Tip card animation observer
+    var tipCards = document.querySelectorAll('.resume-tip-card');
+    if (tipCards.length && 'IntersectionObserver' in window) {
+      var tipObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            tipObs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+      tipCards.forEach(function(card) { tipObs.observe(card); });
+    }
+
+    requestAnimationFrame(function() {
+      if (typeof initReveal === 'function') initReveal();
+    });
   };
 
   /* ---- AI Tools page ---- */
   window.renderResumeAITools = async function (el) {
     el.innerHTML = `
-    <div class="page-banner page-banner--resume">
-      <h1 class="page-title">Resume Gap Analysis</h1>
-      <p class="page-intro">See how your resume stacks up against a real job posting. Get an AI-powered match score, find out what's missing, and learn exactly what to add.</p>
-    </div>
-    <section class="page-section">
-      <div id="aiKeySetup" style="max-width: 600px;"></div>
-
-      <!-- Gap analysis input -->
-      <div class="gap-analysis-card">
-        <h2 class="gap-analysis-heading">Compare your resume to a job posting</h2>
-        <p class="gap-analysis-desc">Paste your resume and a job description below. AI will analyze the overlap and tell you exactly what to improve.</p>
-        <div class="ai-tailor-grid">
-          <div class="ai-tailor-col">
-            <label class="ai-label">Your resume</label>
-            <textarea class="ai-textarea ai-textarea-lg" rows="10" placeholder="Paste your full resume text here..." id="gapResume"></textarea>
-          </div>
-          <div class="ai-tailor-col">
-            <label class="ai-label">Job description</label>
-            <textarea class="ai-textarea ai-textarea-lg" rows="10" placeholder="Paste the job posting you're targeting..." id="gapJob"></textarea>
-          </div>
-        </div>
-        <button type="button" class="btn btn-primary ai-action-btn ai-tailor-btn" id="gapAnalyzeBtn">Analyze my resume <span class="btn-arrow" aria-hidden="true">→</span></button>
-        <p class="ai-error" id="gapError" style="display:none;"></p>
-      </div>
-
-      <!-- Gap analysis results (hidden until analysis runs) -->
-      <div id="gapResults" class="gap-results" style="display:none;">
-
-        <!-- Top row: donut chart + summary -->
-        <div class="gap-results-top">
-          <div class="gap-chart-wrap">
-            <div class="gap-chart-ring">
-              <canvas id="gapChart" width="220" height="220"></canvas>
-              <div class="gap-chart-center">
-                <span class="gap-chart-score" id="gapScoreLabel">0%</span>
-                <span class="gap-chart-score-label">match</span>
-              </div>
-            </div>
-          </div>
-          <div class="gap-summary-wrap">
-            <h3 class="gap-summary-title">Overview</h3>
-            <p class="gap-summary-text" id="gapSummaryText"></p>
-            <div class="gap-strengths" id="gapStrengths"></div>
-          </div>
-        </div>
-
-        <!-- Missing keywords -->
-        <div class="gap-section">
-          <h3 class="gap-section-title">Missing keywords &amp; skills</h3>
-          <p class="gap-section-desc">These appeared in the job description but not in your resume. Adding them can help you pass applicant tracking systems (ATS) and show recruiters you're a fit.</p>
-          <div class="gap-keywords" id="gapKeywords"></div>
-        </div>
-
-        <!-- Suggestions -->
-        <div class="gap-section">
-          <h3 class="gap-section-title">What to add or change</h3>
-          <p class="gap-section-desc">Specific, actionable steps to bring your resume closer to what this role is looking for.</p>
-          <ol class="gap-suggestions" id="gapSuggestions"></ol>
-        </div>
-
-        <!-- CTA to other tools -->
-        <div class="gap-cta-bar">
-          <p class="gap-cta-text">Ready to improve your resume? Use the tools below to implement these suggestions.</p>
-        </div>
-      </div>
-
-      <!-- Other AI tools -->
-      <div style="max-width: 600px; margin-top: 2rem;">
-        <h2 class="gap-tools-heading">More AI tools</h2>
-        <div id="aiBulletTool"></div>
-        <div id="aiSummaryTool" style="margin-top: 0.75rem;"></div>
-        <div id="aiSkillsTool" style="margin-top: 0.75rem;"></div>
+    <section class="block block--hero block--hero-with-bg resume-hero resume-hero--compact">
+      <div class="block-inner">
+        <p class="hero-badge">AI-powered · free</p>
+        <h1 class="block-hero-title">Resume Gap Analysis</h1>
+        <p class="block-hero-sub">See how your resume stacks up against a real job posting. Get an AI-powered match score, find out what's missing, and learn exactly what to add.</p>
       </div>
     </section>
-    <div style="text-align:center; margin: 0 0 2rem;">
-      <a href="resume.html" class="btn btn-secondary">← Back to Resume Builder</a>
-    </div>`;
+    <section class="block resume-ai-section">
+      <div class="block-inner">
+        <div id="aiKeySetup" class="reveal" style="max-width: 600px;"></div>
+
+        <div class="gap-analysis-card reveal">
+          <h2 class="gap-analysis-heading">Compare your resume to a job posting</h2>
+          <p class="gap-analysis-desc">Paste your resume and a job description below. AI will analyze the overlap and tell you exactly what to improve.</p>
+          <div class="ai-tailor-grid">
+            <div class="ai-tailor-col">
+              <label class="ai-label">Your resume</label>
+              <textarea class="ai-textarea ai-textarea-lg" rows="10" placeholder="Paste your full resume text here..." id="gapResume"></textarea>
+            </div>
+            <div class="ai-tailor-col">
+              <label class="ai-label">Job description</label>
+              <textarea class="ai-textarea ai-textarea-lg" rows="10" placeholder="Paste the job posting you're targeting..." id="gapJob"></textarea>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary ai-action-btn ai-tailor-btn" id="gapAnalyzeBtn">Analyze my resume <span class="btn-arrow" aria-hidden="true">→</span></button>
+          <p class="ai-error" id="gapError" style="display:none;"></p>
+        </div>
+
+        <div id="gapResults" class="gap-results" style="display:none;">
+          <div class="gap-results-top">
+            <div class="gap-chart-wrap">
+              <div class="gap-chart-ring">
+                <canvas id="gapChart" width="220" height="220"></canvas>
+                <div class="gap-chart-center">
+                  <span class="gap-chart-score" id="gapScoreLabel">0%</span>
+                  <span class="gap-chart-score-label">match</span>
+                </div>
+              </div>
+            </div>
+            <div class="gap-summary-wrap">
+              <h3 class="gap-summary-title">Overview</h3>
+              <p class="gap-summary-text" id="gapSummaryText"></p>
+              <div class="gap-strengths" id="gapStrengths"></div>
+            </div>
+          </div>
+          <div class="gap-section">
+            <h3 class="gap-section-title">Missing keywords &amp; skills</h3>
+            <p class="gap-section-desc">These appeared in the job description but not in your resume. Adding them can help you pass applicant tracking systems (ATS) and show recruiters you're a fit.</p>
+            <div class="gap-keywords" id="gapKeywords"></div>
+          </div>
+          <div class="gap-section">
+            <h3 class="gap-section-title">What to add or change</h3>
+            <p class="gap-section-desc">Specific, actionable steps to bring your resume closer to what this role is looking for.</p>
+            <ol class="gap-suggestions" id="gapSuggestions"></ol>
+          </div>
+          <div class="gap-cta-bar">
+            <p class="gap-cta-text">Ready to improve your resume? Use the tools below to implement these suggestions.</p>
+          </div>
+        </div>
+
+        <div class="reveal" style="max-width: 600px; margin-top: 2rem;">
+          <h2 class="gap-tools-heading">More AI tools</h2>
+          <div id="aiBulletTool"></div>
+          <div id="aiSummaryTool" style="margin-top: 0.75rem;"></div>
+          <div id="aiSkillsTool" style="margin-top: 0.75rem;"></div>
+        </div>
+      </div>
+    </section>
+    <p class="resume-back-link"><a href="resume.html">← Back to Resume Builder</a></p>`;
 
     /* Wire up gap analysis */
     var analyzeBtn = document.getElementById('gapAnalyzeBtn');
@@ -573,7 +593,6 @@
     function renderGapResults(data) {
       document.getElementById('gapSummaryText').textContent = data.summary;
 
-      // Strengths
       var strengthsEl = document.getElementById('gapStrengths');
       if (data.strengths.length) {
         strengthsEl.innerHTML = '<h4 class="gap-strengths-title">What you\'re doing well</h4><ul class="gap-strengths-list">' +
@@ -582,19 +601,16 @@
         strengthsEl.innerHTML = '';
       }
 
-      // Missing keywords
       var keywordsEl = document.getElementById('gapKeywords');
       keywordsEl.innerHTML = data.missing_keywords.map(function (kw) {
         return '<span class="gap-keyword-tag">' + kw + '</span>';
       }).join('');
 
-      // Suggestions
       var suggestionsEl = document.getElementById('gapSuggestions');
       suggestionsEl.innerHTML = data.suggestions.map(function (s) {
         return '<li>' + s + '</li>';
       }).join('');
 
-      // Animate donut chart
       animateGapChart(data.match_score);
     }
 
@@ -634,7 +650,6 @@
 
         ctx.clearRect(0, 0, size, size);
 
-        // Track
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.strokeStyle = trackColor;
@@ -642,7 +657,6 @@
         ctx.lineCap = 'round';
         ctx.stroke();
 
-        // Score arc
         if (sweepAngle > 0.01) {
           ctx.beginPath();
           ctx.arc(cx, cy, radius, startAngle, startAngle + sweepAngle);
@@ -674,5 +688,9 @@
         document.getElementById('aiSkillsTool').appendChild(ResumeAI.createSkillsSuggester('your major'));
       });
     }
+
+    requestAnimationFrame(function() {
+      if (typeof initReveal === 'function') initReveal();
+    });
   };
 })();

@@ -1,33 +1,42 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Pick Your Major – FutureFit{% endblock %}
+{% block body_class %}quiz-page-wrap{% endblock %}
 
 {% block content %}
-<section class="page-section major-selection">
-    <h1 class="page-title">What’s your major (or intended major)?</h1>
-    <p class="page-intro">We’ll suggest roles that fit your degree and your personality. Pick the one closest to what you’re studying.</p>
+<section class="block block--hero block--hero-with-bg quiz-hero quiz-hero--compact">
+    <div class="block-inner">
+        <p class="hero-badge">Step 2 of 3</p>
+        <h1 class="block-hero-title">Pick your major</h1>
+        <p class="block-hero-sub">We'll suggest roles that fit your degree and your personality. Pick the one closest to what you're studying.</p>
+    </div>
+</section>
 
-    <form method="post" class="major-form" id="major-form">
-        {% csrf_token %}
-        <input type="hidden" name="major" id="major-hidden" value="" required>
+<section class="block quiz-major-section">
+    <div class="block-inner">
+        <form method="post" class="major-form" id="major-form">
+            {% csrf_token %}
+            <input type="hidden" name="major" id="major-hidden" value="" required>
 
-        <p class="major-choose-label">Choose your major</p>
+            <p class="major-choose-label reveal">Choose your major</p>
 
-        <div class="major-list-wrapper" id="major-list-wrapper">
-            <div class="major-list" id="major-list" role="listbox" aria-label="Majors" data-preselect="{{ preselect|default:'' }}">
-                {% for key, label, desc, keywords in majors %}
-                <button type="button" class="major-option" data-major-key="{{ key }}" data-major-label="{{ label }}" data-major-keywords="{{ keywords|lower }}" role="option" tabindex="-1">
-                    <span class="major-option-label">{{ label }}</span>
-                    <span class="major-option-desc">{{ desc }}</span>
-                </button>
-                {% endfor %}
+            <div class="major-list-wrapper" id="major-list-wrapper">
+                <div class="major-list" id="major-list" role="listbox" aria-label="Majors" data-preselect="{{ preselect|default:'' }}">
+                    {% for key, label, desc, keywords in majors %}
+                    <button type="button" class="major-option" data-major-key="{{ key }}" data-major-label="{{ label }}" data-major-keywords="{{ keywords|lower }}" role="option" tabindex="-1">
+                        <span class="major-option-label">{{ label }}</span>
+                        <span class="major-option-desc">{{ desc }}</span>
+                    </button>
+                    {% endfor %}
+                </div>
+                <div class="major-list-scrollbar" id="major-list-scrollbar" aria-hidden="true">
+                    <div class="major-list-thumb" id="major-list-thumb"></div>
+                </div>
             </div>
-            <div class="major-list-scrollbar" id="major-list-scrollbar" aria-hidden="true">
-                <div class="major-list-thumb" id="major-list-thumb"></div>
-            </div>
-        </div>
-        <button type="submit" class="btn btn-primary major-submit-btn" id="major-submit" disabled>Continue to quiz</button>
-    </form>
+            <button type="submit" class="btn btn-primary major-submit-btn" id="major-submit" disabled>Continue to quiz</button>
+        </form>
+        <p class="quiz-back-link"><a href="{% url 'career_quiz_home' %}">← Choose a different path</a></p>
+    </div>
 </section>
 <script>
 (function() {
@@ -67,7 +76,6 @@
     }
   }
 
-  // Custom scrollbar (always visible)
   var wrapper = document.getElementById('major-list-wrapper');
   var track = document.getElementById('major-list-scrollbar');
   var thumb = document.getElementById('major-list-thumb');

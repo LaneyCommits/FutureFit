@@ -1,27 +1,61 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Resume Templates – FutureFit{% endblock %}
+{% block body_class %}page-resume{% endblock %}
 
 {% block content %}
-<div class="page-banner page-banner--resume">
-    <h1 class="page-title">Resume Templates by Major</h1>
-    <p class="page-intro">Every field has different expectations. Pick your major to get a template with the right sections, formatting, and sample content—ready to download as a PDF.</p>
-</div>
-
-<section class="page-section">
-    <div class="resume-major-grid">
-        {% for major in majors %}
-        <a href="{% url 'resume_template_detail' major.key %}" class="resume-major-card">
-            <span class="resume-major-icon">{{ major.icon }}</span>
-            <h3 class="resume-major-label">{{ major.label }}</h3>
-            <p class="resume-major-focus">{{ major.focus }}</p>
-            <span class="resume-major-cta">View template →</span>
-        </a>
-        {% endfor %}
+<section class="block block--hero block--hero-with-bg resume-hero resume-hero--compact">
+    <div class="block-inner">
+        <p class="hero-badge">{{ majors|length }} majors · free downloads</p>
+        <h1 class="block-hero-title">Resume Templates by Major</h1>
+        <p class="block-hero-sub">Every field has different expectations. Pick your major to get a template with the right sections, formatting, and sample content — ready to download as a PDF.</p>
     </div>
 </section>
 
-<div style="text-align:center; margin: 1rem 0 2rem;">
-    <a href="{% url 'resume_tips' %}" class="btn btn-secondary">Resume tips & advice →</a>
-</div>
+<section class="block resume-templates-section">
+    <div class="block-inner">
+        <div class="resume-search-wrap reveal">
+            <span class="resume-search-icon" aria-hidden="true">🔍</span>
+            <input type="text" class="resume-search-input" id="resume-search" placeholder="Search majors..." autocomplete="off">
+        </div>
+
+        <div class="resume-major-grid" id="resume-major-grid">
+            {% for major in majors %}
+            <a href="{% url 'resume_template_detail' major.key %}" class="resume-major-card reveal{% if forloop.counter <= 6 %} reveal-delay-{{ forloop.counter0 }}{% endif %}" data-keywords="{{ major.label|lower }} {{ major.focus|lower }}">
+                <span class="resume-major-icon">{{ major.icon }}</span>
+                <h3 class="resume-major-label">{{ major.label }}</h3>
+                <p class="resume-major-focus">{{ major.focus }}</p>
+                <span class="resume-major-cta">View template →</span>
+            </a>
+            {% endfor %}
+        </div>
+        <p class="resume-no-results" id="resume-no-results">No templates match your search. Try a different keyword.</p>
+
+        <p class="resume-back-link"><a href="{% url 'resume_tips' %}">Resume tips & advice →</a></p>
+    </div>
+</section>
+<script>
+(function() {
+  var input = document.getElementById('resume-search');
+  var grid = document.getElementById('resume-major-grid');
+  var noResults = document.getElementById('resume-no-results');
+  if (!input || !grid) return;
+
+  var cards = grid.querySelectorAll('.resume-major-card');
+
+  input.addEventListener('input', function() {
+    var q = this.value.trim().toLowerCase();
+    var visible = 0;
+
+    cards.forEach(function(card) {
+      var kw = card.getAttribute('data-keywords') || '';
+      var match = !q || kw.indexOf(q) !== -1;
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+
+    noResults.style.display = visible === 0 ? 'block' : 'none';
+  });
+})();
+</script>
 {% endblock %}

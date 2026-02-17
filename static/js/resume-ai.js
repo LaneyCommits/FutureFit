@@ -11,6 +11,9 @@
   var GEMINI_MODEL = 'gemini-2.0-flash';
   var GEMINI_API = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent';
 
+  /* Default key for the static site so AI works out of the box */
+  var DEFAULT_KEY = 'AIzaSyDa1nPd3toFkz7GK2kxEBJo0BhsC-XsNzA';
+
   /* Server endpoints (Django) */
   var SERVER_ENDPOINTS = {
     status: '/resume/api/ai/status/',
@@ -38,7 +41,7 @@
 
   /* ---- Client-side key management (fallback) ---- */
 
-  function getClientKey() { return localStorage.getItem(STORAGE_KEY) || ''; }
+  function getClientKey() { return localStorage.getItem(STORAGE_KEY) || DEFAULT_KEY || ''; }
   function setClientKey(key) { localStorage.setItem(STORAGE_KEY, key.trim()); }
   function hasClientKey() { return getClientKey().length > 10; }
 
@@ -278,6 +281,23 @@
   /* ---- UI: Key setup (only shown in client mode) ---- */
 
   function createKeySetup(onSave) {
+    /* If a default key is present, AI works automatically — show ready badge */
+    if (DEFAULT_KEY && DEFAULT_KEY.length > 10 && !localStorage.getItem(STORAGE_KEY)) {
+      var readyWrap = document.createElement('div');
+      readyWrap.className = 'ai-key-setup';
+      readyWrap.style.borderColor = 'rgba(127, 175, 157, 0.3)';
+      readyWrap.style.background = 'rgba(127, 175, 157, 0.06)';
+      readyWrap.innerHTML =
+        '<div class="ai-key-header">' +
+          '<span class="ai-key-icon">✅</span>' +
+          '<div>' +
+            '<strong>AI is ready to use</strong>' +
+            '<p class="ai-key-desc">AI features are powered by Google Gemini. No setup needed — just use the tools below.</p>' +
+          '</div>' +
+        '</div>';
+      return readyWrap;
+    }
+
     var wrap = document.createElement('div');
     wrap.className = 'ai-key-setup';
     wrap.innerHTML =
@@ -292,7 +312,7 @@
       '<a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="ai-key-link">' +
         'Get a free API key from Google AI Studio →</a>' +
       '<div class="ai-key-input-row">' +
-        '<input type="password" class="ai-key-input" placeholder="Paste your Gemini API key" value="' + getClientKey() + '">' +
+        '<input type="password" class="ai-key-input" placeholder="Paste your Gemini API key" value="' + (localStorage.getItem(STORAGE_KEY) || '') + '">' +
         '<button type="button" class="btn btn-primary ai-key-save">Save key</button>' +
       '</div>';
 

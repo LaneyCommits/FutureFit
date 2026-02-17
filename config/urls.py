@@ -9,4 +9,5 @@ urlpatterns = [
     path('', include('resume_analysis.urls')),
     path('career-quiz/', include('career_quiz.urls')),
     path('resume/', include('resume.urls')),
+    path('schools/', include('schools.urls')),
 ]

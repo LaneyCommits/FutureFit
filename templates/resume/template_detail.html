@@ -1,95 +1,101 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}{{ template.label }} Resume Template – FutureFit{% endblock %}
+{% block body_class %}page-resume{% endblock %}
 
 {% block content %}
-<div class="page-banner page-banner--resume">
-    <h1 class="page-title">{{ template.icon }} {{ template.label }} Resume</h1>
-    <p class="page-intro">{{ template.focus }} — tailored format and sample content for {{ template.label }} students.</p>
-</div>
-
-<section class="page-section">
-    <div class="resume-quickstart">
-        <div class="resume-quickstart-steps">
-            <span class="resume-qs-step"><span class="resume-qs-num">1</span> Click any text to edit</span>
-            <span class="resume-qs-step"><span class="resume-qs-num">2</span> Add your info</span>
-            <span class="resume-qs-step"><span class="resume-qs-num">3</span> Use AI tools to polish</span>
-            <span class="resume-qs-step"><span class="resume-qs-num">4</span> Download as PDF</span>
-        </div>
+<section class="block block--hero block--hero-with-bg resume-hero resume-hero--compact">
+    <div class="block-inner">
+        <p class="hero-badge">{{ template.label }} · editable template</p>
+        <h1 class="block-hero-title">{{ template.icon }} {{ template.label }} Resume</h1>
+        <p class="block-hero-sub">{{ template.focus }} — tailored format and sample content for {{ template.label }} students.</p>
     </div>
-    <div class="resume-detail-layout">
-        <!-- Live preview -->
-        <div class="resume-preview-wrap">
-            <div class="resume-preview" id="resumePreview">
-                <div class="resume-paper">
-                    <div class="rp-header">
-                        <div class="rp-name" contenteditable="true">Your Name</div>
-                        <div class="rp-contact" contenteditable="true">email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname</div>
-                    </div>
+</section>
 
-                    {% for section in template.sections %}
-                    <div class="rp-section">
-                        <div class="rp-section-title">{{ section }}</div>
-                        {% if section == "Summary" %}
-                        <div class="rp-content" contenteditable="true">Results-driven {{ template.label }} student with experience in {{ template.focus|lower }}. Passionate about making an impact through practical skills and a strong work ethic. Seeking an entry-level position to apply classroom knowledge in a professional setting.</div>
-                        {% elif section == "Education" or section == "Education & Training" %}
-                        <div class="rp-content" contenteditable="true"><strong>Bachelor of Science in {{ template.label }}</strong><br>Your University · Expected May 2026<br>GPA: 3.X/4.0 · Relevant Coursework: [Add your courses]</div>
-                        {% elif section == "Technical Skills" or section == "Skills" or section == "Tools & Software" or section == "Skills & Tools" or section == "Skills & Equipment" %}
-                        <div class="rp-content" contenteditable="true">Add your relevant skills, tools, and software here. Separate technical skills from soft skills for clarity.</div>
-                        {% elif section == "Certifications" or section == "Certifications & Licenses" or section == "Licenses & Certifications" %}
-                        <div class="rp-content" contenteditable="true">List relevant certifications, licenses, and professional training. Include dates earned and issuing organization.</div>
-                        {% elif section == "Portfolio" or section == "Portfolio & Projects" %}
-                        <div class="rp-content" contenteditable="true">Link to your online portfolio (e.g., Behance, Dribbble, GitHub, personal website). List 2–3 key projects with brief descriptions of your role and impact.</div>
-                        {% else %}
-                        <div class="rp-content" contenteditable="true">
-                            <ul>
-                            {% for bullet in template.sample_bullets %}
-                                <li>{{ bullet }}</li>
-                            {% endfor %}
-                            </ul>
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
+<section class="block resume-detail-section">
+    <div class="block-inner">
+        <div class="resume-quickstart reveal" id="resume-quickstart">
+            <div class="resume-quickstart-steps">
+                <span class="resume-qs-step"><span class="resume-qs-num">1</span> Click any text to edit</span>
+                <span class="resume-qs-step"><span class="resume-qs-num">2</span> Add your info</span>
+                <span class="resume-qs-step"><span class="resume-qs-num">3</span> Use AI tools to polish</span>
+                <span class="resume-qs-step"><span class="resume-qs-num">4</span> Download as PDF</span>
             </div>
-            <div class="resume-preview-actions">
-                <button class="btn btn-primary" id="downloadPdfBtn">Download as PDF <span aria-hidden="true">↓</span></button>
-                <button class="btn btn-teal" id="reviewBtn">Review my resume <span aria-hidden="true">✦</span></button>
-                <button class="btn btn-secondary" id="resetBtn">Reset template</button>
-            </div>
-            <div id="reviewResults" class="review-results" style="display:none;"></div>
         </div>
+        <div class="resume-detail-layout">
+            <!-- Live preview -->
+            <div class="resume-preview-wrap reveal">
+                <div class="resume-preview" id="resumePreview">
+                    <div class="resume-paper">
+                        <div class="rp-header">
+                            <div class="rp-name" contenteditable="true">Your Name</div>
+                            <div class="rp-contact" contenteditable="true">email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname</div>
+                        </div>
 
-        <!-- Sidebar -->
-        <aside class="resume-detail-sidebar">
-            <div class="resume-sidebar-card">
-                <h3 class="ai-sidebar-title">AI Resume Assistant <span class="ai-badge">Free</span></h3>
-                <div id="aiKeySetup"></div>
-                <div id="aiTools" class="ai-sidebar-wrap"></div>
-            </div>
-
-            <div class="resume-sidebar-card resume-sidebar-card--compact">
-                <details class="resume-details" open>
-                    <summary class="resume-details-toggle">Tips for {{ template.label }}</summary>
-                    <ul class="resume-sidebar-tips">
-                        {% for tip in template.tips %}
-                        <li>{{ tip }}</li>
-                        {% endfor %}
-                    </ul>
-                </details>
-                <details class="resume-details">
-                    <summary class="resume-details-toggle">Recommended sections</summary>
-                    <ol class="resume-sidebar-sections">
                         {% for section in template.sections %}
-                        <li>{{ section }}</li>
+                        <div class="rp-section">
+                            <div class="rp-section-title">{{ section }}</div>
+                            {% if section == "Summary" %}
+                            <div class="rp-content" contenteditable="true">Results-driven {{ template.label }} student with experience in {{ template.focus|lower }}. Passionate about making an impact through practical skills and a strong work ethic. Seeking an entry-level position to apply classroom knowledge in a professional setting.</div>
+                            {% elif section == "Education" or section == "Education & Training" %}
+                            <div class="rp-content" contenteditable="true"><strong>Bachelor of Science in {{ template.label }}</strong><br>Your University · Expected May 2026<br>GPA: 3.X/4.0 · Relevant Coursework: [Add your courses]</div>
+                            {% elif section == "Technical Skills" or section == "Skills" or section == "Tools & Software" or section == "Skills & Tools" or section == "Skills & Equipment" %}
+                            <div class="rp-content" contenteditable="true">Add your relevant skills, tools, and software here. Separate technical skills from soft skills for clarity.</div>
+                            {% elif section == "Certifications" or section == "Certifications & Licenses" or section == "Licenses & Certifications" %}
+                            <div class="rp-content" contenteditable="true">List relevant certifications, licenses, and professional training. Include dates earned and issuing organization.</div>
+                            {% elif section == "Portfolio" or section == "Portfolio & Projects" %}
+                            <div class="rp-content" contenteditable="true">Link to your online portfolio (e.g., Behance, Dribbble, GitHub, personal website). List 2–3 key projects with brief descriptions of your role and impact.</div>
+                            {% else %}
+                            <div class="rp-content" contenteditable="true">
+                                <ul>
+                                {% for bullet in template.sample_bullets %}
+                                    <li>{{ bullet }}</li>
+                                {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
                         {% endfor %}
-                    </ol>
-                </details>
+                    </div>
+                </div>
+                <div class="resume-preview-actions">
+                    <button class="btn btn-primary" id="downloadPdfBtn">Download as PDF <span aria-hidden="true">↓</span></button>
+                    <button class="btn btn-teal" id="reviewBtn">Review my resume <span aria-hidden="true">✦</span></button>
+                    <button class="btn btn-secondary" id="resetBtn">Reset template</button>
+                </div>
+                <div id="reviewResults" class="review-results" style="display:none;"></div>
             </div>
 
-            <a href="{% url 'resume_templates' %}" class="btn btn-secondary" style="width:100%; text-align:center;">← Back to all templates</a>
-        </aside>
+            <!-- Sidebar -->
+            <aside class="resume-detail-sidebar reveal reveal-delay-1">
+                <div class="resume-sidebar-card">
+                    <h3 class="ai-sidebar-title">AI Resume Assistant <span class="ai-badge">Free</span></h3>
+                    <div id="aiKeySetup"></div>
+                    <div id="aiTools" class="ai-sidebar-wrap"></div>
+                </div>
+
+                <div class="resume-sidebar-card resume-sidebar-card--compact">
+                    <details class="resume-details" open>
+                        <summary class="resume-details-toggle">Tips for {{ template.label }}</summary>
+                        <ul class="resume-sidebar-tips">
+                            {% for tip in template.tips %}
+                            <li>{{ tip }}</li>
+                            {% endfor %}
+                        </ul>
+                    </details>
+                    <details class="resume-details">
+                        <summary class="resume-details-toggle">Recommended sections</summary>
+                        <ol class="resume-sidebar-sections">
+                            {% for section in template.sections %}
+                            <li>{{ section }}</li>
+                            {% endfor %}
+                        </ol>
+                    </details>
+                </div>
+
+                <a href="{% url 'resume_templates' %}" class="btn btn-secondary" style="width:100%; text-align:center;">← Back to all templates</a>
+            </aside>
+        </div>
     </div>
 </section>
 
@@ -97,6 +103,20 @@
 <script src="{% static 'js/resume-ai.js' %}"></script>
 <script>
 (function() {
+    // Quickstart step animation
+    var qs = document.getElementById('resume-quickstart');
+    if (qs && 'IntersectionObserver' in window) {
+        var qsObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    qs.classList.add('is-animated');
+                    qsObs.unobserve(qs);
+                }
+            });
+        }, { threshold: 0.3 });
+        qsObs.observe(qs);
+    }
+
     var preview = document.getElementById('resumePreview');
     var downloadBtn = document.getElementById('downloadPdfBtn');
     var resetBtnEl = document.getElementById('resetBtn');

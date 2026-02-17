@@ -149,6 +149,15 @@ body.is-scrolled .site-header {
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(79, 163, 165, 0.35);
 }
+.btn-header-short { display: none; }
+@media (max-width: 768px) {
+  .btn-header {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.78rem;
+  }
+  .btn-header-full { display: none; }
+  .btn-header-short { display: inline; }
+}
 
 /* Home: full-width block layout */
 .page-home .main-content {
@@ -303,6 +312,14 @@ body.is-scrolled .site-header {
 .btn-hero-secondary:hover { background: rgba(127, 175, 157, 0.30); border-color: var(--navy); color: var(--navy); }
 .btn-arrow { font-size: 1.1em; }
 .btn-arrow--outline { font-size: 0.85em; }
+@media (max-width: 600px) {
+  .btn-hero-primary,
+  .btn-hero-secondary {
+    padding: 0.75rem 1.15rem;
+    font-size: 0.88rem;
+    white-space: nowrap;
+  }
+}
 
 /* Dark/white block */
 .block--dark {
@@ -408,6 +425,15 @@ body.is-scrolled .site-header {
   font-size: 0.82rem;
   color: var(--text-muted);
   letter-spacing: 0.02em;
+}
+@media (max-width: 600px) {
+  .stats-bar-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem 1.5rem;
+    justify-items: center;
+    max-width: 320px;
+  }
 }
 
 /* How it works */
@@ -1166,6 +1192,214 @@ body.is-scrolled .site-header {
 }
 .quiz-option input { margin-top: 0.35rem; accent-color: var(--teal-accent); }
 
+/* Quiz page full-width layout */
+.quiz-page-wrap .main-content {
+  max-width: 100%;
+  padding: 0;
+}
+
+/* Quiz hero – shorter than the homepage hero */
+.quiz-hero {
+  min-height: auto !important;
+  padding: 4.5rem 1.5rem 3.5rem !important;
+}
+.quiz-hero--compact {
+  padding: 3.5rem 1.5rem 2.5rem !important;
+}
+.quiz-hero .block-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Quiz content sections */
+.quiz-choices-section,
+.quiz-major-section,
+.quiz-questions-section,
+.quiz-results-section {
+  padding: 0;
+}
+.quiz-choices-section .block-inner,
+.quiz-major-section .block-inner,
+.quiz-questions-section .block-inner,
+.quiz-results-section .block-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+  text-align: left;
+}
+
+/* Quiz choice cards */
+.quiz-choices-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
+  text-align: center;
+  margin: 0 0 1.75rem;
+  color: var(--navy);
+}
+.quiz-choice-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.quiz-choice-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: inherit;
+}
+.quiz-choice-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--sage);
+}
+.quiz-choice-card--featured {
+  border-color: var(--sage);
+  background: linear-gradient(135deg, rgba(127,175,157,0.06) 0%, rgba(79,163,165,0.06) 100%);
+}
+.quiz-choice-badge {
+  position: absolute;
+  top: -0.6rem;
+  right: 1.25rem;
+  background: var(--sage);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+}
+.quiz-choice-icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.65rem;
+  line-height: 1;
+}
+.quiz-choice-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.3rem;
+}
+.quiz-choice-time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+}
+.quiz-choice-desc {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0 0 1rem;
+  flex: 1;
+}
+.quiz-choice-cta {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--teal-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: gap 0.2s ease;
+}
+.quiz-choice-card:hover .quiz-choice-cta {
+  gap: 0.5rem;
+}
+.quiz-back-link {
+  text-align: center;
+}
+.quiz-back-link a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+.quiz-back-link a:hover {
+  color: var(--teal-accent);
+}
+
+/* Quiz major pill */
+.quiz-major-pill {
+  display: inline-block;
+  background: rgba(127, 175, 157, 0.15);
+  border: 1px solid var(--sage);
+  color: var(--navy);
+  padding: 0.35rem 0.9rem;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* Quiz progress bar */
+.quiz-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  position: sticky;
+  top: 62px;
+  z-index: 50;
+  background: var(--bg);
+  padding: 0.65rem 0;
+}
+.quiz-progress-bar {
+  flex: 1;
+  height: 5px;
+  background: rgba(31, 42, 68, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.quiz-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sage), var(--teal-accent));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.quiz-progress-text {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Quiz submit */
+.quiz-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+/* Quiz results */
+.quiz-results-section .block-inner {
+  max-width: 1100px;
+}
+.quiz-results-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.results-careers-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 1rem;
+}
+
 .explore-badge {
   background: rgba(200, 221, 213, 0.30);
   border-color: var(--light-sage);
@@ -1215,6 +1449,18 @@ body.is-scrolled .site-header {
   color: var(--teal-accent);
   font-weight: 600;
   margin-top: auto;
+}
+.explore-major-schools-link {
+  display: inline-block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-top: 0.35rem;
+  padding-left: 1rem;
+  transition: color 0.2s;
+}
+.explore-major-schools-link:hover {
+  color: var(--teal-accent);
 }
 
 /* Career results */
@@ -1367,14 +1613,128 @@ body.is-scrolled .site-header {
   padding: 0.5rem 0;
 }
 
-/* Resume pages */
+/* Resume pages – full-width layout */
 .page-resume .main-content {
   padding: 0;
   max-width: none;
   width: 100%;
 }
-.page-banner--resume::before {
-  background-image: url('https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=1200&q=75');
+
+/* Resume hero – shorter than the homepage hero */
+.resume-hero {
+  min-height: auto !important;
+  padding: 4.5rem 1.5rem 3.5rem !important;
+}
+.resume-hero--compact {
+  padding: 3.5rem 1.5rem 2.5rem !important;
+}
+.resume-hero .block-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Resume content sections */
+.resume-templates-section,
+.resume-tips-section,
+.resume-ai-section,
+.resume-detail-section,
+.resume-verbs-section-block {
+  padding: 0;
+}
+.resume-templates-section .block-inner,
+.resume-tips-section .block-inner,
+.resume-ai-section .block-inner,
+.resume-verbs-section-block .block-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+}
+.resume-detail-section .block-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* Resume templates search */
+.resume-search-wrap {
+  max-width: 420px;
+  margin: 0 auto 2rem;
+  position: relative;
+}
+.resume-search-input {
+  width: 100%;
+  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  font-size: 0.92rem;
+  font-family: var(--font-sans);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.resume-search-input:focus {
+  outline: none;
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(127, 175, 157, 0.15);
+}
+.resume-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.resume-no-results {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem 1rem;
+  font-size: 0.95rem;
+  display: none;
+}
+
+/* Resume tips animated counters */
+.resume-tip-number {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+.resume-tip-card.is-visible .resume-tip-number {
+  animation: tipPop 0.5s ease;
+}
+@keyframes tipPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Resume quickstart steps animation */
+.resume-qs-step {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.resume-quickstart.is-animated .resume-qs-step {
+  animation: qsSlideIn 0.5s ease both;
+}
+.resume-quickstart.is-animated .resume-qs-step:nth-child(2) { animation-delay: 0.1s; }
+.resume-quickstart.is-animated .resume-qs-step:nth-child(3) { animation-delay: 0.2s; }
+.resume-quickstart.is-animated .resume-qs-step:nth-child(4) { animation-delay: 0.3s; }
+@keyframes qsSlideIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Resume back link (consistent) */
+.resume-back-link {
+  text-align: center;
+  padding: 0 0 2rem;
+}
+.resume-back-link a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+.resume-back-link a:hover {
+  color: var(--teal-accent);
 }
 
 /* Resume options grid */
@@ -2340,6 +2700,275 @@ body.is-scrolled .site-header {
   font-weight: 700;
   color: var(--navy);
   margin: 0 0 1rem;
+}
+
+/* Schools page – full-width layout */
+.page-schools .main-content {
+  padding: 0;
+  max-width: none;
+  width: 100%;
+}
+.schools-hero {
+  min-height: auto !important;
+  padding: 4.5rem 1.5rem 3.5rem !important;
+}
+.schools-hero .block-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.schools-content-section {
+  padding: 0;
+}
+.schools-content-section .block-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+/* Quiz result badge */
+.schools-quiz-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, rgba(127,175,157,0.08) 0%, rgba(79,163,165,0.08) 100%);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius);
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--navy);
+}
+.schools-quiz-badge-icon { font-size: 1.15rem; }
+.schools-quiz-badge-clear {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 50%;
+  transition: color 0.2s;
+}
+.schools-quiz-badge-clear:hover { color: var(--navy); }
+
+/* Filters */
+.schools-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.schools-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.schools-filter-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.schools-filter-select {
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235A6478' d='M3 5l3 3 3-3z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+.schools-filter-select:focus {
+  outline: none;
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(127, 175, 157, 0.15);
+}
+
+/* Results bar */
+.schools-results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.schools-results-count {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.schools-clear-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+}
+.schools-clear-btn:hover {
+  color: var(--teal-accent);
+  background: rgba(79, 163, 165, 0.08);
+}
+
+/* School card grid */
+.schools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+.school-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  box-shadow: var(--shadow);
+}
+.school-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--sage);
+}
+.school-card-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  background: var(--bg);
+}
+.school-card-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.school-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.school-type-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.18rem 0.55rem;
+  border-radius: 20px;
+}
+.school-type-badge--public {
+  background: rgba(79, 163, 165, 0.12);
+  color: var(--teal-accent);
+}
+.school-type-badge--private {
+  background: rgba(127, 175, 157, 0.12);
+  color: #5a8a78;
+}
+.school-accept-badge {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+.school-card-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.2rem;
+  line-height: 1.3;
+}
+.school-card-location {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+}
+.school-card-highlight {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0 0 1rem;
+  flex: 1;
+}
+.school-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.school-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.school-stat-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+.school-stat-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.school-card-majors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+.school-major-pill {
+  font-size: 0.68rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  background: rgba(127, 175, 157, 0.12);
+  color: var(--navy);
+  white-space: nowrap;
+}
+.school-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--teal-accent);
+  text-decoration: none;
+  transition: gap 0.2s ease, color 0.2s;
+}
+.school-card-link:hover {
+  gap: 0.5rem;
+  color: var(--accent-hover);
+}
+
+.schools-no-results {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 3rem 1rem;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  .schools-filters { grid-template-columns: 1fr 1fr; }
+  .schools-grid { grid-template-columns: 1fr; }
+  .school-card-image { height: 160px; }
 }
 
 /* Footer */

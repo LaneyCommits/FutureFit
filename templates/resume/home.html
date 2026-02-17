@@ -20,16 +20,16 @@
 <!-- Options: Create new or improve existing -->
 <section class="block block--dark">
     <div class="block-inner">
-        <h2 class="block-title block-title--light" style="text-align:center; margin-bottom: 0.5rem;">What would you like to do?</h2>
-        <p class="block-desc block-desc--light" style="text-align:center; margin-bottom: 2.5rem;">Whether you're starting fresh or polishing what you have, we'll help you stand out.</p>
+        <h2 class="block-title block-title--light reveal" style="text-align:center; margin-bottom: 0.5rem;">What would you like to do?</h2>
+        <p class="block-desc block-desc--light reveal" style="text-align:center; margin-bottom: 2.5rem;">Whether you're starting fresh or polishing what you have, we'll help you stand out.</p>
         <div class="resume-options-grid">
-            <a href="{% url 'resume_templates' %}" class="resume-option-card">
+            <a href="{% url 'resume_templates' %}" class="resume-option-card reveal">
                 <span class="resume-option-icon">📝</span>
                 <h3 class="resume-option-title">Create a new resume</h3>
                 <p class="resume-option-desc">Pick a template tailored to your major, fill in your details, and download a polished, professional resume as a PDF.</p>
                 <span class="resume-option-cta">Browse templates →</span>
             </a>
-            <a href="{% url 'resume_ai_tools' %}" class="resume-option-card">
+            <a href="{% url 'resume_ai_tools' %}" class="resume-option-card reveal reveal-delay-1">
                 <span class="resume-option-icon">✨</span>
                 <h3 class="resume-option-title">Improve your existing resume</h3>
                 <p class="resume-option-desc">Use free AI to tailor your resume to a job posting, enhance bullet points, generate summaries, and get skill suggestions.</p>
@@ -42,11 +42,11 @@
 <!-- Major cards grid -->
 <section class="block block--features">
     <div class="block-inner">
-        <h2 class="block-title" style="text-align:center; margin-bottom: 0.5rem;">Templates for every major</h2>
-        <p class="block-desc" style="text-align:center; margin-bottom: 2.5rem;">Each template is formatted for your field with the right sections, action verbs, and sample content.</p>
+        <h2 class="block-title reveal" style="text-align:center; margin-bottom: 0.5rem;">Templates for every major</h2>
+        <p class="block-desc reveal" style="text-align:center; margin-bottom: 2.5rem;">Each template is formatted for your field with the right sections, action verbs, and sample content.</p>
         <div class="resume-major-grid">
             {% for major in majors %}
-            <a href="{% url 'resume_template_detail' major.key %}" class="resume-major-card">
+            <a href="{% url 'resume_template_detail' major.key %}" class="resume-major-card reveal{% if forloop.counter <= 6 %} reveal-delay-{{ forloop.counter0 }}{% endif %}">
                 <span class="resume-major-icon">{{ major.icon }}</span>
                 <h3 class="resume-major-label">{{ major.label }}</h3>
                 <p class="resume-major-focus">{{ major.focus }}</p>
@@ -58,11 +58,14 @@
 </section>
 
 <!-- CTA section -->
-<section class="block block--cream">
+<section class="block block--cream reveal">
     <div class="block-inner block-inner--narrow">
         <h2 class="block-title">Not sure where to start?</h2>
-        <p class="block-desc block-desc--why">Take our career quiz to discover which paths match your personality and interests—then come back to build the perfect resume.</p>
-        <a href="{% url 'career_quiz_home' %}" class="btn btn-primary">Take the career quiz <span class="btn-arrow" aria-hidden="true">→</span></a>
+        <p class="block-desc block-desc--why">Take our career quiz to discover which paths match your personality and interests—then find schools that are strong in your field.</p>
+        <div class="block-hero-buttons" style="justify-content: center;">
+            <a href="{% url 'career_quiz_home' %}" class="btn btn-primary">Take the career quiz <span class="btn-arrow" aria-hidden="true">→</span></a>
+            <a href="{% url 'schools_home' %}" class="btn btn-secondary">Find schools →</a>
+        </div>
     </div>
 </section>
 {% endblock %}
