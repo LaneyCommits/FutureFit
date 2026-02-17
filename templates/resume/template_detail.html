@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ template.label }} Resume Template – FutureFit{% endblock %}
+
+{% block content %}
+<div class="page-banner page-banner--resume">
+    <h1 class="page-title">{{ template.icon }} {{ template.label }} Resume</h1>
+    <p class="page-intro">{{ template.focus }} — tailored format and sample content for {{ template.label }} students.</p>
+</div>
+
+<section class="page-section">
+    <div class="resume-quickstart">
+        <div class="resume-quickstart-steps">
+            <span class="resume-qs-step"><span class="resume-qs-num">1</span> Click any text to edit</span>
+            <span class="resume-qs-step"><span class="resume-qs-num">2</span> Add your info</span>
+            <span class="resume-qs-step"><span class="resume-qs-num">3</span> Use AI tools to polish</span>
+            <span class="resume-qs-step"><span class="resume-qs-num">4</span> Download as PDF</span>
+        </div>
+    </div>
+    <div class="resume-detail-layout">
+        <!-- Live preview -->
+        <div class="resume-preview-wrap">
+            <div class="resume-preview" id="resumePreview">
+                <div class="resume-paper">
+                    <div class="rp-header">
+                        <div class="rp-name" contenteditable="true">Your Name</div>
+                        <div class="rp-contact" contenteditable="true">email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname</div>
+                    </div>
+
+                    {% for section in template.sections %}
+                    <div class="rp-section">
+                        <div class="rp-section-title">{{ section }}</div>
+                        {% if section == "Summary" %}
+                        <div class="rp-content" contenteditable="true">Results-driven {{ template.label }} student with experience in {{ template.focus|lower }}. Passionate about making an impact through practical skills and a strong work ethic. Seeking an entry-level position to apply classroom knowledge in a professional setting.</div>
+                        {% elif section == "Education" or section == "Education & Training" %}
+                        <div class="rp-content" contenteditable="true"><strong>Bachelor of Science in {{ template.label }}</strong><br>Your University · Expected May 2026<br>GPA: 3.X/4.0 · Relevant Coursework: [Add your courses]</div>
+                        {% elif section == "Technical Skills" or section == "Skills" or section == "Tools & Software" or section == "Skills & Tools" or section == "Skills & Equipment" %}
+                        <div class="rp-content" contenteditable="true">Add your relevant skills, tools, and software here. Separate technical skills from soft skills for clarity.</div>
+                        {% elif section == "Certifications" or section == "Certifications & Licenses" or section == "Licenses & Certifications" %}
+                        <div class="rp-content" contenteditable="true">List relevant certifications, licenses, and professional training. Include dates earned and issuing organization.</div>
+                        {% elif section == "Portfolio" or section == "Portfolio & Projects" %}
+                        <div class="rp-content" contenteditable="true">Link to your online portfolio (e.g., Behance, Dribbble, GitHub, personal website). List 2–3 key projects with brief descriptions of your role and impact.</div>
+                        {% else %}
+                        <div class="rp-content" contenteditable="true">
+                            <ul>
+                            {% for bullet in template.sample_bullets %}
+                                <li>{{ bullet }}</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="resume-preview-actions">
+                <button class="btn btn-primary" id="downloadPdfBtn">Download as PDF <span aria-hidden="true">↓</span></button>
+                <button class="btn btn-teal" id="reviewBtn">Review my resume <span aria-hidden="true">✦</span></button>
+                <button class="btn btn-secondary" id="resetBtn">Reset template</button>
+            </div>
+            <div id="reviewResults" class="review-results" style="display:none;"></div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="resume-detail-sidebar">
+            <div class="resume-sidebar-card">
+                <h3 class="ai-sidebar-title">AI Resume Assistant <span class="ai-badge">Free</span></h3>
+                <div id="aiKeySetup"></div>
+                <div id="aiTools" class="ai-sidebar-wrap"></div>
+            </div>
+
+            <div class="resume-sidebar-card resume-sidebar-card--compact">
+                <details class="resume-details" open>
+                    <summary class="resume-details-toggle">Tips for {{ template.label }}</summary>
+                    <ul class="resume-sidebar-tips">
+                        {% for tip in template.tips %}
+                        <li>{{ tip }}</li>
+                        {% endfor %}
+                    </ul>
+                </details>
+                <details class="resume-details">
+                    <summary class="resume-details-toggle">Recommended sections</summary>
+                    <ol class="resume-sidebar-sections">
+                        {% for section in template.sections %}
+                        <li>{{ section }}</li>
+                        {% endfor %}
+                    </ol>
+                </details>
+            </div>
+
+            <a href="{% url 'resume_templates' %}" class="btn btn-secondary" style="width:100%; text-align:center;">← Back to all templates</a>
+        </aside>
+    </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="{% static 'js/resume-ai.js' %}"></script>
+<script>
+(function() {
+    var preview = document.getElementById('resumePreview');
+    var downloadBtn = document.getElementById('downloadPdfBtn');
+    var resetBtnEl = document.getElementById('resetBtn');
+    var originalHTML = preview.innerHTML;
+
+    function restoreBtn() {
+        downloadBtn.innerHTML = 'Download as PDF <span aria-hidden="true">↓</span>';
+        downloadBtn.disabled = false;
+    }
+
+    downloadBtn.addEventListener('click', function() {
+        downloadBtn.textContent = 'Generating PDF...';
+        downloadBtn.disabled = true;
+
+        html2pdf().set({
+            margin:       [0.4, 0.5, 0.4, 0.5],
+            filename:     '{{ template.label|lower }}-resume-futurefit.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+        }).from(preview.querySelector('.resume-paper')).save().then(restoreBtn).catch(function(err) {
+            console.error('PDF generation error:', err);
+            alert('There was an error generating the PDF. Please try again.');
+            restoreBtn();
+        });
+    });
+
+    resetBtnEl.addEventListener('click', function() {
+        if (confirm('Reset the template? Your edits will be lost.')) {
+            preview.innerHTML = originalHTML;
+        }
+    });
+
+    // AI resume review
+    var major = '{{ template.label }}';
+    var reviewBtn = document.getElementById('reviewBtn');
+    var reviewResults = document.getElementById('reviewResults');
+
+    reviewBtn.addEventListener('click', function () {
+        var resumeText = preview.querySelector('.resume-paper').innerText.trim();
+        if (!resumeText || resumeText.length < 30) {
+            alert('Add some content to your resume before reviewing.');
+            return;
+        }
+        if (!ResumeAI.canUseAI()) {
+            alert('Please set up your AI key in the sidebar first.');
+            return;
+        }
+        reviewBtn.disabled = true;
+        reviewBtn.innerHTML = '<span class="gap-btn-spinner"></span> Reviewing...';
+        reviewResults.style.display = 'none';
+
+        ResumeAI.reviewResume(resumeText, major)
+            .then(function (data) {
+                renderReview(data);
+                reviewResults.style.display = 'block';
+                reviewResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            })
+            .catch(function (e) {
+                reviewResults.innerHTML = '<p class="ai-error" style="display:block;">' + (e.message || 'Something went wrong.') + '</p>';
+                reviewResults.style.display = 'block';
+            })
+            .finally(function () {
+                reviewBtn.disabled = false;
+                reviewBtn.innerHTML = 'Review my resume <span aria-hidden="true">✦</span>';
+            });
+    });
+
+    function renderReview(data) {
+        var scoreColor = data.score >= 70 ? '#7FAF9D' : data.score >= 40 ? '#4FA3A5' : '#C8766A';
+        var strengthsHTML = data.strengths.map(function (s) {
+            return '<li class="review-strength-item">' + s + '</li>';
+        }).join('');
+        var improvementsHTML = data.improvements.map(function (imp) {
+            return '<div class="review-improvement">' +
+                '<div class="review-imp-header"><span class="review-imp-area">' + imp.area + '</span></div>' +
+                '<p class="review-imp-issue">' + imp.issue + '</p>' +
+                '<p class="review-imp-fix"><strong>Suggestion:</strong> ' + imp.fix + '</p>' +
+            '</div>';
+        }).join('');
+        var missingHTML = data.missing.map(function (m) {
+            return '<span class="gap-keyword-tag">' + m + '</span>';
+        }).join('');
+        reviewResults.innerHTML =
+            '<div class="review-header">' +
+                '<div class="review-score-ring">' +
+                    '<canvas id="reviewChart" width="100" height="100"></canvas>' +
+                    '<span class="review-score-num">' + data.score + '</span>' +
+                '</div>' +
+                '<div class="review-verdict-wrap">' +
+                    '<h3 class="review-verdict">' + data.verdict + '</h3>' +
+                    '<p class="review-verdict-sub">AI reviewed your ' + major + ' resume and found ' +
+                        data.improvements.length + ' area' + (data.improvements.length !== 1 ? 's' : '') + ' to improve.</p>' +
+                '</div>' +
+            '</div>' +
+            (strengthsHTML ? '<div class="review-section"><h4 class="review-section-title review-section-title--good">What\'s working</h4><ul class="review-strengths">' + strengthsHTML + '</ul></div>' : '') +
+            (improvementsHTML ? '<div class="review-section"><h4 class="review-section-title review-section-title--fix">Suggested improvements</h4>' + improvementsHTML + '</div>' : '') +
+            (missingHTML ? '<div class="review-section"><h4 class="review-section-title">Consider adding</h4><div class="gap-keywords">' + missingHTML + '</div></div>' : '');
+        var canvas = document.getElementById('reviewChart');
+        if (canvas) {
+            var ctx = canvas.getContext('2d');
+            var dpr = window.devicePixelRatio || 1;
+            var size = 100;
+            canvas.width = size * dpr; canvas.height = size * dpr;
+            canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
+            ctx.scale(dpr, dpr);
+            var cx = size / 2, cy = size / 2, r = size / 2 - 8, lw = 10;
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(31,42,68,0.08)'; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.stroke();
+            var sweep = (data.score / 100) * Math.PI * 2;
+            if (sweep > 0.01) {
+                ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + sweep);
+                ctx.strokeStyle = scoreColor; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.stroke();
+            }
+        }
+    }
+
+    // AI tools — auto-detect server mode
+    var keySetup = document.getElementById('aiKeySetup');
+    var aiTools = document.getElementById('aiTools');
+
+    ResumeAI.checkServer().then(function(serverOk) {
+        if (serverOk) {
+            keySetup.appendChild(ResumeAI.createServerBadge());
+        } else {
+            keySetup.appendChild(ResumeAI.createKeySetup());
+        }
+        aiTools.appendChild(ResumeAI.createBulletEnhancer(major));
+        aiTools.appendChild(ResumeAI.createSummaryGenerator(major));
+        aiTools.appendChild(ResumeAI.createSkillsSuggester(major));
+    });
+})();
+</script>
+{% endblock %}

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Career Quiz – FutureFit</title>
+  <title>Resume Template – FutureFit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700&display=swap" rel="stylesheet">
@@ -21,14 +21,12 @@
       <nav class="nav">
         <a href="index.html" class="nav-link">Home</a>
         <a href="about.html" class="nav-link">About</a>
-        <a href="resume.html" class="nav-link">Resume</a>
+        <a href="resume.html" class="nav-link nav-link--active">Resume</a>
         <a href="quiz.html" class="btn btn-header">Take the quiz</a>
       </nav>
     </div>
   </header>
-  <main class="main-content">
-    <div id="quiz-app"></div>
-  </main>
+  <main class="main-content" id="resume-app"></main>
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
@@ -59,8 +57,9 @@
       <p>Built for students. Always free. No sign-up required.</p>
     </div>
   </footer>
-  <script src="js/quiz-static.js"></script>
-  <script src="js/quiz-app.js"></script>
   <script src="js/dimension.js"></script>
+  <script src="js/resume-ai.js"></script>
+  <script src="js/resume-app.js"></script>
+  <script>renderResumeDetail(document.getElementById('resume-app'));</script>
 </body>
 </html>

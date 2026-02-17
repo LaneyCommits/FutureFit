@@ -74,13 +74,13 @@
         <div class="career-cards">
             {% for s in suggestions %}
             <div class="career-card">
-                <span class="career-card-rank">{% if s.compatibility_rank == 1 %}Best match{% else %}#{{ s.compatibility_rank }}{% endif %}</span>
+                <span class="career-card-rank" aria-label="Match rank {{ s.compatibility_rank }}">{% if s.compatibility_rank == 1 %}Best match{% else %}#{{ s.compatibility_rank }}{% endif %}</span>
                 <h3 class="career-card-title">{{ s.title }}</h3>
                 <p class="career-card-desc">{{ s.description }}</p>
                 <details class="career-learn-more">
                     <summary class="career-learn-more-trigger">
                         <span class="career-learn-more-label">Learn more</span>
-                        <span class="career-learn-more-arrow" aria-hidden="true">&#9660;</span>
+                        <span class="career-learn-more-arrow" aria-hidden="true">▼</span>
                     </summary>
                     <div class="career-learn-more-content">
                         <p>{{ s.learn_more }}</p>

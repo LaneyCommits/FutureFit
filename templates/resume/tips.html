@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Resume Tips – FutureFit{% endblock %}
+
+{% block content %}
+<div class="page-banner page-banner--resume">
+    <h1 class="page-title">Resume Tips & Best Practices</h1>
+    <p class="page-intro">Expert advice to help you write a resume that stands out. Whether you're starting from scratch or polishing a draft, these tips will help.</p>
+</div>
+
+<section class="page-section">
+    <div class="resume-tips-grid">
+        {% for tip in tips %}
+        <div class="resume-tip-card">
+            <span class="resume-tip-number">{{ forloop.counter }}</span>
+            <h3 class="resume-tip-title">{{ tip.title }}</h3>
+            <p class="resume-tip-desc">{{ tip.desc }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Major-specific tips callout -->
+<section class="block block--cream" style="margin-top: 1rem;">
+    <div class="block-inner block-inner--narrow">
+        <h2 class="block-title">Want tips specific to your major?</h2>
+        <p class="block-desc block-desc--why">Every field has different resume expectations. Browse our templates to see section recommendations, sample bullets, and formatting advice tailored to your degree.</p>
+        <a href="{% url 'resume_templates' %}" class="btn btn-primary">Browse templates by major <span class="btn-arrow" aria-hidden="true">→</span></a>
+    </div>
+</section>
+
+<!-- Action verbs section -->
+<section class="page-section">
+    <div class="resume-verbs-section">
+        <h2 class="page-title" style="text-align:center;">Power action verbs</h2>
+        <p class="page-intro" style="text-align:center; margin: 0 auto 2rem;">Start your bullet points with these strong verbs to make your achievements stand out.</p>
+        <div class="resume-verbs-grid">
+            <div class="resume-verb-group">
+                <h4 class="resume-verb-category">Leadership</h4>
+                <p class="resume-verb-list">Led, Managed, Directed, Supervised, Coordinated, Spearheaded, Mentored, Delegated</p>
+            </div>
+            <div class="resume-verb-group">
+                <h4 class="resume-verb-category">Achievement</h4>
+                <p class="resume-verb-list">Achieved, Exceeded, Improved, Increased, Reduced, Streamlined, Resolved, Delivered</p>
+            </div>
+            <div class="resume-verb-group">
+                <h4 class="resume-verb-category">Creation</h4>
+                <p class="resume-verb-list">Designed, Developed, Created, Built, Launched, Established, Implemented, Initiated</p>
+            </div>
+            <div class="resume-verb-group">
+                <h4 class="resume-verb-category">Analysis</h4>
+                <p class="resume-verb-list">Analyzed, Researched, Evaluated, Assessed, Investigated, Identified, Calculated, Forecasted</p>
+            </div>
+            <div class="resume-verb-group">
+                <h4 class="resume-verb-category">Communication</h4>
+                <p class="resume-verb-list">Presented, Authored, Edited, Negotiated, Collaborated, Advocated, Facilitated, Persuaded</p>
+            </div>
+            <div class="resume-verb-group">
+                <h4 class="resume-verb-category">Technical</h4>
+                <p class="resume-verb-list">Programmed, Engineered, Automated, Configured, Debugged, Optimized, Deployed, Integrated</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div style="text-align:center; margin: 0 0 2rem;">
+    <a href="{% url 'resume_home' %}" class="btn btn-secondary">← Back to Resume Builder</a>
+</div>
+{% endblock %}

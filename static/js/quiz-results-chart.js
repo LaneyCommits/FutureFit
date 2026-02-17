@@ -43,11 +43,11 @@
 
   // FutureFit palette: 5 distinct colors matching site vibe
   var COLORS = [
-    '#584053',  /* plum */
-    '#8dc6bf',  /* teal */
-    '#fcbc66',  /* peach */
-    '#f97b4f',  /* coral */
-    '#9a8a95'   /* dusty mauve */
+    '#1F2A44',  /* navy */
+    '#7FAF9D',  /* sage */
+    '#4FA3A5',  /* teal accent */
+    '#C8DDD5',  /* light sage */
+    '#6B7A94'   /* muted navy */
   ];
 
   // --- Calculating animation: count up then hide ---

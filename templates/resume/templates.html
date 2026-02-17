@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Resume Templates – FutureFit{% endblock %}
+
+{% block content %}
+<div class="page-banner page-banner--resume">
+    <h1 class="page-title">Resume Templates by Major</h1>
+    <p class="page-intro">Every field has different expectations. Pick your major to get a template with the right sections, formatting, and sample content—ready to download as a PDF.</p>
+</div>
+
+<section class="page-section">
+    <div class="resume-major-grid">
+        {% for major in majors %}
+        <a href="{% url 'resume_template_detail' major.key %}" class="resume-major-card">
+            <span class="resume-major-icon">{{ major.icon }}</span>
+            <h3 class="resume-major-label">{{ major.label }}</h3>
+            <p class="resume-major-focus">{{ major.focus }}</p>
+            <span class="resume-major-cta">View template →</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<div style="text-align:center; margin: 1rem 0 2rem;">
+    <a href="{% url 'resume_tips' %}" class="btn btn-secondary">Resume tips & advice →</a>
+</div>
+{% endblock %}

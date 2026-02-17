@@ -6,9 +6,15 @@
 
   function loadData() {
     if (QUIZ_DATA) return Promise.resolve(QUIZ_DATA);
-    return fetch('js/quiz-data.json').then(function(r) { return r.json(); }).then(function(d) {
+    return fetch('js/quiz-data.json').then(function(r) {
+      if (!r.ok) throw new Error('Failed to load quiz data');
+      return r.json();
+    }).then(function(d) {
       QUIZ_DATA = d;
       return d;
+    }).catch(function(e) {
+      console.error('Quiz data load error:', e);
+      return null;
     });
   }
 
