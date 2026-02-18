@@ -1,9 +1,12 @@
 import io
 import json
+import logging
 import os
 import re
 
 from django.shortcuts import render
+
+logger = logging.getLogger(__name__)
 from django.http import Http404, HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -70,11 +73,6 @@ def resume_pdf_view(request):
     except (json.JSONDecodeError, ValueError):
         return JsonResponse({'error': 'Invalid request.'}, status=400)
 
-    try:
-        from weasyprint import HTML, CSS
-    except ImportError:
-        return JsonResponse({'error': 'PDF generation not available. Install weasyprint: pip install weasyprint'}, status=503)
-
     html_content = _prepare_resume_html(html_content)
     full_html = f'''<!DOCTYPE html>
 <html>
@@ -98,14 +96,14 @@ body {{ font-family: Helvetica, Arial, sans-serif; font-size: 11pt; color: #333;
 </body>
 </html>'''
 
-    try:
-        result = io.BytesIO()
-        HTML(string=full_html).write_pdf(result)
-        result.seek(0)
-    except Exception as e:
-        return JsonResponse({'error': f'PDF generation failed: {str(e)}'}, status=500)
+    full_html = _html_safe_for_weasyprint(full_html)
+    pdf_bytes, pdf_err = _html_to_pdf(full_html)
+    if pdf_err:
+        status = 503 if 'not available' in pdf_err else 500
+        return JsonResponse({'error': pdf_err}, status=status)
 
-    response = HttpResponse(result.read(), content_type='application/pdf')
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    response['Content-Length'] = str(len(pdf_bytes))
     safe_name = re.sub(r'[^\w\-\.]', '_', filename)
     if not safe_name.lower().endswith('.pdf'):
         safe_name += '.pdf'
@@ -123,6 +121,56 @@ def _prepare_resume_html(html):
     cleaned = cleaned.replace('class="rp-content"', 'class="resume-content" style="font-size:10pt;"')
     cleaned = cleaned.replace('contenteditable="true"', '')
     return cleaned
+
+
+def _html_safe_for_weasyprint(html_string):
+    """Ensure HTML is valid UTF-8 and strip characters that can break WeasyPrint."""
+    if not isinstance(html_string, str):
+        html_string = str(html_string, 'utf-8', errors='replace')
+    # Replace problematic control chars and ensure valid Unicode
+    html_string = html_string.encode('utf-8', errors='replace').decode('utf-8')
+    # Remove null bytes and other control characters that can corrupt PDF
+    html_string = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', html_string)
+    return html_string
+
+
+def _html_to_pdf(full_html):
+    """
+    Convert HTML string to PDF bytes. Tries WeasyPrint first; on Windows WeasyPrint
+    often fails (GTK/Pango not installed), so falls back to xhtml2pdf (pure Python).
+    Returns (pdf_bytes, None) on success, or (None, error_message) on failure.
+    """
+    # Try WeasyPrint first (better quality where available, e.g. Linux/Mac)
+    try:
+        from weasyprint import HTML
+        result = io.BytesIO()
+        HTML(string=full_html).write_pdf(result)
+        pdf_bytes = result.getvalue()
+        if pdf_bytes:
+            return pdf_bytes, None
+    except Exception as e:
+        err_msg = str(e).lower()
+        # WeasyPrint often fails on Windows with missing GTK/Pango
+        if 'libgobject' in err_msg or 'gobject' in err_msg or 'find_library' in err_msg or 'load library' in err_msg:
+            pass  # fall through to xhtml2pdf
+        else:
+            return None, f'PDF generation failed: {e}'
+
+    # Fallback: xhtml2pdf (pure Python, works on Windows without extra deps)
+    try:
+        from xhtml2pdf import pisa
+        result = io.BytesIO()
+        pisa_status = pisa.CreatePDF(full_html, dest=result, encoding='utf-8')
+        if pisa_status.err:
+            return None, 'PDF generation failed (xhtml2pdf reported errors).'
+        pdf_bytes = result.getvalue()
+        if not pdf_bytes:
+            return None, 'PDF generation produced an empty file.'
+        return pdf_bytes, None
+    except ImportError:
+        return None, 'PDF generation not available. Install xhtml2pdf: pip install xhtml2pdf'
+    except Exception as e:
+        return None, f'PDF generation failed: {e}'
 
 
 # --------------- AI API endpoints ---------------
@@ -552,6 +600,15 @@ def resume_generate_pdf_view(request):
     if not name or not email or not phone or not job_title:
         return JsonResponse({'error': 'Please fill in name, email, phone, and job title.'}, status=400)
 
+    try:
+        return _generate_pdf_impl(body, name, email, phone, job_title)
+    except Exception as e:
+        logger.exception('resume_generate_pdf failed')
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+def _generate_pdf_impl(body, name, email, phone, job_title):
+    """Generate resume PDF; returns HttpResponse or raises."""
     prompt = (
         'You are an expert resume writer. Generate a professional, one-page resume as HTML. '
         'Use EXACTLY this structure - no extra wrapper, only the content below. '
@@ -603,11 +660,6 @@ def resume_generate_pdf_view(request):
         html_content = re.sub(r'\n?```\s*$', '', html_content)
     html_content = html_content.strip()
 
-    try:
-        from weasyprint import HTML
-    except ImportError:
-        return JsonResponse({'error': 'PDF generation not available. Install weasyprint.'}, status=503)
-
     html_content = _prepare_resume_html(html_content)
     full_html = '''<!DOCTYPE html>
 <html>
@@ -631,15 +683,14 @@ body { font-family: Helvetica, Arial, sans-serif; font-size: 11pt; color: #333; 
 </body>
 </html>'''
 
-    try:
-        result = io.BytesIO()
-        HTML(string=full_html).write_pdf(result)
-        result.seek(0)
-    except Exception as e:
-        return JsonResponse({'error': f'PDF generation failed: {str(e)}'}, status=500)
+    pdf_bytes, pdf_err = _html_to_pdf(full_html)
+    if pdf_err:
+        status = 503 if 'not available' in pdf_err else 500
+        return JsonResponse({'error': pdf_err}, status=status)
 
     safe_name = re.sub(r'[^\w\-\.]', '_', name or 'resume')
     filename = f'{safe_name}-resume.pdf'
-    response = HttpResponse(result.read(), content_type='application/pdf')
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    response['Content-Length'] = str(len(pdf_bytes))
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
