@@ -128,19 +128,43 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         }).then(function(r) {
-            var ct = r.headers.get('content-type') || '';
-            if (ct.indexOf('application/json') !== -1) return r.json().then(function(j) { throw new Error(j.error || 'Something went wrong'); });
-            return r.blob();
-        }).then(function(blob) {
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = (data.name.replace(/\s+/g, '-') || 'resume') + '-resume.pdf';
-            a.click();
-            URL.revokeObjectURL(url);
+            var ct = (r.headers.get('content-type') || '').toLowerCase();
+            if (!r.ok) {
+                return r.text().then(function(text) {
+                    var msg = 'Failed to generate resume.';
+                    try {
+                        var j = JSON.parse(text);
+                        if (j && j.error) msg = j.error;
+                    } catch (_) {}
+                    throw new Error(msg);
+                });
+            }
+            if (ct.indexOf('application/pdf') === -1) {
+                return r.text().then(function(text) {
+                    var msg = 'Server returned an error.';
+                    try {
+                        var j = JSON.parse(text);
+                        if (j && j.error) msg = j.error;
+                    } catch (_) {}
+                    throw new Error(msg);
+                });
+            }
+            return r.blob().then(function(blob) {
+                var pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
+                var url = URL.createObjectURL(pdfBlob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = (data.name.replace(/\s+/g, '-') || 'resume') + '-resume.pdf';
+                a.rel = 'noopener';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
         }).catch(function(e) {
             errEl.textContent = e.message || 'Failed to generate resume. Please try again.';
             errEl.style.display = 'block';
+            errEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }).finally(function() {
             btn.disabled = false;
             btn.innerHTML = 'Generate Resume PDF <span aria-hidden="true">↓</span>';
