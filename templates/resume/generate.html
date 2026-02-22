@@ -33,6 +33,9 @@
 
                     <label for="linkedin">LinkedIn URL</label>
                     <input type="url" id="linkedin" name="linkedin" placeholder="linkedin.com/in/yourname">
+
+                    <label for="github">GitHub URL <span class="resume-generate-hint-small">(recommended for CS/IT roles)</span></label>
+                    <input type="url" id="github" name="github" placeholder="github.com/yourname">
                 </fieldset>
 
                 <fieldset class="resume-generate-fieldset">
@@ -102,6 +105,7 @@
             phone: document.getElementById('phone').value.trim(),
             location: document.getElementById('location').value.trim(),
             linkedin: document.getElementById('linkedin').value.trim(),
+            github: document.getElementById('github').value.trim(),
             job_title: document.getElementById('job_title').value.trim(),
             company: document.getElementById('company').value.trim(),
             keywords: document.getElementById('keywords').value.trim(),

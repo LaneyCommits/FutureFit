@@ -88,9 +88,9 @@
         <a href="{% url 'career_quiz_major' %}" class="btn btn-secondary">Pick a different major & retake quiz</a>
         {% endif %}
         {% if major %}
-        <a href="{% url 'schools_home' %}?major={{ major.key }}" class="btn btn-primary">Find schools for {{ major.label }} <span class="btn-arrow" aria-hidden="true">→</span></a>
+        <a href="{% url 'schools_home' %}?major={{ major.key }}" class="btn btn-primary">Find colleges <span class="btn-arrow" aria-hidden="true">→</span></a>
         {% else %}
-        <a href="{% url 'schools_home' %}" class="btn btn-primary">Find schools <span class="btn-arrow" aria-hidden="true">→</span></a>
+        <a href="{% url 'schools_home' %}" class="btn btn-primary">Find colleges <span class="btn-arrow" aria-hidden="true">→</span></a>
         {% endif %}
         <a href="{% url 'resume_home' %}" class="btn btn-secondary">Build your resume →</a>
     </div>

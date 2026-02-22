@@ -56,7 +56,7 @@
                     <span class="explore-major-desc">{{ desc }}</span>
                     <span class="explore-major-cta">See jobs for this major →</span>
                 </a>
-                <a href="{% url 'schools_home' %}?major={{ key }}" class="explore-major-schools-link">Find schools →</a>
+                <a href="{% url 'schools_home' %}?major={{ key }}" class="explore-major-schools-link">Find colleges →</a>
             </li>
             {% endfor %}
         </ul>
@@ -103,7 +103,7 @@
     <div class="quiz-results-actions reveal">
         <a href="{% url 'career_quiz_explore' %}" class="btn btn-secondary">Retake explore quiz</a>
         <a href="{% url 'career_quiz_home' %}" class="btn btn-secondary">Back to quiz home</a>
-        <a href="{% url 'schools_home' %}" class="btn btn-primary">Find schools <span class="btn-arrow" aria-hidden="true">→</span></a>
+        <a href="{% url 'schools_home' %}" class="btn btn-primary">Find colleges <span class="btn-arrow" aria-hidden="true">→</span></a>
         <a href="{% url 'resume_home' %}" class="btn btn-secondary">Build your resume →</a>
     </div>
     {% endif %}

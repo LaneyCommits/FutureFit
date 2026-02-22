@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from google import genai
 
-from .resume_data import RESUME_TEMPLATES, RESUME_TIPS
+from .resume_data import RESUME_TEMPLATES, RESUME_TIPS, COVER_LETTER_TEMPLATES
 
 
 def resume_home_view(request):
@@ -25,13 +25,16 @@ def resume_home_view(request):
     })
 
 
-def resume_templates_view(request):
+def resume_templates_view(request, doc_type=None):
     majors = [
         {'key': k, 'label': v['label'], 'icon': v['icon'], 'image': v.get('image'), 'focus': v['focus']}
         for k, v in RESUME_TEMPLATES.items()
     ]
+    doc_type = doc_type or 'resume'
     return render(request, 'resume/templates.html', {
         'majors': majors,
+        'doc_type': doc_type,
+        'tips': RESUME_TIPS,
     })
 
 
@@ -58,6 +61,93 @@ def resume_ai_tools_view(request):
 def resume_generate_view(request):
     """AI Resume Generator form page."""
     return render(request, 'resume/generate.html')
+
+
+def resume_template_html_view(request, major_key):
+    """Return template HTML for a major (for inline loading on templates page)."""
+    template_data = RESUME_TEMPLATES.get(major_key)
+    if not template_data:
+        return JsonResponse({'error': 'Template not found.'}, status=404)
+    html = _build_resume_template_html(template_data, major_key)
+    return JsonResponse({'html': html, 'label': template_data['label']})
+
+
+def resume_cover_letter_html_view(request, major_key):
+    """Return cover letter HTML for a major (for inline loading on cover letters page)."""
+    cover_data = COVER_LETTER_TEMPLATES.get(major_key)
+    resume_data = RESUME_TEMPLATES.get(major_key)
+    if not cover_data and not resume_data:
+        return JsonResponse({'error': 'Cover letter template not found.'}, status=404)
+    html = _build_cover_letter_html(cover_data or resume_data, major_key)
+    label = (cover_data or resume_data)['label']
+    return JsonResponse({'html': html, 'label': f'{label} Cover Letter'})
+
+
+def _build_resume_template_html(template, major_key=None):
+    """Build resume-paper HTML as H1/H2/P flow for single Quill editor (Word-like)."""
+    label = template['label']
+    focus = template.get('focus', '').lower()
+    sections = template.get('sections', [])
+    sample_bullets = template.get('sample_bullets', [])
+
+    def section_content(section):
+        if section == 'Summary':
+            return f'<p>Results-driven {label} student with experience in {focus}. Passionate about making an impact through practical skills and a strong work ethic. Seeking an entry-level position to apply classroom knowledge in a professional setting.</p>'
+        if section in ('Education', 'Education & Training'):
+            return f'<p><strong>Bachelor of Science in {label}</strong><br>Your University · Expected May 2026<br>GPA: 3.X/4.0 · Relevant Coursework: [Add your courses]</p>'
+        if section in ('Technical Skills', 'Skills', 'Tools & Software', 'Skills & Tools', 'Skills & Equipment'):
+            return '<p>Add your relevant skills, tools, and software here. Separate technical skills from soft skills for clarity.</p>'
+        if section in ('Certifications', 'Certifications & Licenses', 'Licenses & Certifications'):
+            return '<p>List relevant certifications, licenses, and professional training. Include dates earned and issuing organization.</p>'
+        if section in ('Portfolio', 'Portfolio & Projects'):
+            return '<p>Link to your online portfolio (e.g., Behance, Dribbble, GitHub, personal website). List 2–3 key projects with brief descriptions of your role and impact.</p>'
+        # Experience sections
+        bullets = ''.join(f'<li>{b}</li>' for b in sample_bullets)
+        return f'<ul>{bullets}</ul>'
+
+    contact_placeholder = (
+        'email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname · github.com/yourname'
+        if major_key == 'computer_science'
+        else 'email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname'
+    )
+
+    parts = [
+        '<h1>Your Name</h1>',
+        f'<p>{contact_placeholder}</p>',
+    ]
+    for s in sections:
+        parts.append(f'<h2>{s}</h2>')
+        parts.append(section_content(s))
+    return ''.join(parts)
+
+
+def _build_cover_letter_html(template, major_key=None):
+    """Build cover letter HTML as H2/P flow for single Quill editor (Word-like)."""
+    label = template.get('label', 'Student')
+    sample = template.get('sample_letter', '')
+    if sample:
+        return f'<h2>Cover Letter</h2>{sample}'
+    # Fallback for majors without custom sample
+    contact = (
+        'email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname · github.com/yourname'
+        if major_key == 'computer_science'
+        else 'email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname'
+    )
+    generic = (
+        f'<p>Your Name<br>{contact}</p>'
+        '<p>February 18, 2026</p>'
+        '<p>Hiring Manager<br>Company Name<br>123 Business Ave<br>City, State 12345</p>'
+        '<p>Dear Hiring Manager,</p>'
+        f'<p>I am writing to express my interest in the [Position Title] opportunity at [Company Name]. '
+        f'As a {label} student at [Your University], I am eager to contribute to your team and grow '
+        'as a professional.</p>'
+        '<p>[Replace with 1–2 paragraphs that highlight your qualifications, experience, and interest in the role. '
+        'Use specific examples and tailor to the job description.]</p>'
+        '<p>I would welcome the opportunity to discuss how my background aligns with your needs. Thank you for '
+        'considering my application.</p>'
+        '<p>Sincerely,<br>Your Name</p>'
+    )
+    return f'<h2>Cover Letter</h2>{generic}'
 
 
 @csrf_exempt
@@ -120,6 +210,17 @@ def _prepare_resume_html(html):
     cleaned = cleaned.replace('class="rp-section-title"', 'class="resume-section-title" style="font-size:11pt; font-weight:bold; text-transform:uppercase; border-bottom:1px solid #ccc; padding-bottom:4pt; margin-bottom:6pt;"')
     cleaned = cleaned.replace('class="rp-content"', 'class="resume-content" style="font-size:10pt;"')
     cleaned = cleaned.replace('contenteditable="true"', '')
+    # H1/H2 from single Quill editor (Word-like structure)
+    cleaned = re.sub(
+        r'<h1(?=\s|>)',
+        '<h1 style="font-size:18pt; font-weight:bold; text-align:center; margin:0 0 4pt; color:#1F2A44;"',
+        cleaned
+    )
+    cleaned = re.sub(
+        r'<h2(?=\s|>)',
+        '<h2 style="font-size:11pt; font-weight:bold; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1px solid #ccc; padding-bottom:4pt; margin:12pt 0 6pt; color:#1F2A44;"',
+        cleaned
+    )
     return cleaned
 
 
@@ -150,8 +251,11 @@ def _html_to_pdf(full_html):
             return pdf_bytes, None
     except Exception as e:
         err_msg = str(e).lower()
-        # WeasyPrint often fails on Windows with missing GTK/Pango
-        if 'libgobject' in err_msg or 'gobject' in err_msg or 'find_library' in err_msg or 'load library' in err_msg:
+        # WeasyPrint often fails: missing GTK/Pango, or not installed (pycairo/cairo), or ImportError
+        if (
+            'libgobject' in err_msg or 'gobject' in err_msg or 'find_library' in err_msg
+            or 'load library' in err_msg or 'weasyprint' in err_msg or 'no module named' in err_msg
+        ):
             pass  # fall through to xhtml2pdf
         else:
             return None, f'PDF generation failed: {e}'
@@ -275,6 +379,42 @@ def ai_extract_pdf_view(request):
         return JsonResponse({'text': text})
     except Exception as e:
         return JsonResponse({'error': f'Failed to extract text: {str(e)}'}, status=400)
+
+
+@csrf_exempt
+@require_POST
+def ai_generate_content_view(request):
+    """Generate content from a prompt/task for FutureBot inline use."""
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    prompt_text = body.get('prompt', '').strip()
+    task = body.get('task', '').strip()
+
+    if not prompt_text and not task:
+        return JsonResponse({'error': 'Please provide a prompt or task.'}, status=400)
+
+    combined = f'{task}. {prompt_text}' if task and prompt_text else (prompt_text or task)
+
+    task_prompts = {
+        'Idea Brainstorm': 'You are a creative writing coach. Generate 5–7 bullet-point ideas based on the user\'s topic. Be concise and actionable. Return ONLY the bullet points.',
+        'Paragraph Generator': 'You are an expert writer. Write a well-structured paragraph based on the user\'s request. Be professional and clear. Return ONLY the paragraph.',
+        'Case Study': 'You are a professional writer. Write a brief case study or example based on the user\'s topic. Be specific and compelling. Return ONLY the content.',
+        'Business Proposal': 'You are a business writing expert. Draft a section for a business proposal based on the user\'s request. Be professional and persuasive. Return ONLY the content.',
+        'Resume Summary': 'You are an expert resume writer. Write a 2–3 sentence professional summary based on the user\'s background/goals. Return ONLY the summary.',
+        'Cover Letter': 'You are an expert cover letter writer. Draft a paragraph for a cover letter based on the user\'s request. Return ONLY the paragraph.',
+    }
+
+    base_instruction = task_prompts.get(task, 'You are a helpful writing assistant. Generate clear, professional content based on the user\'s request. Return ONLY the generated content, no labels or explanation.')
+
+    prompt = f'{base_instruction}\n\nUser request: {combined}'
+
+    text, err = _call_gemini(prompt)
+    if err:
+        return JsonResponse({'error': err}, status=502)
+    return JsonResponse({'result': text.strip()})
 
 
 @csrf_exempt
@@ -616,7 +756,7 @@ def _generate_pdf_impl(body, name, email, phone, job_title):
         'Structure:\n'
         '<div class="rp-header">\n'
         '  <div class="rp-name">FULL NAME</div>\n'
-        '  <div class="rp-contact">email | phone | location | linkedin</div>\n'
+        '  <div class="rp-contact">email | phone | location | linkedin [| github for tech roles]</div>\n'
         '</div>\n'
         '<div class="rp-section">\n'
         '  <div class="rp-section-title">SUMMARY</div>\n'
@@ -638,7 +778,7 @@ def _generate_pdf_impl(body, name, email, phone, job_title):
         'Rules: Use <strong> for emphasis. Bullets in <ul><li>. Keep it one page. Match keywords from the job.\n\n'
         f'--- USER INFO ---\n'
         f'Name: {name}\nEmail: {email}\nPhone: {phone}\n'
-        f'Location: {body.get("location", "")}\nLinkedIn: {body.get("linkedin", "")}\n'
+        f'Location: {body.get("location", "")}\nLinkedIn: {body.get("linkedin", "")}\nGitHub: {body.get("github", "")}\n'
         f'Target job: {job_title}\nCompany/industry: {body.get("company", "")}\n'
         f'Keywords to include: {body.get("keywords", "")}\n'
         f'Education: {body.get("degree", "")} at {body.get("school", "")}, grad: {body.get("graduation", "")}, GPA: {body.get("gpa", "")}\n'

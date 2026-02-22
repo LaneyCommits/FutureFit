@@ -3,6 +3,10 @@
 {% block title %}{{ template.label }} Resume Template – FutureFit{% endblock %}
 {% block body_class %}page-resume{% endblock %}
 
+{% block extra_head %}
+<link href="https://cdn.jsdelivr.net/npm/[email protected]/dist/quill.snow.css" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
 <section class="block block--hero block--hero-with-bg resume-hero resume-hero--compact">
     <div class="block-inner">
@@ -26,16 +30,28 @@
         <div class="resume-detail-layout">
             <!-- Live preview -->
             <div class="resume-preview-wrap reveal">
+                <div class="resume-toolbar-wrap" style="position:relative">
                 <div class="resume-format-toolbar" id="formatToolbar">
                     <span class="resume-toolbar-group">
-                        <button type="button" class="resume-format-btn" data-cmd="bold" data-tooltip="Bold"><strong>B</strong></button>
-                        <button type="button" class="resume-format-btn" data-cmd="italic" data-tooltip="Italic"><em>I</em></button>
-                        <button type="button" class="resume-format-btn" data-cmd="underline" data-tooltip="Underline">U</button>
-                        <button type="button" class="resume-format-btn" data-cmd="strikeThrough" data-tooltip="Strikethrough">S̶</button>
+                        <button type="button" class="resume-format-btn resume-format-btn--ai" id="futureBotTrigger" title="FutureBot — AI writing assistant"><span class="resume-ai-sparkle" aria-hidden="true">✦</span> FutureBot</button>
                     </span>
                     <span class="resume-toolbar-divider" aria-hidden="true"></span>
                     <span class="resume-toolbar-group">
-                        <select class="resume-format-select" id="formatFont" data-tooltip="Change font">
+                        <button type="button" class="resume-format-btn resume-format-undo" data-action="undo" title="Undo">↶</button>
+                        <button type="button" class="resume-format-btn resume-format-redo" data-action="redo" title="Redo">↷</button>
+                    </span>
+                    <span class="resume-toolbar-divider" aria-hidden="true"></span>
+                    <span class="resume-toolbar-group">
+                        <button type="button" class="resume-format-btn" data-cmd="bold" title="Bold"><strong>B</strong></button>
+                        <button type="button" class="resume-format-btn" data-cmd="italic" title="Italic"><em>I</em></button>
+                        <button type="button" class="resume-format-btn" data-cmd="underline" title="Underline">U</button>
+                        <button type="button" class="resume-format-btn" data-cmd="strikeThrough" title="Strikethrough">S̶</button>
+                        <button type="button" class="resume-format-btn" data-cmd="subscript" title="Subscript">X₂</button>
+                        <button type="button" class="resume-format-btn" data-cmd="superscript" title="Superscript">X²</button>
+                    </span>
+                    <span class="resume-toolbar-divider" aria-hidden="true"></span>
+                    <span class="resume-toolbar-group">
+                        <select class="resume-format-select" id="formatFont" title="Font">
                             <option value="">Font</option>
                             <option value="Arial, Helvetica, sans-serif">Arial</option>
                             <option value="Helvetica, Arial, sans-serif">Helvetica</option>
@@ -45,7 +61,8 @@
                             <option value="Verdana, Geneva, sans-serif">Verdana</option>
                             <option value="'Segoe UI', Tahoma, sans-serif">Segoe UI</option>
                         </select>
-                        <select class="resume-format-select resume-format-size" id="formatSize" data-tooltip="Font size">
+                        <button type="button" class="resume-format-btn" data-cmd="decreaseSize" title="Decrease font size">A−</button>
+                        <select class="resume-format-select resume-format-size" id="formatSize" title="Font size">
                             <option value="">Size</option>
                             <option value="1">10pt</option>
                             <option value="2">12pt</option>
@@ -58,7 +75,11 @@
                     </span>
                     <span class="resume-toolbar-divider" aria-hidden="true"></span>
                     <span class="resume-toolbar-group">
-                        <select class="resume-format-select resume-format-color" id="formatColor" data-tooltip="Text color">
+                        <button type="button" class="resume-format-btn" data-cmd="increaseSize" title="Increase font size">A+</button>
+                    </span>
+                    <span class="resume-toolbar-divider" aria-hidden="true"></span>
+                    <span class="resume-toolbar-group">
+                        <select class="resume-format-select resume-format-color" id="formatColor" title="Text color">
                             <option value="">Color</option>
                             <option value="#000000">Black</option>
                             <option value="#1f2a44">Navy</option>
@@ -68,30 +89,57 @@
                             <option value="#4FA3A5">Accent</option>
                             <option value="#c8766a">Coral</option>
                         </select>
+                        <select class="resume-format-select resume-format-highlight" id="formatHighlight" title="Highlight color">
+                            <option value="">Highlight</option>
+                            <option value="#ffff00">Yellow</option>
+                            <option value="#90EE90">Light green</option>
+                            <option value="#ADD8E6">Light blue</option>
+                            <option value="#FFE4B5">Moccasin</option>
+                        </select>
                     </span>
                     <span class="resume-toolbar-divider" aria-hidden="true"></span>
                     <span class="resume-toolbar-group">
-                        <button type="button" class="resume-format-btn" data-cmd="insertUnorderedList" data-tooltip="Bullet list">• List</button>
-                        <button type="button" class="resume-format-btn" data-cmd="insertOrderedList" data-tooltip="Numbered list">1. List</button>
+                        <button type="button" class="resume-format-btn" data-cmd="link" title="Insert link">⎘</button>
+                        <button type="button" class="resume-format-btn" data-cmd="insertUnorderedList" title="Bullet list">• List</button>
+                        <button type="button" class="resume-format-btn" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
                     </span>
                     <span class="resume-toolbar-divider" aria-hidden="true"></span>
                     <span class="resume-toolbar-group">
-                        <button type="button" class="resume-format-btn" data-cmd="justifyLeft" data-tooltip="Align left">≡ ←</button>
-                        <button type="button" class="resume-format-btn" data-cmd="justifyCenter" data-tooltip="Align center">≡ ↔</button>
-                        <button type="button" class="resume-format-btn" data-cmd="justifyRight" data-tooltip="Align right">≡ →</button>
+                        <button type="button" class="resume-format-btn" data-cmd="justifyLeft" title="Align left">≡ ←</button>
+                        <button type="button" class="resume-format-btn" data-cmd="justifyCenter" title="Align center">≡ ↔</button>
+                        <button type="button" class="resume-format-btn" data-cmd="justifyRight" title="Align right">≡ →</button>
                     </span>
                     <span class="resume-toolbar-divider" aria-hidden="true"></span>
                     <span class="resume-toolbar-group">
-                        <button type="button" class="resume-format-btn" data-cmd="indent" data-tooltip="Indent">→</button>
-                        <button type="button" class="resume-format-btn" data-cmd="outdent" data-tooltip="Outdent">←</button>
-                        <button type="button" class="resume-format-btn" data-cmd="removeFormat" data-tooltip="Clear formatting">✕</button>
+                        <button type="button" class="resume-format-btn" data-cmd="indent" title="Indent">→</button>
+                        <button type="button" class="resume-format-btn" data-cmd="outdent" title="Outdent">←</button>
+                        <button type="button" class="resume-format-btn" data-cmd="removeFormat" title="Clear formatting">✕</button>
                     </span>
+                </div>
+                <!-- FutureBot pop-up -->
+                <div class="futurebot-popup" id="futureBotPopup" role="dialog" aria-labelledby="futureBotTitle" aria-hidden="true" style="display:none;">
+                    <div class="futurebot-popup-inner">
+                        <div class="futurebot-header">
+                            <h3 class="futurebot-title" id="futureBotTitle"><span class="futurebot-sparkle" aria-hidden="true">✦</span> FutureBot</h3>
+                            <button type="button" class="futurebot-close" id="futureBotClose" title="Close" aria-label="Close">&times;</button>
+                        </div>
+                        <p class="futurebot-prompt">Describe your writing task</p>
+                        <input type="text" class="futurebot-input" id="futureBotInput" placeholder="e.g. Write a professional summary for a software engineering internship" autocomplete="off">
+                        <div class="futurebot-suggestions">
+                            <button type="button" class="futurebot-suggestion" data-task="Case Study">Case Study</button>
+                            <button type="button" class="futurebot-suggestion" data-task="Business Proposal">Business Proposal</button>
+                            <button type="button" class="futurebot-suggestion" data-task="Resume Summary">Resume Summary</button>
+                            <button type="button" class="futurebot-suggestion" data-task="Cover Letter">Cover Letter</button>
+                        </div>
+                        <a href="{% url 'resume_ai_tools' %}" class="futurebot-link" id="futureBotLink" style="display:none;"></a>
+                    </div>
+                </div>
                 </div>
                 <div class="resume-preview" id="resumePreview">
                     <div class="resume-paper">
                         <div class="rp-header">
                             <div class="rp-name" contenteditable="true">Your Name</div>
-                            <div class="rp-contact" contenteditable="true">email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname</div>
+                            <div class="rp-contact" contenteditable="true">email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname{% if major_key == 'computer_science' %} · github.com/yourname{% endif %}</div>
                         </div>
 
                         {% for section in template.sections %}
@@ -163,6 +211,7 @@
 </section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/quill.js"></script>
 <script src="{% static 'js/resume-ai.js' %}"></script>
 <script>
 (function() {
@@ -184,6 +233,39 @@
     var downloadBtn = document.getElementById('downloadPdfBtn');
     var resetBtnEl = document.getElementById('resetBtn');
     var originalHTML = preview.innerHTML;
+    var quillInstances = [];
+
+    function initQuillOnContent(el) {
+        if (!el || el.querySelector('.ql-container')) return null;
+        el.removeAttribute('contenteditable');
+        var q = new Quill(el, {
+            theme: 'snow',
+            modules: {
+                toolbar: false,
+                history: { userOnly: true }
+            }
+        });
+        quillInstances.push({ el: el, quill: q });
+        return q;
+    }
+    function initAllQuills() {
+        quillInstances = [];
+        var paper = preview.querySelector('.resume-paper');
+        if (!paper) return;
+        paper.querySelectorAll('.rp-content').forEach(function(el) { initQuillOnContent(el); });
+    }
+    function getFocusedQuill() {
+        var active = document.activeElement;
+        if (!active) return null;
+        var qlEditor = active.closest('.ql-editor');
+        if (!qlEditor) return null;
+        var container = qlEditor.closest('.rp-content');
+        if (!container) return null;
+        var found = quillInstances.find(function(o) { return o.el === container; });
+        return found ? found.quill : (typeof Quill !== 'undefined' ? Quill.find(container) : null);
+    }
+
+    if (typeof Quill !== 'undefined') initAllQuills();
 
     function restoreBtn() {
         downloadBtn.innerHTML = '<span aria-hidden="true">↓</span> PDF';
@@ -195,6 +277,15 @@
         downloadBtn.disabled = true;
 
         var paper = preview.querySelector('.resume-paper');
+        var htmlToSend = paper.outerHTML;
+        if (quillInstances.length > 0) {
+            var clone = paper.cloneNode(true);
+            clone.querySelectorAll('.rp-content').forEach(function(el) {
+                var ql = el.querySelector('.ql-editor');
+                if (ql) el.innerHTML = ql.innerHTML;
+            });
+            htmlToSend = clone.outerHTML;
+        }
         var filename = ('{{ template.label }}'.toLowerCase().replace(/[^a-z0-9\-\.]/g, '-') || 'resume') + '-futurefit.pdf';
 
         function fallbackJsPdf() {
@@ -250,7 +341,7 @@
         fetch('/resume/api/pdf/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ html: paper.outerHTML, filename: filename })
+            body: JSON.stringify({ html: htmlToSend, filename: filename })
         }).then(function(r) {
             if (r.ok) return r.blob();
             return Promise.reject(new Error(r.status));
@@ -270,8 +361,49 @@
     resetBtnEl.addEventListener('click', function() {
         if (confirm('Reset the template? Your edits will be lost.')) {
             preview.innerHTML = originalHTML;
+            if (typeof Quill !== 'undefined') initAllQuills();
         }
     });
+
+    // FutureBot pop-up
+    var futureBotTrigger = document.getElementById('futureBotTrigger');
+    var futureBotPopup = document.getElementById('futureBotPopup');
+    var futureBotClose = document.getElementById('futureBotClose');
+    var futureBotInput = document.getElementById('futureBotInput');
+    var futureBotLink = document.getElementById('futureBotLink');
+    if (futureBotTrigger && futureBotPopup) {
+        futureBotTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            futureBotPopup.style.display = 'block';
+            futureBotPopup.setAttribute('aria-hidden', 'false');
+            futureBotInput && futureBotInput.focus();
+        });
+        if (futureBotClose) futureBotClose.addEventListener('click', function() {
+            futureBotPopup.style.display = 'none';
+            futureBotPopup.setAttribute('aria-hidden', 'true');
+        });
+        futureBotPopup.addEventListener('click', function(e) {
+            if (e.target === futureBotPopup) {
+                futureBotPopup.style.display = 'none';
+                futureBotPopup.setAttribute('aria-hidden', 'true');
+            }
+        });
+        var goToAITools = function(task) {
+            var url = "{% url 'resume_ai_tools' %}";
+            if (task) url += '?task=' + encodeURIComponent(task);
+            window.location.href = url;
+        };
+        if (futureBotInput) {
+            futureBotInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && this.value.trim().length >= 5) goToAITools(this.value.trim());
+            });
+        }
+        document.querySelectorAll('.futurebot-suggestion').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                goToAITools(this.getAttribute('data-task'));
+            });
+        });
+    }
 
     // AI resume review
     var major = '{{ template.label }}';
@@ -363,9 +495,54 @@
         }
     }
 
-    // Format toolbar — always visible, reflect selection state
+    // Format toolbar — Quill when focused in .rp-content, execCommand for name/contact
     var formatToolbar = document.getElementById('formatToolbar');
     function getPaper() { return preview.querySelector('.resume-paper'); }
+    var quillToCmd = { bold: 'bold', italic: 'italic', underline: 'underline', strikeThrough: 'strike',
+        subscript: ['script', 'sub'], superscript: ['script', 'super'],
+        insertUnorderedList: ['list', 'bullet'], insertOrderedList: ['list', 'ordered'],
+        justifyLeft: ['align', false], justifyCenter: ['align', 'center'], justifyRight: ['align', 'right'],
+        indent: ['indent', '+1'], outdent: ['indent', '-1'], removeFormat: 'clean' };
+    function applyFormat(cmd, val) {
+        var q = getFocusedQuill();
+        if (q) {
+            if (cmd === 'link' && val) { q.format('link', val); return; }
+            var m = quillToCmd[cmd];
+            if (Array.isArray(m)) q.format(m[0], m[1]);
+            else if (m === 'clean') q.format('clean');
+            else if (m) q.format(m, val !== undefined ? val : !q.getFormat()[m]);
+        } else {
+            if (cmd === 'link' && val) document.execCommand('createLink', false, val);
+            else document.execCommand(cmd, false, val != null ? val : null);
+        }
+    }
+    function updateToolbarState() {
+        var p = getPaper();
+        var sel = window.getSelection();
+        var q = getFocusedQuill();
+        formatToolbar.querySelectorAll('.resume-format-btn[data-cmd]').forEach(function(b) {
+            b.classList.remove('is-active');
+        });
+        formatToolbar.querySelectorAll('.resume-format-undo, .resume-format-redo').forEach(function(b) {
+            b.disabled = !q || !q.getModule || !q.getModule('history');
+        });
+        if (q) {
+            var fmt = q.getFormat();
+            ['bold','italic','underline','strikeThrough'].forEach(function(cmd) {
+                var btn = formatToolbar.querySelector('.resume-format-btn[data-cmd="' + cmd + '"]');
+                if (btn) btn.classList.toggle('is-active', !!fmt[cmd]);
+            });
+            var align = fmt.align;
+            if (align === false || align === 'left') formatToolbar.querySelector('.resume-format-btn[data-cmd="justifyLeft"]')?.classList.add('is-active');
+            else if (align === 'center') formatToolbar.querySelector('.resume-format-btn[data-cmd="justifyCenter"]')?.classList.add('is-active');
+            else if (align === 'right') formatToolbar.querySelector('.resume-format-btn[data-cmd="justifyRight"]')?.classList.add('is-active');
+        } else if (p && sel && sel.anchorNode && p.contains(sel.anchorNode)) {
+            ['bold','italic','underline','strikeThrough','justifyLeft','justifyCenter','justifyRight'].forEach(function(cmd) {
+                var btn = formatToolbar.querySelector('.resume-format-btn[data-cmd="' + cmd + '"]');
+                if (btn) btn.classList.toggle('is-active', document.queryCommandState(cmd));
+            });
+        }
+    }
     function rgbToHex(rgb) {
         if (!rgb || rgb.indexOf('rgb') === -1) return rgb;
         var m = rgb.match(/[\d.]+/g);
@@ -375,57 +552,53 @@
         var b = ('0' + parseInt(m[2], 10).toString(16)).slice(-2);
         return '#' + r + g + b;
     }
-    function updateToolbarState() {
-        var p = getPaper();
-        var sel = window.getSelection();
-        if (!p || !sel || !sel.anchorNode || !p.contains(sel.anchorNode)) {
-            formatToolbar.querySelectorAll('.resume-format-btn[data-cmd]').forEach(function(b) {
-                b.classList.remove('is-active');
-            });
-            return;
-        }
-        ['bold','italic','underline','strikeThrough','justifyLeft','justifyCenter','justifyRight'].forEach(function(cmd) {
-            var btn = formatToolbar.querySelector('.resume-format-btn[data-cmd="' + cmd + '"]');
-            if (btn) btn.classList.toggle('is-active', document.queryCommandState(cmd));
-        });
-        var fontEl = document.getElementById('formatFont');
-        var sizeEl = document.getElementById('formatSize');
-        var colorEl = document.getElementById('formatColor');
-        if (fontEl) {
-            var fv = (document.queryCommandValue('fontName') || '').toLowerCase();
-            for (var i = 0; i < fontEl.options.length; i++) {
-                var opt = fontEl.options[i];
-                if (opt.value) {
-                    var firstFont = opt.value.split(',')[0].replace(/'/g, '').trim().toLowerCase();
-                    if (fv.indexOf(firstFont) !== -1 || firstFont.indexOf(fv) !== -1) {
-                        fontEl.value = opt.value;
-                        break;
-                    }
-                }
-            }
-        }
-        if (sizeEl) {
-            var sv = document.queryCommandValue('fontSize');
-            if (sv && sizeEl.querySelector('option[value="' + sv + '"]')) sizeEl.value = sv;
-        }
-        if (colorEl) {
-            var cv = document.queryCommandValue('foreColor');
-            var hex = rgbToHex(cv) || cv;
-            if (hex && colorEl.querySelector('option[value="' + hex + '"]')) colorEl.value = hex;
-        }
-    }
     preview.addEventListener('mouseup', updateToolbarState);
     preview.addEventListener('keyup', updateToolbarState);
     document.addEventListener('selectionchange', updateToolbarState);
-    formatToolbar && formatToolbar.querySelectorAll('.resume-format-btn').forEach(function(btn) {
-        btn.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            var cmd = this.getAttribute('data-cmd');
-            document.execCommand(cmd, false, null);
-            updateToolbarState();
+    if (formatToolbar) {
+        formatToolbar.querySelectorAll('.resume-format-btn[data-cmd]').forEach(function(btn) {
+            btn.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                var cmd = this.getAttribute('data-cmd');
+                if (cmd === 'link') {
+                    var url = prompt('Enter URL:');
+                    if (url) applyFormat('link', url);
+                } else if (cmd === 'increaseSize') {
+                    var sizeEl = document.getElementById('formatSize');
+                    if (sizeEl && sizeEl.value) {
+                        var next = Math.min(7, parseInt(sizeEl.value, 10) + 1);
+                        sizeEl.value = String(next);
+                        applyFormat('size', String(next));
+                    } else applyFormat('size', '2');
+                } else if (cmd === 'decreaseSize') {
+                    var sizeEl = document.getElementById('formatSize');
+                    if (sizeEl && sizeEl.value) {
+                        var next = Math.max(1, parseInt(sizeEl.value, 10) - 1);
+                        sizeEl.value = String(next);
+                        applyFormat('size', String(next));
+                    } else applyFormat('size', '1');
+                } else {
+                    applyFormat(cmd);
+                }
+                updateToolbarState();
+            });
         });
-    });
-    ['formatFont','formatSize','formatColor'].forEach(function(id) {
+        formatToolbar.querySelectorAll('.resume-format-undo').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var q = getFocusedQuill();
+                if (q && q.getModule && q.getModule('history')) q.history.undo();
+            });
+        });
+        formatToolbar.querySelectorAll('.resume-format-redo').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var q = getFocusedQuill();
+                if (q && q.getModule && q.getModule('history')) q.history.redo();
+            });
+        });
+    }
+    ['formatFont','formatSize','formatColor','formatHighlight'].forEach(function(id) {
         var el = document.getElementById(id);
         if (!el) return;
         var savedSel = null;
@@ -436,13 +609,17 @@
         el.addEventListener('change', function() {
             var val = this.value;
             if (!val) return;
-            if (savedSel) {
+            var q = getFocusedQuill();
+            if (q) {
+                var cmd = id === 'formatFont' ? 'font' : id === 'formatSize' ? 'size' : id === 'formatHighlight' ? 'background' : 'color';
+                q.format(cmd, val);
+            } else if (savedSel) {
                 var sel = window.getSelection();
                 sel.removeAllRanges();
                 sel.addRange(savedSel);
+                var execCmd = id === 'formatFont' ? 'fontName' : id === 'formatSize' ? 'fontSize' : id === 'formatHighlight' ? 'backColor' : 'foreColor';
+                document.execCommand(execCmd, false, val);
             }
-            var cmd = id === 'formatFont' ? 'fontName' : id === 'formatSize' ? 'fontSize' : 'foreColor';
-            document.execCommand(cmd, false, val);
             updateToolbarState();
         });
     });
@@ -458,16 +635,26 @@
             }
             enhanceBtn.disabled = true;
             enhanceBtn.innerHTML = '<span class="gap-btn-spinner"></span> Enhancing...';
+            var htmlToSend = p.outerHTML;
+            if (quillInstances.length > 0) {
+                var clone = p.cloneNode(true);
+                clone.querySelectorAll('.rp-content').forEach(function(el) {
+                    var ql = el.querySelector('.ql-editor');
+                    if (ql) el.innerHTML = ql.innerHTML;
+                });
+                htmlToSend = clone.outerHTML;
+            }
             fetch('/resume/api/ai/enhance-resume/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ html: p.outerHTML, major: '{{ template.label }}' })
-            }).then(function(r) { return r.json(); }).then(function(data) {
+                body: JSON.stringify({ html: htmlToSend, major: '{{ template.label }}' })
+            }).then(function(r) { return r.json();             }).then(function(data) {
                 if (data.error) throw new Error(data.error);
                 var temp = document.createElement('div');
                 temp.innerHTML = data.html;
                 var newPaper = temp.querySelector('.resume-paper');
                 if (newPaper) p.outerHTML = newPaper.outerHTML;
+                if (typeof Quill !== 'undefined') initAllQuills();
             }).catch(function(e) {
                 alert(e.message || 'Enhancement failed. Please try again.');
             }).finally(function() {

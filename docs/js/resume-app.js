@@ -202,7 +202,7 @@
               <div class="resume-paper">
                 <div class="rp-header">
                   <div class="rp-name" contenteditable="true">Your Name</div>
-                  <div class="rp-contact" contenteditable="true">email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname</div>
+                  <div class="rp-contact" contenteditable="true">email@example.com · (555) 123-4567 · City, State · linkedin.com/in/yourname${majorKey === 'computer_science' ? ' · github.com/yourname' : ''}</div>
                 </div>
                 ${sectionsHTML}
               </div>

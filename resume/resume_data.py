@@ -310,6 +310,135 @@ RESUME_TEMPLATES = {
     },
 }
 
+# Sample cover letters by major — editable templates for the cover letters section
+COVER_LETTER_TEMPLATES = {
+    'business': {
+        'label': 'Business & Management',
+        'icon': '📊',
+        'focus': 'Leadership, analytics, and business impact',
+        'sample_letter': (
+            '<p>Your Name<br>email@example.com · (555) 123-4567 · linkedin.com/in/yourname</p>'
+            '<p>February 18, 2026</p>'
+            '<p>Hiring Manager<br>Company Name<br>123 Business Ave<br>City, State 12345</p>'
+            '<p>Dear Hiring Manager,</p>'
+            '<p>I am writing to express my interest in the [Position Title] opportunity at [Company Name]. '
+            'As a Business &amp; Management student at [Your University] with a focus on leadership and analytics, '
+            'I am eager to contribute to your team and grow as a professional.</p>'
+            '<p>Through my coursework in finance, marketing, and operations, I have developed strong analytical '
+            'and problem-solving skills. In my role with [Student Organization/Internship], I managed a team of five '
+            'and delivered a marketing campaign that reached 12,000+ students. I am confident that my ability to '
+            'analyze data, communicate findings, and work collaboratively would add value to [Company Name].</p>'
+            '<p>I would welcome the opportunity to discuss how my background aligns with your needs. Thank you for '
+            'considering my application.</p>'
+            '<p>Sincerely,<br>Your Name</p>'
+        ),
+    },
+    'computer_science': {
+        'label': 'Computer Science & IT',
+        'icon': '💻',
+        'focus': 'Technical skills, projects, and problem-solving',
+        'sample_letter': (
+            '<p>Your Name<br>email@example.com · (555) 123-4567 · github.com/yourname · linkedin.com/in/yourname</p>'
+            '<p>February 18, 2026</p>'
+            '<p>Hiring Manager<br>Company Name<br>456 Tech Blvd<br>City, State 12345</p>'
+            '<p>Dear Hiring Manager,</p>'
+            '<p>I am excited to apply for the [Software Engineer/Developer] position at [Company Name]. '
+            'As a Computer Science student at [Your University], I have built a strong foundation in full-stack '
+            'development, algorithms, and system design, and I am eager to contribute to your engineering team.</p>'
+            '<p>I recently developed a full-stack web application using React and Django, deployed on AWS, and '
+            'contributed to an open-source project with 500+ GitHub stars. These experiences have strengthened my '
+            'ability to write clean code, collaborate with others, and ship features iteratively. I am particularly '
+            'drawn to [Company Name] because of [specific reason—product, mission, or tech stack].</p>'
+            '<p>I would welcome the chance to discuss how my skills and passion for technology can benefit your team. '
+            'Thank you for considering my application.</p>'
+            '<p>Sincerely,<br>Your Name</p>'
+        ),
+    },
+    'engineering': {
+        'label': 'Engineering',
+        'icon': '⚙️',
+        'focus': 'Technical expertise, design projects, and certifications',
+        'sample_letter': (
+            '<p>Your Name<br>email@example.com · (555) 123-4567 · linkedin.com/in/yourname</p>'
+            '<p>February 18, 2026</p>'
+            '<p>Hiring Manager<br>Company Name<br>789 Innovation Dr<br>City, State 12345</p>'
+            '<p>Dear Hiring Manager,</p>'
+            '<p>I am writing to apply for the [Mechanical/Civil/Electrical] Engineer position at [Company Name]. '
+            'As an Engineering student at [Your University] with hands-on experience in design and analysis, '
+            'I am eager to bring my technical skills and problem-solving mindset to your organization.</p>'
+            '<p>My coursework in [relevant area] and my capstone project—designing a [type of system] that reduced '
+            'material costs by 15% while meeting load requirements—have prepared me for real-world engineering '
+            'challenges. I have also passed the Fundamentals of Engineering (FE) exam and am familiar with AutoCAD, '
+            'MATLAB, and industry standards. I am excited about [Company Name]\'s work in [specific area].</p>'
+            '<p>I would appreciate the opportunity to discuss how I can contribute to your team. Thank you for '
+            'considering my application.</p>'
+            '<p>Sincerely,<br>Your Name</p>'
+        ),
+    },
+    'health_sciences': {
+        'label': 'Health Sciences & Nursing',
+        'icon': '🏥',
+        'focus': 'Clinical experience, patient care, and certifications',
+        'sample_letter': (
+            '<p>Your Name<br>email@example.com · (555) 123-4567 · linkedin.com/in/yourname</p>'
+            '<p>February 18, 2026</p>'
+            '<p>Hiring Manager<br>[Hospital/Clinic Name]<br>100 Care Lane<br>City, State 12345</p>'
+            '<p>Dear Hiring Manager,</p>'
+            '<p>I am writing to express my interest in the [RN/Nurse/Clinical] position at [Organization Name]. '
+            'As a Health Sciences student at [Your University] with over 400 clinical hours across medical-surgical, '
+            'pediatric, and ICU settings, I am eager to provide high-quality patient care as part of your team.</p>'
+            '<p>My clinical experience has reinforced my commitment to patient safety, evidence-based practice, '
+            'and compassionate care. I am BLS and CPR certified and proficient with EMR systems including Epic. '
+            'I am particularly drawn to [Organization Name] because of your focus on [specific program or value].</p>'
+            '<p>I would welcome the opportunity to discuss how my clinical skills and dedication can contribute to '
+            'your mission. Thank you for considering my application.</p>'
+            '<p>Sincerely,<br>Your Name</p>'
+        ),
+    },
+    'humanities': {
+        'label': 'Humanities',
+        'icon': '📚',
+        'focus': 'Writing, research, and critical thinking',
+        'sample_letter': (
+            '<p>Your Name<br>email@example.com · (555) 123-4567 · linkedin.com/in/yourname</p>'
+            '<p>February 18, 2026</p>'
+            '<p>Hiring Manager<br>Company Name<br>200 Research Way<br>City, State 12345</p>'
+            '<p>Dear Hiring Manager,</p>'
+            '<p>I am writing to apply for the [Editor/Research/Communications] position at [Company Name]. '
+            'As a Humanities student at [Your University] with a strong background in research, writing, and '
+            'critical analysis, I am eager to bring my communication and analytical skills to your organization.</p>'
+            '<p>My experience includes researching and writing a 40-page honors thesis, editing 50+ articles for '
+            'the university literary magazine, and presenting original research at a regional conference. These '
+            'experiences have sharpened my ability to synthesize complex ideas, write clearly for diverse audiences, '
+            'and meet deadlines. I am excited about [Company Name]\'s work in [specific area].</p>'
+            '<p>I would welcome the opportunity to discuss how my skills align with your needs. Thank you for '
+            'considering my application.</p>'
+            '<p>Sincerely,<br>Your Name</p>'
+        ),
+    },
+    'education': {
+        'label': 'Education',
+        'icon': '📖',
+        'focus': 'Teaching, curriculum, and student development',
+        'sample_letter': (
+            '<p>Your Name<br>email@example.com · (555) 123-4567 · linkedin.com/in/yourname</p>'
+            '<p>February 18, 2026</p>'
+            '<p>Principal / Hiring Manager<br>[School/District Name]<br>300 Education Dr<br>City, State 12345</p>'
+            '<p>Dear Hiring Manager,</p>'
+            '<p>I am writing to express my interest in the [Teacher/Educator] position at [School Name]. '
+            'As an Education student at [Your University] with fieldwork and student-teaching experience, '
+            'I am eager to create an inclusive, engaging learning environment for your students.</p>'
+            '<p>My coursework in curriculum development and differentiated instruction, combined with my '
+            'student-teaching at [School], has prepared me to plan lessons, manage a classroom, and support '
+            'diverse learners. I am committed to fostering a growth mindset and building positive relationships '
+            'with students and families. I am drawn to [School Name] because of [specific program or mission].</p>'
+            '<p>I would welcome the opportunity to discuss how I can contribute to your team. Thank you for '
+            'considering my application.</p>'
+            '<p>Sincerely,<br>Your Name</p>'
+        ),
+    },
+}
+
 RESUME_TIPS = [
     {
         'title': 'Keep it to one page',
