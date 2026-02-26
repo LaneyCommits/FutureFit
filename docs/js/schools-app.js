@@ -18,7 +18,12 @@
     hospitality: 'Hospitality & Tourism',
     real_estate: 'Real Estate & Property',
     sports_recreation: 'Sports & Recreation',
-    trades_construction: 'Skilled Trades & Construction'
+    trades_construction: 'Skilled Trades & Construction',
+    cosmetology: 'Cosmetology & Beauty',
+    allied_health: 'Allied Health & Clinical Support',
+    culinary: 'Culinary & Baking',
+    aviation_transportation: 'Aviation & Transportation',
+    fire_emergency: 'Fire & Emergency Services'
   };
 
   var US_STATES = [
@@ -70,7 +75,7 @@
       ${heroShapes}
       ${heroParticlesBehind}
       <div class="block-inner">
-        <p class="hero-badge">${SCHOOLS.length} schools · 16 majors · free</p>
+        <p class="hero-badge">${SCHOOLS.length} schools · 21 majors · free</p>
         <h1 class="block-hero-title">Find the right school for you</h1>
         <p class="block-hero-sub">Filter by major, location, cost, and school type to find colleges that fit your goals — not just what's trending.</p>
       </div>

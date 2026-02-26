@@ -1384,7 +1384,54 @@ SCHOOLS = [
 ]
 
 
+def _college_to_dict(c):
+    """Convert College model instance to frontend dict format."""
+    ugds = c.undergrad_count
+    if ugds is None:
+        size = None  # Unknown – show "—" in UI
+    elif ugds < 2000:
+        size = "small"
+    elif ugds < 15000:
+        size = "medium"
+    else:
+        size = "large"
+
+    tuition = c.tuition_in  # None when Scorecard has no data (PrivacySuppressed)
+    adm = c.acceptance_rate
+    accept_int = int(round(adm)) if adm is not None else None
+
+    if c.known_for:
+        highlight = "Strong programs in " + ", ".join(c.known_for[:3]) + "."
+    else:
+        highlight = "Wide range of academic programs."
+
+    return {
+        "id": str(c.unitid),
+        "name": c.name,
+        "city": c.city or "",
+        "state": c.state or "",
+        "type": "private" if c.institution_type == "for_profit" else c.institution_type,
+        "size": size,
+        "tuition": tuition,  # None when unknown
+        "tuition_in": tuition,  # None when unknown
+        "acceptance_rate": accept_int,
+        "strong_majors": c.strong_majors or [],
+        "highlight": highlight,
+        "url": c.website_url or "",
+        "image": c.image_url or "",
+    }
+
+
 def get_schools():
+    """Return schools for the finder. Prefers College (Scorecard) data if present."""
+    try:
+        from schools.models import College
+
+        count = College.objects.count()
+        if count > 0:
+            return [_college_to_dict(c) for c in College.objects.all()]
+    except Exception:
+        pass
     return SCHOOLS
 
 

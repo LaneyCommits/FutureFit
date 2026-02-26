@@ -26,7 +26,7 @@
         <span class="hero-particle hero-particle--accent hero-particle--s" style="--x: 74%; --y: 44%; --d: 1.4"></span>
     </div>
     <div class="block-inner">
-        <p class="hero-badge">{{ schools_count }} colleges · 16 majors · free</p>
+        <p class="hero-badge">{{ schools_count_display }} colleges · 21 majors · free</p>
         <h1 class="block-hero-title">Find the right college for you</h1>
         <p class="block-hero-sub">Filter by major, location, cost, and school type to find colleges that fit your goals — not just what's trending.</p>
         <div class="block-hero-buttons">
@@ -97,11 +97,9 @@
         <div class="schools-grid" id="schools-grid"></div>
 
         <nav class="schools-pagination" id="schools-pagination" aria-label="College results pagination" style="display:none;">
-          <button type="button" class="schools-pagination-btn" id="pag-first" title="First page" aria-label="First page">«</button>
-          <button type="button" class="schools-pagination-btn" id="pag-prev" title="Previous page" aria-label="Previous page">&lt;</button>
-          <div class="schools-pagination-pages" id="pag-pages"></div>
-          <button type="button" class="schools-pagination-btn" id="pag-next" title="Next page" aria-label="Next page">&gt;</button>
-          <button type="button" class="schools-pagination-btn" id="pag-last" title="Last page" aria-label="Last page">»</button>
+          <button type="button" class="schools-pagination-btn" id="pag-prev" title="Previous page" aria-label="Previous page">←</button>
+          <span class="schools-pagination-info" id="pag-info">Page 1</span>
+          <button type="button" class="schools-pagination-btn" id="pag-next" title="Next page" aria-label="Next page">→</button>
         </nav>
 
         <p class="schools-no-results" id="schools-no-results" style="display:none;">No colleges match your filters. Try broadening your search.</p>
@@ -127,7 +125,7 @@
   var grid = document.getElementById('schools-grid');
   var countEl = document.getElementById('schools-count');
   var paginationEl = document.getElementById('schools-pagination');
-  var pagPagesEl = document.getElementById('pag-pages');
+  var pagInfoEl = document.getElementById('pag-info');
   var noResults = document.getElementById('schools-no-results');
   var filterMajor = document.getElementById('filter-major');
   var filterState = document.getElementById('filter-state');
@@ -139,6 +137,7 @@
   var quizMajorLabel = document.getElementById('quiz-major-label');
 
   function formatCost(n) {
+    if (n == null || n === '') return '—';
     if (n >= 1000) return '$' + (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'k';
     return '$' + n;
   }
@@ -151,27 +150,37 @@
     }).join('');
   }
 
+  function formatAcceptance(r) {
+    return (r != null && r !== '') ? (r + '%') : '—';
+  }
+  var PLACEHOLDER_IMG = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200"><rect fill="%23152338" width="400" height="200"/><g fill="%234FA3A5" opacity="0.4"><path d="M120 90 L180 60 L240 90 L240 150 L120 150 Z"/><rect x="140" y="100" width="25" height="35"/><rect x="195" y="100" width="25" height="35"/><circle cx="280" cy="110" r="30"/><text x="200" y="185" font-family="system-ui,sans-serif" font-size="14" fill="%238BA4B0">Campus</text></g></svg>');
   function schoolCard(s, idx) {
     var typeBadge = s.type === 'public' ? '<span class="school-type-badge school-type-badge--public">Public</span>' : '<span class="school-type-badge school-type-badge--private">Private</span>';
     var delayClass = idx < 6 ? ' reveal-delay-' + (idx % 3) : '';
-    var imgTag = s.image ? '<img class="school-card-image" src="' + s.image + '" alt="' + s.name + ' campus" loading="lazy">' : '';
+    var imgSrc = (s.image && s.image.trim()) ? s.image : PLACEHOLDER_IMG;
+    var imgWrap = '<div class="school-card-image-wrap">' +
+      '<img class="school-card-image" src="' + imgSrc + '" alt="' + (s.image ? s.name + ' campus' : 'Campus placeholder') + '" loading="lazy">' +
+      '<div class="school-card-image-loading" aria-hidden="true"></div>' +
+    '</div>';
+    var acceptStr = formatAcceptance(s.acceptance_rate);
+    var linkTag = s.url ? '<a href="' + s.url + '" target="_blank" rel="noopener" class="school-card-link">Visit website <span class="btn-arrow" aria-hidden="true">→</span></a>' : '<span class="school-card-link school-card-link--disabled">Website not available</span>';
     return '<div class="school-card reveal' + delayClass + '" data-id="' + s.id + '">' +
-      imgTag +
+      imgWrap +
       '<div class="school-card-body">' +
       '<div class="school-card-top">' +
         typeBadge +
-        '<span class="school-accept-badge">' + s.acceptance_rate + '% accept</span>' +
+        '<span class="school-accept-badge">' + (s.acceptance_rate != null && s.acceptance_rate !== '' ? s.acceptance_rate + '% accept' : '—') + '</span>' +
       '</div>' +
       '<h3 class="school-card-name">' + s.name + '</h3>' +
       '<p class="school-card-location">' + s.city + ', ' + s.state + '</p>' +
       '<p class="school-card-highlight">' + s.highlight + '</p>' +
       '<div class="school-card-stats">' +
         '<div class="school-stat"><span class="school-stat-value">' + formatCost(s.tuition_in) + '</span><span class="school-stat-label">in-state</span></div>' +
-        '<div class="school-stat"><span class="school-stat-value">' + s.acceptance_rate + '%</span><span class="school-stat-label">acceptance</span></div>' +
-        '<div class="school-stat"><span class="school-stat-value">' + s.size + '</span><span class="school-stat-label">campus</span></div>' +
+        '<div class="school-stat"><span class="school-stat-value">' + acceptStr + '</span><span class="school-stat-label">acceptance</span></div>' +
+        '<div class="school-stat"><span class="school-stat-value">' + (s.size || '—') + '</span><span class="school-stat-label">campus</span></div>' +
       '</div>' +
-      '<div class="school-card-majors">' + majorPills(s.strong_majors) + '</div>' +
-      '<a href="' + s.url + '" target="_blank" rel="noopener" class="school-card-link">Visit website <span class="btn-arrow" aria-hidden="true">→</span></a>' +
+      '<div class="school-card-majors">' + majorPills(s.strong_majors || []) + '</div>' +
+      linkTag +
       '</div>' +
     '</div>';
   }
@@ -187,7 +196,11 @@
     var filtered = SCHOOLS.filter(function(s) {
       if (major && s.strong_majors.indexOf(major) === -1) return false;
       if (state && s.state !== state) return false;
-      if (filterCost.value && (s.tuition_in < costLow || s.tuition_in > costHigh)) return false;
+      if (filterCost.value) {
+        var t = s.tuition_in;
+        if (t == null || t === '') return false;
+        if (t < costLow || t > costHigh) return false;
+      }
       if (type && s.type !== type) return false;
       return true;
     });
@@ -198,7 +211,9 @@
         var bMajorIdx = b.strong_majors.indexOf(major);
         if (aMajorIdx !== bMajorIdx) return aMajorIdx - bMajorIdx;
       }
-      return a.tuition_in - b.tuition_in;
+      var aT = (a.tuition_in != null && a.tuition_in !== '') ? a.tuition_in : 999999;
+      var bT = (b.tuition_in != null && b.tuition_in !== '') ? b.tuition_in : 999999;
+      return aT - bT;
     });
 
     var totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
@@ -213,18 +228,52 @@
     var html = pageItems.map(function(s, i) { return schoolCard(s, start + i); }).join('');
     grid.innerHTML = html;
 
-    if (filtered.length > PER_PAGE && paginationEl && pagPagesEl) {
+    var needsImages = pageItems.filter(function(s) { return !(s.image && s.image.trim()); }).map(function(s) { return s.id; });
+    needsImages.forEach(function(id) {
+      var card = grid.querySelector('.school-card[data-id="' + id + '"]');
+      var loader = card && card.querySelector('.school-card-image-loading');
+      if (loader) loader.classList.add('is-loading');
+    });
+    if (needsImages.length) {
+      fetch("{% url 'schools_fetch_images' %}?ids=" + encodeURIComponent(needsImages.join(",")))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var imgs = data.images || {};
+          for (var id in imgs) {
+            var s = SCHOOLS.find(function(x) { return String(x.id) === String(id); });
+            if (s) s.image = imgs[id];
+            var card = grid.querySelector('.school-card[data-id="' + id + '"]');
+            var img = card && card.querySelector('.school-card-image');
+            var loader = card && card.querySelector('.school-card-image-loading');
+            if (img && imgs[id]) {
+              img.onload = function() { if (loader) loader.classList.remove('is-loading'); };
+              img.src = imgs[id];
+            } else if (loader) loader.classList.remove('is-loading');
+          }
+          needsImages.forEach(function(id) {
+            if (!imgs[id]) {
+              var card = grid.querySelector('.school-card[data-id="' + id + '"]');
+              var loader = card && card.querySelector('.school-card-image-loading');
+              if (loader) loader.classList.remove('is-loading');
+            }
+          });
+        })
+        .catch(function() {
+          needsImages.forEach(function(id) {
+            var card = grid.querySelector('.school-card[data-id="' + id + '"]');
+            var loader = card && card.querySelector('.school-card-image-loading');
+            if (loader) loader.classList.remove('is-loading');
+          });
+        });
+    }
+
+    if (filtered.length > PER_PAGE && paginationEl) {
       paginationEl.style.display = 'flex';
-      var pageHtml = '';
-      for (var p = 1; p <= totalPages; p++) {
-        var activeClass = p === currentPage ? ' is-active' : '';
-        pageHtml += '<button type="button" class="schools-pagination-page' + activeClass + '" data-page="' + p + '" aria-label="Page ' + p + '"' + (p === currentPage ? ' aria-current="page"' : '') + '>' + p + '</button>';
-      }
-      pagPagesEl.innerHTML = pageHtml;
-      document.getElementById('pag-first').disabled = currentPage <= 1;
-      document.getElementById('pag-prev').disabled = currentPage <= 1;
-      document.getElementById('pag-next').disabled = currentPage >= totalPages;
-      document.getElementById('pag-last').disabled = currentPage >= totalPages;
+      if (pagInfoEl) pagInfoEl.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+      var pagPrev = document.getElementById('pag-prev');
+      var pagNext = document.getElementById('pag-next');
+      if (pagPrev) pagPrev.disabled = currentPage <= 1;
+      if (pagNext) pagNext.disabled = currentPage >= totalPages;
     } else if (paginationEl) {
       paginationEl.style.display = 'none';
     }
@@ -270,7 +319,6 @@
     render();
   }
 
-  document.getElementById('pag-first').addEventListener('click', function() { goToPage(1); });
   document.getElementById('pag-prev').addEventListener('click', function() {
     goToPage(Math.max(1, (window._schoolsCurrentPage || 1) - 1));
   });
@@ -287,25 +335,6 @@
       return true;
     }).length) / PER_PAGE);
     goToPage(Math.min(total, (window._schoolsCurrentPage || 1) + 1));
-  });
-  document.getElementById('pag-last').addEventListener('click', function() {
-    var total = Math.ceil((SCHOOLS.filter(function(s) {
-      var maj = filterMajor.value, st = filterState.value;
-      var costOpt = filterCost.options[filterCost.selectedIndex];
-      var costLow = costOpt && costOpt.dataset.low ? parseInt(costOpt.dataset.low) : 0;
-      var costHigh = costOpt && costOpt.dataset.high ? parseInt(costOpt.dataset.high) : 999999;
-      if (maj && s.strong_majors.indexOf(maj) === -1) return false;
-      if (st && s.state !== st) return false;
-      if (filterCost.value && (s.tuition_in < costLow || s.tuition_in > costHigh)) return false;
-      if (filterType.value && s.type !== filterType.value) return false;
-      return true;
-    }).length) / PER_PAGE);
-    goToPage(Math.max(1, total));
-  });
-
-  pagPagesEl.addEventListener('click', function(e) {
-    var btn = e.target.closest('.schools-pagination-page');
-    if (btn) goToPage(parseInt(btn.dataset.page, 10));
   });
 
   render();

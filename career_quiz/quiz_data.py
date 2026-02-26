@@ -33,6 +33,11 @@ MAJORS = [
     ('real_estate', 'Real Estate & Property', 'Real estate, property management, appraisal', 'real estate property appraisal'),
     ('sports_recreation', 'Sports & Recreation', 'Kinesiology, sports management, recreation', 'sports recreation kinesiology athletics'),
     ('trades_construction', 'Skilled Trades & Construction', 'Construction, trades, vocational, technical', 'trades construction vocational skilled trades'),
+    ('cosmetology', 'Cosmetology & Beauty', 'Hair, nails, skincare, barbering, makeup', 'cosmetology beauty hair nails skincare barber esthetics'),
+    ('allied_health', 'Allied Health & Clinical Support', 'Medical assistant, dental assisting, sonography, surgical tech', 'allied health medical assistant dental sonography radiologic phlebotomy'),
+    ('culinary', 'Culinary & Baking', 'Culinary arts, baking, pastry, food service', 'culinary baking pastry chef cooking'),
+    ('aviation_transportation', 'Aviation & Transportation', 'Aviation maintenance, truck driving, diesel, logistics', 'aviation transportation diesel truck driving'),
+    ('fire_emergency', 'Fire & Emergency Services', 'Fire science, EMT, paramedic, emergency management', 'fire emergency EMT paramedic'),
 ]
 
 # Each career: title, description, category (for scoring match), list of major keys
@@ -117,6 +122,25 @@ CAREERS_BY_MAJOR = [
     ('Electrical Engineer', 'Design and maintain electrical systems.', 'technical', ['engineering']),
     ('Quality Assurance Analyst', 'Test products and processes for quality.', 'organizing', ['engineering', 'computer_science']),
     ('Technical Writer', 'Write manuals, docs, and technical content.', 'creative', ['computer_science', 'communications', 'engineering']),
+    # Cosmetology & Beauty
+    ('Cosmetologist / Hairstylist', 'Provide hair, nail, and skincare services to clients.', 'creative', ['cosmetology']),
+    ('Esthetician / Skincare Specialist', 'Offer facials, skincare treatments, and beauty services.', 'helping', ['cosmetology']),
+    ('Barber', 'Cut and style hair, often specializing in men\'s grooming.', 'creative', ['cosmetology']),
+    # Allied Health & Clinical Support
+    ('Medical Assistant', 'Support clinicians with patient care and administrative tasks.', 'helping', ['allied_health', 'health_sciences']),
+    ('Dental Hygienist', 'Clean teeth, take X-rays, and educate patients on oral health.', 'helping', ['allied_health', 'health_sciences']),
+    ('Surgical Technologist', 'Prepare operating rooms and assist during surgery.', 'technical', ['allied_health', 'health_sciences']),
+    ('Sonographer / Ultrasound Tech', 'Operate imaging equipment to capture diagnostic images.', 'technical', ['allied_health', 'health_sciences']),
+    # Culinary & Baking
+    ('Chef / Cook', 'Prepare and cook food in restaurants, hotels, or catering.', 'creative', ['culinary', 'hospitality']),
+    ('Pastry Chef / Baker', 'Create baked goods, desserts, and pastries.', 'creative', ['culinary']),
+    # Aviation & Transportation
+    ('Aircraft Mechanic', 'Maintain and repair aircraft systems and structures.', 'technical', ['aviation_transportation', 'trades_construction']),
+    ('Commercial Truck Driver', 'Transport goods long-distance by truck.', 'organizing', ['aviation_transportation']),
+    ('Diesel Technician', 'Repair and maintain diesel engines in trucks and equipment.', 'technical', ['aviation_transportation', 'trades_construction']),
+    # Fire & Emergency Services
+    ('Firefighter', 'Respond to fires, emergencies, and rescue operations.', 'helping', ['fire_emergency']),
+    ('EMT / Paramedic', 'Provide emergency medical care in the field.', 'helping', ['fire_emergency', 'health_sciences']),
 ]
 
 # Extended "Learn more" copy for each career (shown in dropdown on results)
@@ -186,6 +210,20 @@ CAREER_LEARN_MORE = {
     'Electrical Engineer': 'Electrical engineers design and maintain electrical systems—power, electronics, or control systems. You might work in utilities, manufacturing, or tech. A PE license can be required for certain roles.',
     'Quality Assurance Analyst': 'QA analysts test software or products to find defects and ensure quality. You might write test cases, run manual or automated tests, and work with developers. Common in tech and manufacturing.',
     'Technical Writer': 'Technical writers create manuals, docs, and other technical content so users can understand products or processes. You might work with engineers and product teams. Clear writing and ability to learn technical topics are essential.',
+    'Cosmetologist / Hairstylist': 'Cosmetologists and hairstylists cut, color, and style hair for clients. You might work in a salon, spa, or as a freelancer. State licensure is required. Customer service and creativity are key.',
+    'Esthetician / Skincare Specialist': 'Estheticians provide facials, skincare treatments, and sometimes makeup services. You might work in spas, salons, or medical offices. State licensure is required.',
+    'Barber': 'Barbers cut and style hair, often specializing in men\'s cuts, shaves, and grooming. You might work in a barbershop or salon. State licensure is typically required.',
+    'Medical Assistant': 'Medical assistants perform clinical and administrative tasks in healthcare settings. You might take vital signs, prepare patients, and handle records. Certification can help with hiring.',
+    'Dental Hygienist': 'Dental hygienists clean teeth, take X-rays, and educate patients on oral health. You work in dental offices. State licensure is required; associate degree programs are common.',
+    'Surgical Technologist': 'Surgical technologists prepare operating rooms, sterilize instruments, and assist surgeons during procedures. You work in hospitals and surgical centers. Certification is available.',
+    'Sonographer / Ultrasound Tech': 'Sonographers operate ultrasound equipment to capture diagnostic images. You might specialize in abdominal, cardiac, or vascular imaging. Certification is typical.',
+    'Chef / Cook': 'Chefs and cooks prepare food in restaurants, hotels, or catering. You might start on the line and work up to sous or head chef. Culinary school or apprenticeship is common.',
+    'Pastry Chef / Baker': 'Pastry chefs and bakers create breads, pastries, desserts, and baked goods. You might work in bakeries, restaurants, or hotels. Formal training or apprenticeship is typical.',
+    'Aircraft Mechanic': 'Aircraft mechanics maintain and repair aircraft systems, structures, and engines. FAA certification (A&P) is required. You might work for airlines, repair stations, or the military.',
+    'Commercial Truck Driver': 'Commercial truck drivers transport goods across the country. A CDL (Commercial Driver\'s License) is required. Long hauls or regional routes are common.',
+    'Diesel Technician': 'Diesel technicians repair and maintain diesel engines in trucks, buses, and heavy equipment. You might work for fleets, dealerships, or repair shops. Technical training or apprenticeship is typical.',
+    'Firefighter': 'Firefighters respond to fires, emergencies, and rescue situations. You might work for municipal, wildland, or industrial fire departments. Physical fitness and certification are required.',
+    'EMT / Paramedic': 'EMTs and paramedics provide emergency medical care in the field. You respond to 911 calls and transport patients. State certification is required; paramedics have advanced training.',
 }
 
 # Default when no extended copy exists

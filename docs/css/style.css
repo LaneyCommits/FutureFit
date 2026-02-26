@@ -1355,10 +1355,14 @@ body .site-header {
   border-color: var(--sage);
   background: rgba(127, 175, 157, 0.15);
 }
+.major-option-label,
+.major-option-desc {
+  color: var(--text);
+}
 .quiz-major-badge {
   background: rgba(127, 175, 157, 0.18);
   border: 1px solid var(--sage);
-  color: var(--navy);
+  color: var(--text);
   padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
   display: inline-block;
@@ -1437,7 +1441,7 @@ body .site-header {
   font-size: clamp(1.3rem, 3vw, 1.6rem);
   text-align: center;
   margin: 0 0 1.75rem;
-  color: var(--navy);
+  color: var(--text);
 }
 .quiz-choice-cards {
   display: grid;
@@ -1491,7 +1495,7 @@ body .site-header {
 .quiz-choice-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--navy);
+  color: var(--text);
   margin: 0 0 0.3rem;
 }
 .quiz-choice-time {
@@ -1586,7 +1590,7 @@ body .site-header {
 .quiz-length-card-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--navy);
+  color: var(--text);
   margin: 0 0 0.3rem;
 }
 .quiz-length-card-meta {
@@ -1667,7 +1671,7 @@ body .site-header {
   display: inline-block;
   background: rgba(127, 175, 157, 0.15);
   border: 1px solid var(--sage);
-  color: var(--navy);
+  color: var(--text);
   padding: 0.35rem 0.9rem;
   border-radius: 30px;
   font-size: 0.85rem;
@@ -1884,7 +1888,7 @@ body .site-header {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-.results-summary-title { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--navy); }
+.results-summary-title { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--teal-accent); }
 .results-summary-text { color: var(--text-muted); font-size: 0.95rem; line-height: 1.65; margin: 0; }
 .results-major { margin-bottom: 1rem; }
 .results-major strong { color: var(--sage); }
@@ -1924,7 +1928,7 @@ body .site-header {
 }
 @keyframes quiz-spin { to { transform: rotate(360deg); } }
 .quiz-chart-container { margin-bottom: 2rem; }
-.quiz-chart-title { font-size: 1.1rem; margin-bottom: 1rem; color: var(--navy); }
+.quiz-chart-title { font-size: 1.1rem; margin-bottom: 1rem; color: var(--teal-accent); }
 .quiz-chart-wrap {
   display: flex;
   flex-direction: row;
@@ -3553,7 +3557,7 @@ body .site-header {
   max-height: 160px;
   overflow-y: auto;
   padding: 0.5rem 0.6rem;
-  background: #f9f9f9;
+  background: var(--surface-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 0.82rem;
@@ -4685,41 +4689,29 @@ body.page-schools {
   margin-top: 2rem;
   padding: 1rem 0;
 }
-.schools-pagination-btn,
-.schools-pagination-page {
+.schools-pagination-btn {
   background: none;
   border: none;
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 1.25rem;
   color: var(--teal-accent);
   cursor: pointer;
-  padding: 0.35rem 0.5rem;
+  padding: 0.5rem 0.75rem;
   line-height: 1.2;
   border-radius: var(--radius-sm);
   transition: color 0.2s, opacity 0.2s;
 }
-.schools-pagination-btn:hover,
-.schools-pagination-page:hover {
+.schools-pagination-btn:hover {
   color: var(--accent-hover);
 }
 .schools-pagination-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
-.schools-pagination-pages {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  margin: 0 0.25rem;
-}
-.schools-pagination-page.is-active {
-  color: var(--teal-accent);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-.schools-pagination-page.is-active:hover {
-  color: var(--teal-accent);
+.schools-pagination-info {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0 0.75rem;
 }
 
 .schools-no-results {
