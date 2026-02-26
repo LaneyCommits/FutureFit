@@ -75,15 +75,15 @@
       ${heroShapes}
       ${heroParticlesBehind}
       <div class="block-inner">
-        <p class="hero-badge">${SCHOOLS.length} schools · 21 majors · free</p>
-        <h1 class="block-hero-title">Find the right school for you</h1>
+        <p class="hero-badge">${SCHOOLS.length} colleges · 21 majors · free</p>
+        <h1 class="block-hero-title">Find the right college for you</h1>
         <p class="block-hero-sub">Filter by major, location, cost, and school type to find colleges that fit your goals — not just what's trending.</p>
       </div>
       ${heroParticlesFront}
     </section>
     <section class="block schools-content-section">
       <div class="block-inner">
-        ${preselect ? '<div class="schools-quiz-badge reveal" id="schools-quiz-badge"><span class="schools-quiz-badge-icon">🎯</span><span class="schools-quiz-badge-text">Showing schools strong in <strong id="quiz-major-label">' + (MAJOR_LABELS[preselect] || preselect) + '</strong> based on your quiz results</span><button type="button" class="schools-quiz-badge-clear" id="clear-quiz-filter" title="Clear filter">✕</button></div>' : ''}
+        ${preselect ? '<div class="schools-quiz-badge reveal" id="schools-quiz-badge"><span class="schools-quiz-badge-icon">🎯</span><span class="schools-quiz-badge-text">Showing colleges strong in <strong id="quiz-major-label">' + (MAJOR_LABELS[preselect] || preselect) + '</strong> based on your quiz results</span><button type="button" class="schools-quiz-badge-clear" id="clear-quiz-filter" title="Clear filter">✕</button></div>' : ''}
         <div class="schools-filters reveal" id="schools-filters">
           <div class="schools-filter-group">
             <label class="schools-filter-label" for="filter-major">Major</label>
@@ -103,23 +103,32 @@
           </div>
         </div>
         <div class="schools-results-bar reveal" id="schools-results-bar">
-          <span class="schools-results-count" id="schools-count">${SCHOOLS.length} schools</span>
+          <span class="schools-results-count" id="schools-count">${SCHOOLS.length} colleges</span>
           <button type="button" class="schools-clear-btn" id="clear-all-btn">Clear filters</button>
         </div>
         <div class="schools-grid" id="schools-grid"></div>
-        <p class="schools-no-results" id="schools-no-results" style="display:none;">No schools match your filters. Try broadening your search.</p>
+        <nav class="schools-pagination" id="schools-pagination" aria-label="College results pagination" style="display:none;">
+          <button type="button" class="schools-pagination-btn" id="pag-prev" title="Previous page" aria-label="Previous page">←</button>
+          <span class="schools-pagination-info" id="pag-info">Page 1</span>
+          <button type="button" class="schools-pagination-btn" id="pag-next" title="Next page" aria-label="Next page">→</button>
+        </nav>
+        <p class="schools-no-results" id="schools-no-results" style="display:none;">No colleges match your filters. Try broadening your search.</p>
       </div>
     </section>
     <section class="block block--cream reveal">
       <div class="block-inner block-inner--narrow">
         <h2 class="block-title">Not sure what major to pick?</h2>
-        <p class="block-desc block-desc--why">Take our career quiz to discover which fields match your personality and interests — then come back to find schools that are strong in those areas.</p>
+        <p class="block-desc block-desc--why">Take our career quiz to discover which fields match your personality and interests — then come back to find colleges that are strong in those areas.</p>
         <a href="quiz.html" class="btn btn-primary">Take the career quiz <span class="btn-arrow" aria-hidden="true">→</span></a>
       </div>
     </section>`;
 
+    var PER_PAGE = 6;
+    window._schoolsCurrentPage = 1;
     var grid = document.getElementById('schools-grid');
     var countEl = document.getElementById('schools-count');
+    var paginationEl = document.getElementById('schools-pagination');
+    var pagInfoEl = document.getElementById('pag-info');
     var noResults = document.getElementById('schools-no-results');
     var filterMajor = document.getElementById('filter-major');
     var filterState = document.getElementById('filter-state');
@@ -192,9 +201,26 @@
         return a.tuition_in - b.tuition_in;
       });
 
-      grid.innerHTML = filtered.map(function(s, i) { return schoolCard(s, i); }).join('');
-      countEl.textContent = filtered.length + ' school' + (filtered.length !== 1 ? 's' : '');
+      var totalPages = Math.ceil(filtered.length / PER_PAGE) || 1;
+      var currentPage = Math.min(Math.max(1, window._schoolsCurrentPage || 1), totalPages);
+      window._schoolsCurrentPage = currentPage;
+      var start = (currentPage - 1) * PER_PAGE;
+      var pageSchools = filtered.slice(start, start + PER_PAGE);
+
+      grid.innerHTML = pageSchools.map(function(s, i) { return schoolCard(s, start + i); }).join('');
+      countEl.textContent = filtered.length + ' college' + (filtered.length !== 1 ? 's' : '');
       noResults.style.display = filtered.length === 0 ? 'block' : 'none';
+
+      if (filtered.length > PER_PAGE && paginationEl) {
+        paginationEl.style.display = 'flex';
+        if (pagInfoEl) pagInfoEl.textContent = 'Page ' + currentPage + ' of ' + totalPages;
+        var pagPrev = document.getElementById('pag-prev');
+        var pagNext = document.getElementById('pag-next');
+        if (pagPrev) pagPrev.disabled = currentPage <= 1;
+        if (pagNext) pagNext.disabled = currentPage >= totalPages;
+      } else if (paginationEl) {
+        paginationEl.style.display = 'none';
+      }
 
       if (quizBadge) {
         quizBadge.style.display = major ? 'flex' : 'none';
@@ -204,25 +230,47 @@
       if (typeof initReveal === 'function') requestAnimationFrame(function() { initReveal(); });
     }
 
-    filterMajor.addEventListener('change', render);
-    filterState.addEventListener('change', render);
-    filterCost.addEventListener('change', render);
-    filterType.addEventListener('change', render);
+    filterMajor.addEventListener('change', function() { window._schoolsCurrentPage = 1; render(); });
+    filterState.addEventListener('change', function() { window._schoolsCurrentPage = 1; render(); });
+    filterCost.addEventListener('change', function() { window._schoolsCurrentPage = 1; render(); });
+    filterType.addEventListener('change', function() { window._schoolsCurrentPage = 1; render(); });
 
     clearAllBtn.addEventListener('click', function() {
       filterMajor.value = '';
       filterState.value = '';
       filterCost.value = '';
       filterType.value = '';
+      window._schoolsCurrentPage = 1;
       render();
     });
 
     if (clearQuiz) {
       clearQuiz.addEventListener('click', function() {
         filterMajor.value = '';
+        window._schoolsCurrentPage = 1;
         render();
       });
     }
+
+    document.getElementById('pag-prev').addEventListener('click', function() {
+      window._schoolsCurrentPage = Math.max(1, (window._schoolsCurrentPage || 1) - 1);
+      render();
+    });
+    document.getElementById('pag-next').addEventListener('click', function() {
+      var total = Math.ceil(SCHOOLS.filter(function(s) {
+        var maj = filterMajor.value, st = filterState.value;
+        var costOpt = filterCost.options[filterCost.selectedIndex];
+        var costLow = costOpt && costOpt.dataset.low ? parseInt(costOpt.dataset.low) : 0;
+        var costHigh = costOpt && costOpt.dataset.high ? parseInt(costOpt.dataset.high) : 999999;
+        if (maj && s.strong_majors.indexOf(maj) === -1) return false;
+        if (st && s.state !== st) return false;
+        if (filterCost.value && (s.tuition_in < costLow || s.tuition_in > costHigh)) return false;
+        if (filterType.value && s.type !== filterType.value) return false;
+        return true;
+      }).length / PER_PAGE);
+      window._schoolsCurrentPage = Math.min(total, (window._schoolsCurrentPage || 1) + 1);
+      render();
+    });
 
     render();
 

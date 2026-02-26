@@ -105,7 +105,94 @@
     });
   };
 
-  /* ---- Resume Templates list ---- */
+  /* ---- Academic Writing Templates (sidebar layout, matches Django) ---- */
+  window.renderAcademicWritingTemplates = async function (el) {
+    const data = await loadData();
+    const templates = data.templates;
+    const tips = data.tips || [];
+    const count = Object.keys(templates).length;
+
+    const majorLinks = Object.entries(templates).map(([k, t]) => {
+      const thumb = t.image ? `<img src="${t.image}" alt="" class="academic-major-thumb" loading="lazy">` : `<span class="academic-major-icon">${t.icon}</span>`;
+      return `<a href="resume-template.html?major=${k}" class="academic-major-link" data-keywords="${(t.label + ' ' + t.focus).toLowerCase()}">${thumb}<span class="academic-major-label">${t.label}</span></a>`;
+    }).join('');
+
+    const tipsHTML = tips.slice(0, 5).map((tip, i) =>
+      `<div class="academic-tips-item"><span class="academic-tips-num">${i + 1}</span><div><strong class="academic-tips-title">${tip.title}</strong><p class="academic-tips-desc">${tip.desc}</p></div></div>`
+    ).join('') + `<a href="resume-tips.html" class="academic-tips-more">View full tips page →</a>`;
+
+    el.innerHTML = `
+    <section class="block block--hero block--hero-with-bg resume-hero resume-hero--compact">
+      ${HERO_DECOR.shapes}
+      ${HERO_DECOR.particlesBehind}
+      <div class="block-inner">
+        <p class="hero-badge">${count} majors · free downloads</p>
+        <h1 class="block-hero-title">Resume Templates</h1>
+        <p class="block-hero-sub">Pick a major from the sidebar to load a template. Edit in place, use AI to polish, and download as PDF.</p>
+      </div>
+      ${HERO_DECOR.particlesFront}
+    </section>
+    <div class="academic-writing-layout" data-doc-type="resume">
+      <aside class="academic-sidebar" id="academicSidebar">
+        <div class="academic-sidebar-inner">
+          <div class="academic-sidebar-nav">
+            <span class="academic-nav-item is-active"><span class="academic-nav-icon" aria-hidden="true">◇</span> Templates</span>
+          </div>
+          <div class="academic-sidebar-section">
+            <p class="academic-sidebar-label">Document types</p>
+            <nav class="academic-doc-nav">
+              <a href="resume-templates.html" class="academic-doc-link is-active">Resume</a>
+              <a href="resume-templates.html" class="academic-doc-link">Cover Letters</a>
+              <a href="resume-templates.html" class="academic-doc-link">Admissions Essays</a>
+            </nav>
+          </div>
+          <div class="academic-sidebar-section academic-majors-section">
+            <p class="academic-sidebar-label">By major</p>
+            <div class="academic-search-wrap academic-search-wrap--sidebar">
+              <span class="academic-search-icon" aria-hidden="true">🔍</span>
+              <input type="text" class="academic-search-input" id="academicSearch" placeholder="Search majors..." autocomplete="off">
+            </div>
+            <div class="academic-majors-list" id="academicMajorsList">${majorLinks}</div>
+          </div>
+          <div class="academic-sidebar-footer">
+            <details class="academic-tips-dropdown" open>
+              <summary class="academic-tips-dropdown-trigger">Tips & advice <span class="academic-tips-chevron" aria-hidden="true">▾</span></summary>
+              <div class="academic-tips-dropdown-content">${tipsHTML}</div>
+            </details>
+          </div>
+        </div>
+      </aside>
+      <main class="academic-main">
+        <div class="academic-main-inner">
+          <div class="academic-toolbar-placeholder"></div>
+          <div class="academic-editor-placeholder">
+            <p class="academic-editor-msg">Pick a major from the sidebar to load a template.</p>
+            <p class="academic-editor-msg-sub">Click any major above to open the editor with a tailored template for your field.</p>
+          </div>
+        </div>
+      </main>
+    </div>`;
+
+    // Search filter for majors
+    var input = document.getElementById('academicSearch');
+    var list = document.getElementById('academicMajorsList');
+    if (input && list) {
+      var links = list.querySelectorAll('.academic-major-link');
+      input.addEventListener('input', function() {
+        var q = this.value.trim().toLowerCase();
+        links.forEach(function(link) {
+          var kw = link.getAttribute('data-keywords') || '';
+          link.style.display = !q || kw.indexOf(q) !== -1 ? '' : 'none';
+        });
+      });
+    }
+
+    requestAnimationFrame(function() {
+      if (typeof initReveal === 'function') initReveal();
+    });
+  };
+
+  /* ---- Resume Templates list (grid layout, legacy) ---- */
   window.renderResumeTemplates = async function (el) {
     const data = await loadData();
     const templates = data.templates;
@@ -118,8 +205,8 @@
       ${HERO_DECOR.particlesBehind}
       <div class="block-inner">
         <p class="hero-badge">${count} majors · free downloads</p>
-        <h1 class="block-hero-title">Resume Templates by Major</h1>
-        <p class="block-hero-sub">Every field has different expectations. Pick your major to get a template with the right sections, formatting, and sample content — ready to download as a PDF.</p>
+        <h1 class="block-hero-title">Resume Templates</h1>
+        <p class="block-hero-sub">Pick a major below to load a template. Edit in place, use AI to polish, and download as PDF.</p>
       </div>
       ${HERO_DECOR.particlesFront}
     </section>
