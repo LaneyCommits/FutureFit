@@ -295,7 +295,7 @@
           margin: 1,
           filename: majorKey + '-resume-futurefit.pdf',
           image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 1, width: 600, height: 500, scrollY: 0 },
+          html2canvas: { scale: 1, scrollY: 0 },
           jsPDF: { unit: 'in', orientation: 'portrait' }
         }).from(
           document.querySelector('.resume-paper')
