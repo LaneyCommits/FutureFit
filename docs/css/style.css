@@ -856,22 +856,23 @@ body .site-header {
   width: 100%;
 }
 
-/* About hero */
+/* About hero — matches block--hero-with-bg (cyan accents, dark gradient) */
 .about-hero {
   position: relative;
-  padding: 5rem 1.5rem 4.5rem;
-  background: var(--navy);
   overflow: hidden;
   text-align: center;
+  background: linear-gradient(165deg, #0A1628 0%, #0F1F35 40%, #0A1628 100%) !important;
 }
 .about-hero::before {
   content: '';
   position: absolute;
   inset: -50%;
   background:
-    radial-gradient(ellipse 55% 45% at 30% 40%, rgba(127, 175, 157, 0.3) 0%, transparent 70%),
-    radial-gradient(ellipse 45% 55% at 75% 55%, rgba(79, 163, 165, 0.25) 0%, transparent 70%);
-  animation: heroMesh 25s ease-in-out infinite alternate;
+    radial-gradient(ellipse 55% 45% at 15% 25%, rgba(40, 215, 255, 0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 55% at 85% 55%, rgba(40, 215, 255, 0.15) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 50% at 50% 85%, rgba(40, 215, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 45% at 70% 15%, rgba(40, 215, 255, 0.12) 0%, transparent 65%);
+  animation: heroMesh 20s ease-in-out infinite alternate;
   pointer-events: none;
 }
 .about-hero-inner {
@@ -889,14 +890,14 @@ body .site-header {
   font-family: var(--font-display);
   font-size: clamp(1.85rem, 4.5vw, 2.6rem);
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   line-height: 1.2;
   margin: 0 0 1rem;
 }
 .about-hero-sub {
   font-size: 1.05rem;
   line-height: 1.65;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-muted);
   margin: 0 0 1.5rem;
 }
 
@@ -908,7 +909,7 @@ body .site-header {
 }
 .about-section--cream {
   max-width: none;
-  background: #F0F4F2;
+  background: var(--surface);
 }
 .about-section--cream > * {
   max-width: 900px;
@@ -919,7 +920,7 @@ body .site-header {
   font-family: var(--font-display);
   font-size: clamp(1.4rem, 3vw, 1.85rem);
   font-weight: 700;
-  color: var(--navy);
+  color: var(--text);
   text-align: center;
   margin: 0 0 0.35rem;
 }
