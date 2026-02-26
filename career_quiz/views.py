@@ -39,11 +39,6 @@ def about_view(request):
     return render(request, 'career_quiz/quiz_about.html')
 
 
-def how_it_works_view(request):
-    """How the Career Discovery Quiz works — formats, paths, what you get."""
-    return render(request, 'career_quiz/quiz_how_it_works.html')
-
-
 def major_selection_view(request):
     """User picks their major; we store it in session and redirect to the quiz."""
     if request.GET.get('length') == 'short':
