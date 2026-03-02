@@ -6,7 +6,7 @@ __pycache__/
 .git/
 .gitignore
 *.log
-db.sqlite3
+# removed sqlite from this list since we do need it in the actual container
 .DS_Store
 .idea/
 .vscode/

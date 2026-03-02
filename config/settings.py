@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'career_quiz',
     'resume',
     'schools',
+    'blog'
 ]
 
 MIDDLEWARE = [
