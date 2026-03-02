@@ -3,6 +3,9 @@
 - Convert the existing `blog` app from a stub into a simple database-backed blog.
 - Add a `Post` model and admin integration so new posts can be created via the Django admin UI.
 - Implement list/detail views and templates for blog posts, plus a site-wide navigation link to the blog.
+- Update configuration to include the deployed `site_url` in trusted domains / `CSRF_TRUSTED_ORIGINS`.
+- Adjust `.gitignore` and `.dockerignore` so `db.sqlite3` can be included when needed (e.g., Docker builds or sharing a pre-populated dev database).
+
 
 ## Changes
 
@@ -27,3 +30,8 @@
 ### Views and URLs
 
 - Implemented `PostListView` and
+
+### Configuration and tooling
+
+- Added `site_url` to `CSRF_TRUSTED_ORIGINS` / trusted domains in `config/settings.py` to support the deployed site URL.
+- Removed `db.sqlite3` from `.gitignore` and `.dockerignore` so the SQLite database can be included where appropriate (for example in Docker builds or when sharing a pre-populated dev database).
