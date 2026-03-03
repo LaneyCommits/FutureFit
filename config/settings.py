@@ -25,7 +25,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 if os.getenv("site_url"):
     ALLOWED_HOSTS.append(os.getenv("site_url").replace("https://", ""))
-    CSRF_TRUSTED_ORIGINS = os.getenv("site_url")
+    CSRF_TRUSTED_ORIGINS = [os.getenv("site_url")]
 
 
 INSTALLED_APPS = [
