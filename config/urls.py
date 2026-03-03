@@ -16,4 +16,5 @@ urlpatterns = [
     path('career-quiz/', include('career_quiz.urls')),
     path('resume/', include('resume.urls')),
     path('colleges/', include('schools.urls')),
+    path('resources/', include('blog.urls'))
 ]

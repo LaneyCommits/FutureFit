@@ -21,7 +21,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-p
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '[::1]']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+
+if os.getenv("site_url"):
+    ALLOWED_HOSTS.append(os.getenv("site_url").replace("https://", ""))
+    CSRF_TRUSTED_ORIGINS = [os.getenv("site_url")]
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -34,6 +39,7 @@ INSTALLED_APPS = [
     'career_quiz',
     'resume',
     'schools',
+    'blog'
 ]
 
 MIDDLEWARE = [
