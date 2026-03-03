@@ -729,7 +729,7 @@ body.is-scrolled .site-header {
   .how-step:last-child .how-connector { display: none; }
 }
 
-/* Feature cards */
+/* Feature cards - the blog posts/additional resources*/
 .block--features {
   background: var(--bg);
   padding: 4rem 1.5rem 5rem;
@@ -751,12 +751,14 @@ body.is-scrolled .site-header {
   border-radius: var(--radius);
   padding: 1.75rem;
   box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 2px solid var(--border);
 }
 .feature-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) !important;
+  border-color: var(--teal-accent);
   box-shadow: var(--shadow-hover);
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s
+
 }
 .feature-card-icon {
   display: flex;
@@ -781,12 +783,13 @@ body.is-scrolled .site-header {
 .feature-card-accent--teal { background: var(--sage); }
 .feature-card-accent--peach { background: var(--teal-accent); }
 .feature-card-accent--coral { background: var(--primary-btn); }
-.feature-card-title {
+.feature-card-title, .feature-card-title > * {
   font-family: var(--font-display);
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 0.4rem;
+  text-decoration: none;
 }
 .feature-card-desc {
   font-size: 0.92rem;

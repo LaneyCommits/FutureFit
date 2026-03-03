@@ -1,9 +1,10 @@
 ## Summary
 
-- Convert the existing `blog` app from a stub into a simple database-backed blog.
+- Created the  `blog` app at `/resources/`
 - Add a `Post` model and admin integration so new posts can be created via the Django admin UI.
-- Implement list/detail views and templates for blog posts, plus a site-wide navigation link to the blog.
-- Update configuration to include the deployed `site_url` in trusted domains / `CSRF_TRUSTED_ORIGINS`.
+- Implement list/detail views and templates for blog posts, plus a site-wide navigation link.
+- Add static HTML copies in `docs/` for GitHub Pages deployment (resources list page and applying-to-college article).
+- Update configuration to use a `site_url` environment variable if there is one
 - Adjust `.gitignore` and `.dockerignore` so `db.sqlite3` can be included when needed (e.g., Docker builds or sharing a pre-populated dev database).
 
 
@@ -29,7 +30,14 @@
 
 ### Views and URLs
 
-- Implemented `PostListView` and
+- Implemented `PostListView` and `PostDetailView` in `blog/views.py`.
+- Updated `blog/urls.py` so `/resources/` shows the list and `/resources/<slug>/` shows individual posts.
+
+### Static docs for GitHub Pages
+
+- Created `docs/resources.html` — static copy of the Additional Resources list page with one article card linking to the applying-to-college article.
+- Created `docs/resources-applying-to-college.html` — static copy of the full "A Step-by-Step Guide to Applying to College" article with all eight sections.
+- Added the "Additional Resources" nav link to all 14 existing docs HTML files so the static site matches the Django site navigation.
 
 ### Configuration and tooling
 
