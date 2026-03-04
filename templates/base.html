@@ -20,7 +20,12 @@
                     <img src="{% static 'images/header-logo.png' %}" alt="FutureFit" class="logo-img" width="140" height="36">
                 </a>
             </div>
-            <nav class="nav">
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <nav class="nav" id="main-nav">
                 <a href="{% url 'home' %}" class="nav-link">Home</a>
                 <a href="{% url 'career_quiz_about' %}" class="nav-link">About</a>
                 <a href="{% url 'resume_home' %}" class="nav-link">Resume &amp; Writing</a>
@@ -63,5 +68,26 @@
         </div>
     </footer>
     <script src="{% static 'js/dimension.js' %}"></script>
+    <script>
+    (function() {
+        const toggle = document.querySelector('.nav-toggle');
+        const nav = document.getElementById('main-nav');
+        if (toggle && nav) {
+            toggle.addEventListener('click', function() {
+                const expanded = this.getAttribute('aria-expanded') === 'true';
+                this.setAttribute('aria-expanded', !expanded);
+                nav.classList.toggle('nav--open');
+                document.body.classList.toggle('nav-open');
+            });
+            nav.querySelectorAll('.nav-link, .btn-header').forEach(link => {
+                link.addEventListener('click', () => {
+                    toggle.setAttribute('aria-expanded', 'false');
+                    nav.classList.remove('nav--open');
+                    document.body.classList.remove('nav-open');
+                });
+            });
+        }
+    })();
+    </script>
 </body>
 </html>
