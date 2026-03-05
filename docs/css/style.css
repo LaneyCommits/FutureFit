@@ -208,6 +208,71 @@ body.is-scrolled .site-header {
   font-weight: 600;
   background: rgba(40, 215, 255, 0.1);
 }
+/* Create link: light blue glow */
+.nav-link--create {
+  color: var(--text);
+  text-shadow: 0 0 12px rgba(40, 215, 255, 0.5), 0 0 24px rgba(40, 215, 255, 0.25);
+}
+.nav-link--create:hover {
+  text-shadow: 0 0 14px rgba(40, 215, 255, 0.6), 0 0 28px rgba(40, 215, 255, 0.3);
+}
+.nav-dropdown {
+  position: relative;
+  display: inline-flex;
+}
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin: 0.25rem 0 0;
+  padding: 0.35rem 0;
+  list-style: none;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  min-width: 160px;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.nav-dropdown:hover .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+}
+.nav-dropdown-link {
+  display: block;
+  padding: 0.45rem 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.nav-dropdown-link:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+}
+/* Nav profile icon (static docs: sign up link) */
+.nav-profile-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+.nav-profile-icon:hover { opacity: 0.9; }
+.nav-profile-icon--guest {
+  background: rgba(255, 255, 255, 0.08);
+}
+.nav-profile-guest-icon {
+  font-size: 1.1rem;
+}
 .btn-header {
   padding: 0.5rem 1.15rem;
   font-size: clamp(0.72rem, 0.5rem + 0.4vw, 0.82rem);
@@ -275,6 +340,30 @@ body.is-scrolled .site-header {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
   .nav-link:last-of-type {
+    border-bottom: none;
+  }
+  .nav-dropdown {
+    flex-direction: column;
+    align-items: stretch;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .nav-dropdown .nav-link--create {
+    border-bottom: none;
+  }
+  .nav-dropdown-menu {
+    position: static;
+    margin: 0;
+    padding: 0 0 0.5rem;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    min-width: 0;
+    opacity: 1;
+    visibility: visible;
+  }
+  .nav-dropdown-link {
+    padding: 0.5rem 1rem 0.5rem 1.5rem;
+    font-size: 0.9rem;
     border-bottom: none;
   }
   .btn-header {

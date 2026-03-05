@@ -48,9 +48,30 @@
   /* Expose for pages that render content dynamically */
   window.initReveal = initReveal;
 
+  /* Mobile nav: hamburger toggles nav drawer */
+  function initNavToggle() {
+    var toggle = document.querySelector('.nav-toggle');
+    var nav = document.getElementById('main-nav');
+    if (!toggle || !nav) return;
+    toggle.addEventListener('click', function() {
+      var expanded = this.getAttribute('aria-expanded') === 'true';
+      this.setAttribute('aria-expanded', !expanded);
+      nav.classList.toggle('nav--open');
+      document.body.classList.toggle('nav-open');
+    });
+    nav.querySelectorAll('.nav-link, .btn-header, .nav-dropdown-link, .nav-profile-icon').forEach(function(link) {
+      link.addEventListener('click', function() {
+        toggle.setAttribute('aria-expanded', 'false');
+        nav.classList.remove('nav--open');
+        document.body.classList.remove('nav-open');
+      });
+    });
+  }
+
   function init() {
     updateDimension();
     initReveal();
+    initNavToggle();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
   }
