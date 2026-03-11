@@ -5,7 +5,7 @@ WORKDIR /app
 # Install dependencies
 COPY requirements.txt .
 RUN python -m venv venv
-RUN venv/bin/activate
+RUN source venv/bin/activate
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
