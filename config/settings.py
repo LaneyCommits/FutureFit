@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'resume',
     'schools',
     'blog',
-    'accounts,'
+    'accounts',
     'chat'
 ]
 
