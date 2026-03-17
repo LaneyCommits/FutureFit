@@ -17,7 +17,7 @@ class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
         label='Email',
-        help_text='We’ll send a verification link to this address.',
+        help_text='',
     )
 
     class Meta(UserCreationForm.Meta):
@@ -53,11 +53,34 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
-    """Profile avatar and bio."""
+    """Profile avatar, bio, and job preferences."""
 
     class Meta:
         model = Profile
-        fields = ('avatar', 'bio')
+        fields = ('avatar', 'bio', 'major_key', 'preferred_job_type',
+                  'preferred_remote', 'preferred_location', 'min_salary')
+        widgets = {
+            'preferred_location': forms.TextInput(attrs={
+                'placeholder': 'e.g. New York, San Francisco',
+            }),
+            'min_salary': forms.NumberInput(attrs={
+                'placeholder': 'e.g. 50000',
+                'min': '0',
+            }),
+        }
+        labels = {
+            'major_key': 'Major',
+            'preferred_job_type': 'Preferred job type',
+            'preferred_remote': 'Work setting',
+            'preferred_location': 'Preferred location',
+            'min_salary': 'Minimum salary ($)',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from career_quiz.quiz_data import MAJORS
+        major_choices = [('', 'Not set')] + [(m[0], m[1]) for m in MAJORS]
+        self.fields['major_key'].widget = forms.Select(choices=major_choices)
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')

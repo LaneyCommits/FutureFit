@@ -1,47 +1,76 @@
+"""Jobs page: browse the job market filtered by major, type, salary, and sort."""
+import json
+
 from django.shortcuts import render
 
-from schools.schools_data import get_all_major_labels
+from career_quiz.quiz_data import get_majors
+from .services import fetch_jobs
+from .models import JobListingCache
 
-from .models import Job
 
+def jobs_home(request):
+    majors = get_majors()
+    major_labels = {m[0]: m[1] for m in majors}
 
-def jobs_home_view(request):
-    """
-    Simple jobs & internships listing with filters for major, employment type, state, and remote.
-    """
+    major_key = request.GET.get('major', '')
+    if not major_key and request.user.is_authenticated:
+        try:
+            profile = request.user.profile
+            major_key = getattr(profile, 'major_key', '') or ''
+        except Exception:
+            pass
+    if not major_key:
+        major_key = request.session.get('quiz_major', '')
 
-    jobs = Job.objects.filter(is_active=True)
+    job_type = request.GET.get('job_type', '')
+    sort = request.GET.get('sort', 'relevance')
+    salary_min = request.GET.get('salary_min', '')
+    location = request.GET.get('location', '')
+    remote_only = request.GET.get('remote') == '1'
 
-    major_key = (request.GET.get("major") or "").strip()
-    employment_type = (request.GET.get("type") or "").strip()
-    raw_state = (request.GET.get("state") or "").strip()
-    # Treat empty / invalid state values as "no preference"
-    state = raw_state.upper() if len(raw_state) == 2 else ""
-    remote_only = request.GET.get("remote") == "1"
-
+    jobs = []
     if major_key:
-        jobs = jobs.filter(majors__key=major_key)
+        cache_hash = JobListingCache.make_hash(
+            major=major_key, job_type=job_type, sort=sort,
+            salary_min=salary_min, location=location,
+            remote='1' if remote_only else '',
+        )
+        try:
+            cached = JobListingCache.objects.get(query_hash=cache_hash)
+            if not cached.is_stale:
+                jobs = cached.results_json
+            else:
+                jobs = fetch_jobs(
+                    major_key=major_key, job_type=job_type, sort=sort,
+                    salary_min=salary_min, location=location,
+                    remote_only=remote_only,
+                )
+                cached.results_json = jobs
+                cached.query_desc = f'{major_key} {job_type} {sort}'
+                cached.save()
+        except JobListingCache.DoesNotExist:
+            jobs = fetch_jobs(
+                major_key=major_key, job_type=job_type, sort=sort,
+                salary_min=salary_min, location=location,
+                remote_only=remote_only,
+            )
+            JobListingCache.objects.create(
+                query_hash=cache_hash,
+                query_desc=f'{major_key} {job_type} {sort}',
+                results_json=jobs,
+            )
 
-    if employment_type:
-        jobs = jobs.filter(employment_type=employment_type)
-
-    if state:
-        jobs = jobs.filter(state__iexact=state)
-
-    if remote_only:
-        jobs = jobs.filter(is_remote=True)
-
-    jobs = jobs.select_related().prefetch_related("majors").distinct()
-
-    majors = get_all_major_labels()
-
-    context = {
-        "jobs": jobs,
-        "majors": majors,
-        "selected_major": major_key,
-        "selected_type": employment_type,
-        "selected_state": raw_state,
-        "remote_only": remote_only,
-    }
-    return render(request, "jobs/home.html", context)
-
+    return render(request, 'jobs/home.html', {
+        'majors': majors,
+        'major_labels_json': json.dumps(major_labels),
+        'selected_major': major_key,
+        'selected_major_label': major_labels.get(major_key, ''),
+        'job_type': job_type,
+        'sort': sort,
+        'salary_min': salary_min,
+        'location': location,
+        'remote_only': remote_only,
+        'jobs': jobs,
+        'jobs_json': json.dumps(jobs),
+        'jobs_count': len(jobs),
+    })

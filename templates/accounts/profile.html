@@ -46,6 +46,47 @@
                     <textarea name="bio" id="id_bio" class="form-input" rows="4" placeholder="A short description about yourself (optional).">{% if form.bio.value %}{{ form.bio.value }}{% endif %}</textarea>
                     {% if form.bio.errors %}<span class="auth-field-error">{{ form.bio.errors.0 }}</span>{% endif %}
                 </div>
+
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:1.25rem 0;">
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem;">Job preferences — these personalize your <a href="{% url 'jobs_home' %}" style="color:var(--accent);">Jobs</a> page.</p>
+
+                <div class="form-row">
+                    <label for="id_major_key">Major</label>
+                    {{ form.major_key }}
+                    {% if form.major_key.errors %}<span class="auth-field-error">{{ form.major_key.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="form-row two-cols">
+                    <div>
+                        <label for="id_preferred_job_type">Preferred job type</label>
+                        <select name="preferred_job_type" id="id_preferred_job_type" class="form-input">
+                            <option value="">Any</option>
+                            <option value="full_time" {% if form.preferred_job_type.value == "full_time" %}selected{% endif %}>Full-time</option>
+                            <option value="part_time" {% if form.preferred_job_type.value == "part_time" %}selected{% endif %}>Part-time</option>
+                            <option value="internship" {% if form.preferred_job_type.value == "internship" %}selected{% endif %}>Internship</option>
+                            <option value="contract" {% if form.preferred_job_type.value == "contract" %}selected{% endif %}>Contract</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="id_preferred_remote">Work setting</label>
+                        <select name="preferred_remote" id="id_preferred_remote" class="form-input">
+                            <option value="">Any</option>
+                            <option value="remote" {% if form.preferred_remote.value == "remote" %}selected{% endif %}>Remote</option>
+                            <option value="hybrid" {% if form.preferred_remote.value == "hybrid" %}selected{% endif %}>Hybrid</option>
+                            <option value="onsite" {% if form.preferred_remote.value == "onsite" %}selected{% endif %}>On-site</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row two-cols">
+                    <div>
+                        <label for="id_preferred_location">Preferred location</label>
+                        <input type="text" name="preferred_location" id="id_preferred_location" class="form-input" placeholder="e.g. New York, San Francisco" value="{{ form.preferred_location.value|default:'' }}">
+                    </div>
+                    <div>
+                        <label for="id_min_salary">Minimum salary ($)</label>
+                        <input type="number" name="min_salary" id="id_min_salary" class="form-input" placeholder="e.g. 50000" min="0" value="{{ form.min_salary.value|default:'' }}">
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Save profile</button>
             </form>
             <p class="auth-switch" style="margin-top:1rem;"><a href="{% url 'personalization' %}">Customize AI responses →</a></p>

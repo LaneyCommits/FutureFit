@@ -59,7 +59,7 @@ def about_redirect_view(request):
 
 
 def major_selection_view(request):
-    """User picks their major; we store it in session and redirect to the quiz."""
+    """User picks their major; we store it in session (and on profile) and redirect to the quiz."""
     if request.GET.get('length') == 'short':
         request.session['quiz_short'] = True
     elif request.GET.get('length') == 'full':
@@ -68,6 +68,14 @@ def major_selection_view(request):
         major_key = request.POST.get('major')
         if major_key:
             request.session['quiz_major'] = major_key
+            if request.user.is_authenticated:
+                try:
+                    profile = request.user.profile
+                    if not profile.major_key:
+                        profile.major_key = major_key
+                        profile.save(update_fields=['major_key'])
+                except Exception:
+                    pass
             return redirect('career_quiz_take')
     majors = get_majors()
     preselect = request.GET.get('preselect', '')

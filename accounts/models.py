@@ -1,22 +1,42 @@
-"""Profile and email verification."""
-import secrets
+"""Profile model (email verification removed)."""
 from django.conf import settings
 from django.db import models
 
 
 class Profile(models.Model):
-    """One-to-one profile: verification, avatar, bio, AI personalization."""
+    """One-to-one profile: avatar, bio, AI personalization, job preferences."""
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='profile',
     )
-    email_verified = models.BooleanField(
-        default=False,
-        help_text="Checked when the user has clicked their verification link. Unchecked means they can still log in, but some features may be limited.",
-    )
+    email_verified = models.BooleanField(default=True)
     avatar = models.ImageField(upload_to='avatars/%Y/%m/', blank=True, null=True)
     bio = models.TextField(blank=True)
+
+    major_key = models.CharField(max_length=64, blank=True, default='')
+    PREFERRED_JOB_TYPE_CHOICES = [
+        ('', 'Any'),
+        ('full_time', 'Full-time'),
+        ('part_time', 'Part-time'),
+        ('internship', 'Internship'),
+        ('contract', 'Contract'),
+    ]
+    preferred_job_type = models.CharField(
+        max_length=32, choices=PREFERRED_JOB_TYPE_CHOICES, default='', blank=True,
+    )
+    PREFERRED_REMOTE_CHOICES = [
+        ('', 'Any'),
+        ('remote', 'Remote'),
+        ('hybrid', 'Hybrid'),
+        ('onsite', 'On-site'),
+    ]
+    preferred_remote = models.CharField(
+        max_length=16, choices=PREFERRED_REMOTE_CHOICES, default='', blank=True,
+    )
+    preferred_location = models.CharField(max_length=128, blank=True, default='')
+    min_salary = models.PositiveIntegerField(null=True, blank=True)
+
     # AI personalization (for chatbot and AI tools)
     custom_instructions = models.TextField(
         blank=True,
@@ -35,30 +55,7 @@ class Profile(models.Model):
         default='',
         blank=True,
     )
-    # Optional toggles stored as JSON: e.g. {"warm": true, "enthusiastic": true, "use_headers": true, "use_emoji": false}
     ai_toggles = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
         return f"Profile({self.user.username})"
-
-
-class EmailVerification(models.Model):
-    """One-time token sent to user's email for verification."""
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='email_verifications',
-    )
-    key = models.CharField(max_length=64, unique=True, db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['-created_at']
-
-    @classmethod
-    def create_for_user(cls, user):
-        key = secrets.token_urlsafe(32)
-        return cls.objects.create(user=user, key=key)
-
-    def __str__(self):
-        return f"EmailVerification({self.user.username})"

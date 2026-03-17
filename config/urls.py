@@ -6,6 +6,7 @@ Sections:
   - /career-quiz/   Career discovery quiz
   - /resume/        Templates, cover letters, admissions essays, tips
   - /colleges/      School finder
+  - /jobs/          Job listings
 """
 from django.conf import settings
 from django.conf.urls.static import static
@@ -18,10 +19,10 @@ urlpatterns = [
     path('career-quiz/', include('career_quiz.urls')),
     path('resume/', include('resume.urls')),
     path('colleges/', include('schools.urls')),
-    path('jobs/', include('jobs.urls', namespace='jobs')),
     path('resources/', include('blog.urls')),
     path('accounts/', include('accounts.urls')),
     path('chat/', include('chat.urls')),
+    path('jobs/', include('jobs.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

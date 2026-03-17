@@ -1,11 +1,6 @@
 from django.urls import path
-
-from .views import jobs_home_view
-
-
-app_name = "jobs"
+from . import views
 
 urlpatterns = [
-    path("", jobs_home_view, name="jobs_home"),
+    path('', views.jobs_home, name='jobs_home'),
 ]
-
