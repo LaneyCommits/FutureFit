@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import Profile
+from .models import EmailVerificationState, Profile
 
 User = get_user_model()
 
@@ -30,6 +30,16 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "major_key", "base_style")
-    list_filter = ("major_key", "base_style")
+    list_display = ("user", "email_verified", "major_key", "base_style")
+    list_filter = ("email_verified", "major_key", "base_style")
     search_fields = ("user__username", "user__email")
+
+
+@admin.register(EmailVerificationState)
+class EmailVerificationStateAdmin(admin.ModelAdmin):
+    list_display = ("user", "expires_at", "last_sent_at", "failed_attempts")
+    search_fields = ("user__username", "user__email")
+    readonly_fields = ("code_hash", "expires_at", "last_sent_at", "failed_attempts", "user")
+
+    def has_add_permission(self, request):
+        return False

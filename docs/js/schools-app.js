@@ -94,12 +94,18 @@
             <select class="schools-filter-select" id="filter-state"><option value="">Any state</option>${stateOpts}</select>
           </div>
           <div class="schools-filter-group">
-            <label class="schools-filter-label" for="filter-cost">Cost (in-state tuition)</label>
-            <select class="schools-filter-select" id="filter-cost"><option value="">Any cost</option>${costOpts}</select>
+            <label class="schools-filter-label" for="filter-cost">
+              <span class="schools-filter-label-text schools-filter-label-text--full">Cost (in-state tuition)</span>
+              <span class="schools-filter-label-text schools-filter-label-text--compact">Cost</span>
+            </label>
+            <select class="schools-filter-select" id="filter-cost" title="Cost (in-state tuition)"><option value="">Any cost</option>${costOpts}</select>
           </div>
           <div class="schools-filter-group">
-            <label class="schools-filter-label" for="filter-type">School type</label>
-            <select class="schools-filter-select" id="filter-type"><option value="">All types</option><option value="public">Public</option><option value="private">Private</option></select>
+            <label class="schools-filter-label" for="filter-type">
+              <span class="schools-filter-label-text schools-filter-label-text--full">School type</span>
+              <span class="schools-filter-label-text schools-filter-label-text--compact">Type</span>
+            </label>
+            <select class="schools-filter-select" id="filter-type" title="School type"><option value="">All types</option><option value="public">Public</option><option value="private">Private</option></select>
           </div>
         </div>
         <div class="schools-results-bar reveal" id="schools-results-bar">

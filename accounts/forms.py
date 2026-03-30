@@ -1,10 +1,13 @@
 """Custom auth forms with username rules and email; profile and personalization."""
 import re
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
 from .models import Profile
+
+User = get_user_model()
 
 
 USERNAME_PATTERN = re.compile(r'^[a-zA-Z0-9_.]+\Z')
@@ -41,7 +44,28 @@ class CustomUserCreationForm(UserCreationForm):
                 'Username can only contain letters, numbers, underscores (_) and periods (.).',
                 code='username_invalid',
             )
+        existing = User.objects.filter(username__iexact=username).first()
+        if existing:
+            prof = Profile.objects.filter(user=existing).first()
+            if prof and prof.email_verified:
+                raise ValidationError(
+                    'A user with that username already exists.',
+                    code='username_exists',
+                )
+            existing.delete()
         return username
+
+    def clean_email(self):
+        email = self.cleaned_data['email'].strip().lower()
+        for u in User.objects.filter(email__iexact=email):
+            prof = Profile.objects.filter(user=u).first()
+            if prof and prof.email_verified:
+                raise ValidationError(
+                    'An account with this email already exists. Sign in instead.',
+                    code='email_exists_verified',
+                )
+            u.delete()
+        return email
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -60,6 +84,10 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ('avatar', 'bio', 'major_key', 'preferred_job_type',
                   'preferred_remote', 'preferred_location', 'min_salary')
         widgets = {
+            'avatar': forms.FileInput(attrs={
+                'class': 'form-input profile-avatar-file',
+                'accept': 'image/*',
+            }),
             'preferred_location': forms.TextInput(attrs={
                 'placeholder': 'e.g. New York, San Francisco',
             }),

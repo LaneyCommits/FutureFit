@@ -30,7 +30,7 @@
         <h1 class="block-hero-title">Find the right college for you</h1>
         <p class="block-hero-sub">Filter by major, location, cost, and school type to find colleges that fit your goals — not just what's trending.</p>
         <div class="block-hero-buttons">
-            <a href="{% url 'career_quiz_home' %}" class="btn btn-hero-secondary">Take the quiz first <span class="btn-arrow btn-arrow--outline" aria-hidden="true">→</span></a>
+            <a href="{% url 'career_quiz_home' %}" class="btn btn-header">Take the quiz first <span class="btn-arrow" aria-hidden="true">→</span></a>
         </div>
     </div>
     <div class="hero-particles hero-particles--front" aria-hidden="true">
@@ -71,8 +71,11 @@
                 </select>
             </div>
             <div class="schools-filter-group">
-                <label class="schools-filter-label" for="filter-cost">Cost (in-state tuition)</label>
-                <select class="schools-filter-select" id="filter-cost">
+                <label class="schools-filter-label" for="filter-cost">
+                    <span class="schools-filter-label-text schools-filter-label-text--full">Cost (in-state tuition)</span>
+                    <span class="schools-filter-label-text schools-filter-label-text--compact">Cost</span>
+                </label>
+                <select class="schools-filter-select" id="filter-cost" title="Cost (in-state tuition)">
                     <option value="">Any cost</option>
                     {% for key, label, low, high in cost_brackets %}
                     <option value="{{ key }}" data-low="{{ low }}" data-high="{{ high }}">{{ label }}</option>
@@ -80,8 +83,11 @@
                 </select>
             </div>
             <div class="schools-filter-group">
-                <label class="schools-filter-label" for="filter-type">College type</label>
-                <select class="schools-filter-select" id="filter-type">
+                <label class="schools-filter-label" for="filter-type">
+                    <span class="schools-filter-label-text schools-filter-label-text--full">College type</span>
+                    <span class="schools-filter-label-text schools-filter-label-text--compact">Type</span>
+                </label>
+                <select class="schools-filter-select" id="filter-type" title="College type">
                     <option value="">All types</option>
                     <option value="public">Public</option>
                     <option value="private">Private</option>

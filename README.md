@@ -13,14 +13,14 @@
 | **Gap Analysis** | Paste resume + job posting → AI match score, missing keywords, suggestions |
 | **College Finder** | Filter by major, location, cost, school type |
 | **Jobs** | Live job listings from LinkedIn, Indeed, Glassdoor, ZipRecruiter & more — filtered by major |
+| **Accounts** | Sign up and sign in; profile with **photo** (saved under `media/avatars/`), bio, and job preferences |
 
 ## TODO:
 - [ ] Add ability to make futurebot popup larger 
 - [ ] Make resume tips section into carousel 
 - [ ] Add more colleges 
 - [ ] Finish sign-in functionality so users can save resumes
-    - [ ] optional: make it so verification emails are sent to the user
-    - [ ] add profile pictures
+    - [x] sign-in and profile (avatar upload on `/accounts/profile/`)
 - [ ] consider adding mbti test
 - [ ] add ability to download resumes/resume templates as docx
 - [ ] add way for AI chat to reference user behavior
@@ -40,6 +40,10 @@ Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
 **AI features** (gap analysis, FutureBot): add `GEMINI_API_KEY` to a `.env` file. Get a key from [Google AI Studio](https://aistudio.google.com/apikey).
 
 **Jobs page** (live listings from LinkedIn, Indeed, etc.): add `RAPIDAPI_KEY` to `.env`. Get a free key from [RapidAPI](https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch) (200 requests/month free). Without the key, the page shows curated career data with direct links to job boards.
+
+### Email (optional)
+
+Sign-up **does not** require a verification code; you are logged in immediately. You can still configure SMTP in `.env` for other features that send mail. If you set placeholder Gmail values, the app falls back to the **console** backend so nothing fails at startup.
 
 ## Local Setup
 

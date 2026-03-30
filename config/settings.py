@@ -127,3 +127,13 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() in ('true', '1', 'yes')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+
+# Avoid failed SMTP (500 on signup) when .env still has example Gmail placeholders.
+if (
+    'smtp' in EMAIL_BACKEND.lower()
+    and (
+        EMAIL_HOST_USER.strip() in ('', 'your@gmail.com', 'you@example.com')
+        or EMAIL_HOST_PASSWORD.strip() in ('', 'your-app-password', 'your-password')
+    )
+):
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

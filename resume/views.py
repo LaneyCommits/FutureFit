@@ -814,31 +814,126 @@ def _call_gemini_long(prompt, max_tokens=2048):
         return None, err
 
 
-@csrf_exempt
-@require_POST
-def resume_generate_pdf_view(request):
-    """Generate a resume from form answers via AI, return PDF."""
+def _extract_body_inner_html(full_html):
+    """Return inner HTML of <body> for DOCX conversion."""
     try:
-        body = json.loads(request.body)
-    except (json.JSONDecodeError, ValueError):
-        return JsonResponse({'error': 'Invalid request.'}, status=400)
+        from bs4 import BeautifulSoup
+    except ImportError:
+        return full_html
+    soup = BeautifulSoup(full_html, 'html.parser')
+    body = soup.find('body')
+    if body:
+        return body.decode_contents()
+    return full_html
 
+
+def _html_to_docx_bytes(html_fragment):
+    """
+    Build a Word document from prepared resume HTML (classes resume-name, resume-section, etc.).
+    Returns bytes or raises on failure.
+    """
+    from bs4 import BeautifulSoup
+    from docx import Document
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.shared import Pt
+
+    soup = BeautifulSoup(html_fragment, 'html.parser')
+    doc = Document()
+
+    def add_center_line(text, size_pt, bold=False):
+        if not (text or '').strip():
+            return
+        p = doc.add_paragraph()
+        run = p.add_run(text.strip())
+        run.bold = bold
+        run.font.size = Pt(size_pt)
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    for el in soup.select('.resume-name'):
+        add_center_line(el.get_text(separator=' ', strip=True), 18, True)
+    for el in soup.select('.resume-contact'):
+        add_center_line(el.get_text(separator=' ', strip=True), 10, False)
+
+    if not soup.select('.resume-name'):
+        h1 = soup.find('h1')
+        if h1 and h1.get_text(strip=True):
+            add_center_line(h1.get_text(separator=' ', strip=True), 18, True)
+
+    for section in soup.select('.resume-section'):
+        title_el = section.select_one('.resume-section-title')
+        content_el = section.select_one('.resume-content')
+        if title_el and title_el.get_text(strip=True):
+            p = doc.add_paragraph()
+            r = p.add_run(title_el.get_text(separator=' ', strip=True))
+            r.bold = True
+            r.font.size = Pt(11)
+        if content_el:
+            for li in content_el.find_all('li'):
+                t = li.get_text(separator=' ', strip=True)
+                if t:
+                    doc.add_paragraph(t, style='List Bullet')
+            for para in content_el.find_all('p'):
+                if para.find_parent('li') is not None:
+                    continue
+                t = para.get_text(separator=' ', strip=True)
+                if t:
+                    doc.add_paragraph(t)
+            if not content_el.find('ul') and not content_el.find('p'):
+                t = content_el.get_text(separator='\n', strip=True)
+                if t:
+                    doc.add_paragraph(t)
+
+    if len(doc.paragraphs) == 0:
+        plain = soup.get_text('\n', strip=True)
+        if plain:
+            doc.add_paragraph(plain)
+
+    out = io.BytesIO()
+    doc.save(out)
+    return out.getvalue()
+
+
+def _pdf_bytes_to_raster_bytes(pdf_bytes, fmt):
+    """
+    Render first page of PDF to PNG or JPEG. fmt is 'png' or 'jpeg'.
+    Returns (bytes, None) or (None, error_message).
+    """
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:
+        return None, 'Image export requires PyMuPDF. Add pymupdf to requirements and reinstall.'
+
+    try:
+        from PIL import Image
+    except ImportError:
+        return None, 'Image export requires Pillow.'
+
+    try:
+        pdf_doc = fitz.open(stream=pdf_bytes, filetype='pdf')
+        page = pdf_doc[0]
+        mat = fitz.Matrix(2.0, 2.0)
+        pix = page.get_pixmap(matrix=mat, alpha=False)
+        if fmt == 'png':
+            return pix.tobytes('png'), None
+        img = Image.frombytes('RGB', [pix.width, pix.height], pix.samples)
+        buf = io.BytesIO()
+        img.save(buf, 'JPEG', quality=92, optimize=True)
+        return buf.getvalue(), None
+    except Exception as e:
+        return None, f'Could not render resume image: {e}'
+
+
+def _generate_resume_ai_full_html(body):
+    """
+    Call Gemini, return (full_html, safe_name, None) or (None, None, JsonResponse error).
+    """
     name = (body.get('name') or '').strip()
     email = (body.get('email') or '').strip()
     phone = (body.get('phone') or '').strip()
     job_title = (body.get('job_title') or '').strip()
     if not name or not email or not phone or not job_title:
-        return JsonResponse({'error': 'Please fill in name, email, phone, and job title.'}, status=400)
+        return None, None, JsonResponse({'error': 'Please fill in name, email, phone, and job title.'}, status=400)
 
-    try:
-        return _generate_pdf_impl(body, name, email, phone, job_title)
-    except Exception as e:
-        logger.exception('resume_generate_pdf failed')
-        return JsonResponse({'error': str(e)}, status=500)
-
-
-def _generate_pdf_impl(body, name, email, phone, job_title):
-    """Generate resume PDF; returns HttpResponse or raises."""
     prompt = (
         'You are an expert resume writer. Generate a professional, one-page resume as HTML. '
         'Use EXACTLY this structure - no extra wrapper, only the content below. '
@@ -881,10 +976,9 @@ def _generate_pdf_impl(body, name, email, phone, job_title):
 
     text, err = _call_gemini_long(prompt)
     if err:
-        return JsonResponse({'error': err}, status=502)
+        return None, None, JsonResponse({'error': err}, status=502)
 
     html_content = text.strip()
-    # Remove markdown code blocks if present
     if html_content.startswith('```'):
         html_content = re.sub(r'^```\w*\n?', '', html_content)
         html_content = re.sub(r'\n?```\s*$', '', html_content)
@@ -913,14 +1007,81 @@ body { font-family: Helvetica, Arial, sans-serif; font-size: 11pt; color: #333; 
 </body>
 </html>'''
 
-    pdf_bytes, pdf_err = _html_to_pdf(full_html)
-    if pdf_err:
-        status = 503 if 'not available' in pdf_err else 500
-        return JsonResponse({'error': pdf_err}, status=status)
-
+    full_html = _html_safe_for_weasyprint(full_html)
     safe_name = re.sub(r'[^\w\-\.]', '_', name or 'resume')
-    filename = f'{safe_name}-resume.pdf'
-    response = HttpResponse(pdf_bytes, content_type='application/pdf')
-    response['Content-Length'] = str(len(pdf_bytes))
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return response
+    return full_html, safe_name, None
+
+
+@csrf_exempt
+@require_POST
+def resume_generate_pdf_view(request):
+    """Generate a resume from form answers via AI; return PDF, Word, JPEG, or PNG."""
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'error': 'Invalid request.'}, status=400)
+
+    fmt = (body.get('format') or 'pdf').strip().lower()
+    if fmt in ('jpg', 'jpeg'):
+        fmt_key = 'jpeg'
+    elif fmt == 'png':
+        fmt_key = 'png'
+    elif fmt == 'docx':
+        fmt_key = 'docx'
+    else:
+        fmt_key = 'pdf'
+
+    try:
+        full_html, safe_name, err_resp = _generate_resume_ai_full_html(body)
+        if err_resp is not None:
+            return err_resp
+
+        if fmt_key == 'pdf':
+            pdf_bytes, pdf_err = _html_to_pdf(full_html)
+            if pdf_err:
+                status = 503 if 'not available' in pdf_err else 500
+                return JsonResponse({'error': pdf_err}, status=status)
+            filename = f'{safe_name}-resume.pdf'
+            response = HttpResponse(pdf_bytes, content_type='application/pdf')
+            response['Content-Length'] = str(len(pdf_bytes))
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
+
+        if fmt_key == 'docx':
+            try:
+                inner = _extract_body_inner_html(full_html)
+                docx_bytes = _html_to_docx_bytes(inner)
+            except Exception as e:
+                logger.exception('DOCX generation failed')
+                return JsonResponse({'error': f'Word export failed: {e}'}, status=500)
+            filename = f'{safe_name}-resume.docx'
+            response = HttpResponse(
+                docx_bytes,
+                content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            )
+            response['Content-Length'] = str(len(docx_bytes))
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
+
+        # JPEG or PNG via PDF render
+        pdf_bytes, pdf_err = _html_to_pdf(full_html)
+        if pdf_err:
+            status = 503 if 'not available' in pdf_err else 500
+            return JsonResponse({'error': pdf_err}, status=status)
+        raster_fmt = 'png' if fmt_key == 'png' else 'jpeg'
+        img_bytes, img_err = _pdf_bytes_to_raster_bytes(pdf_bytes, raster_fmt)
+        if img_err:
+            return JsonResponse({'error': img_err}, status=500)
+        if fmt_key == 'png':
+            filename = f'{safe_name}-resume.png'
+            ct = 'image/png'
+        else:
+            filename = f'{safe_name}-resume.jpg'
+            ct = 'image/jpeg'
+        response = HttpResponse(img_bytes, content_type=ct)
+        response['Content-Length'] = str(len(img_bytes))
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    except Exception as e:
+        logger.exception('resume_generate_export failed')
+        return JsonResponse({'error': str(e)}, status=500)

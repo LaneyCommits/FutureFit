@@ -47,10 +47,12 @@
                     {% else %}
                     <span class="nav-profile-initial">{{ user.username|slice:":1"|upper }}</span>
                     {% endif %}
+                    <span class="nav-profile-menu-label">Profile</span>
                 </a>
                 {% else %}
                 <a href="{% url 'login' %}" class="nav-profile-icon nav-profile-icon--guest" aria-label="Log in or sign up">
                     <span class="nav-profile-guest-icon" aria-hidden="true">👤</span>
+                    <span class="nav-profile-menu-label">Log in</span>
                 </a>
                 {% endif %}
             </nav>

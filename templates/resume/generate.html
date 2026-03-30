@@ -4,17 +4,9 @@
 {% block body_class %}page-resume{% endblock %}
 
 {% block content %}
-<section class="block block--hero block--hero-with-bg resume-hero resume-hero--compact">
-    <div class="block-inner">
-        <p class="resume-back-top"><a href="{% url 'resume_home' %}" class="btn btn-secondary btn--back">← Back to resume</a></p>
-        <p class="hero-badge">AI-powered</p>
-        <h1 class="block-hero-title">Generate Your Resume</h1>
-        <p class="block-hero-sub">Answer a few questions about the role and your background. We’ll create a tailored resume and deliver it as a PDF.</p>
-    </div>
-</section>
-
 <section class="block resume-generate-section">
     <div class="block-inner">
+        <p class="resume-back-top"><a href="{% url 'resume_home' %}" class="btn btn-secondary btn--back">← Back to resume</a></p>
         <form id="resumeGenerateForm" class="resume-generate-form">
             <div class="resume-generate-grid">
                 <fieldset class="resume-generate-fieldset">
@@ -84,7 +76,14 @@
                 </fieldset>
             </div>
             <div class="resume-generate-actions">
-                <button type="submit" class="btn btn-primary btn-lg" id="generateBtn">Generate Resume PDF <span aria-hidden="true">↓</span></button>
+                <label for="exportFormat" class="resume-generate-format-label">Download format</label>
+                <select id="exportFormat" class="resume-generate-format-select" name="format" aria-label="Download format">
+                    <option value="pdf" selected>PDF</option>
+                    <option value="docx">Word (.docx)</option>
+                    <option value="jpeg">JPEG image</option>
+                    <option value="png">PNG image</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-lg" id="generateBtn">Generate &amp; download <span aria-hidden="true">↓</span></button>
                 <p class="resume-generate-hint">Your answers are sent to our AI to create a professional, tailored resume. No account needed.</p>
             </div>
         </form>
@@ -127,6 +126,8 @@
         errEl.style.display = 'none';
         btn.disabled = true;
         btn.innerHTML = '<span class="gap-btn-spinner"></span> Generating...';
+        var format = (document.getElementById('exportFormat') && document.getElementById('exportFormat').value) || 'pdf';
+        data.format = format;
         fetch('/resume/api/generate-pdf/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -143,7 +144,11 @@
                     throw new Error(msg);
                 });
             }
-            if (ct.indexOf('application/pdf') === -1) {
+            var okBlob = ct.indexOf('application/pdf') !== -1
+                || ct.indexOf('application/vnd.openxmlformats-officedocument.wordprocessingml.document') !== -1
+                || ct.indexOf('image/jpeg') !== -1
+                || ct.indexOf('image/png') !== -1;
+            if (!okBlob && ct.indexOf('application/json') !== -1) {
                 return r.text().then(function(text) {
                     var msg = 'Server returned an error.';
                     try {
@@ -154,11 +159,27 @@
                 });
             }
             return r.blob().then(function(blob) {
-                var pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
-                var url = URL.createObjectURL(pdfBlob);
+                var base = (data.name.replace(/\s+/g, '-') || 'resume') + '-resume';
+                var ext = 'pdf';
+                var mime = blob.type || 'application/octet-stream';
+                if (format === 'docx') {
+                    ext = 'docx';
+                    if (!blob.type) mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                } else if (format === 'png') {
+                    ext = 'png';
+                    if (!blob.type) mime = 'image/png';
+                } else if (format === 'jpeg' || format === 'jpg') {
+                    ext = 'jpg';
+                    if (!blob.type) mime = 'image/jpeg';
+                } else {
+                    ext = 'pdf';
+                    if (!blob.type) mime = 'application/pdf';
+                }
+                var outBlob = blob.type ? blob : new Blob([blob], { type: mime });
+                var url = URL.createObjectURL(outBlob);
                 var a = document.createElement('a');
                 a.href = url;
-                a.download = (data.name.replace(/\s+/g, '-') || 'resume') + '-resume.pdf';
+                a.download = base + '.' + ext;
                 a.rel = 'noopener';
                 document.body.appendChild(a);
                 a.click();
@@ -171,7 +192,7 @@
             errEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }).finally(function() {
             btn.disabled = false;
-            btn.innerHTML = 'Generate Resume PDF <span aria-hidden="true">↓</span>';
+            btn.innerHTML = 'Generate &amp; download <span aria-hidden="true">↓</span>';
         });
     });
 })();

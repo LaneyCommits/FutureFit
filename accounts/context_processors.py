@@ -6,8 +6,7 @@ def user_profile(request):
     """
     Add user_profile to the template context when available.
 
-    Profiles are now created at signup/login, even before email verification,
-    but we still guard against older accounts that may not have one yet.
+    Profiles are created at signup; email must be verified before the user is logged in.
     """
     if request.user.is_authenticated:
         try:

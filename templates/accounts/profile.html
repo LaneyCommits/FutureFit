@@ -13,32 +13,32 @@
     </div>
     <div class="auth-page-inner">
         <div class="auth-form-card profile-card">
+            {% if messages %}
+            <ul class="auth-messages" role="status" style="margin-bottom:1rem;">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
             <p class="hero-badge">Profile</p>
             <h1 class="block-hero-title">Your profile</h1>
             <p class="block-hero-sub">Update your photo and a short bio.</p>
-            <p class="profile-email-status">
-                {% if profile.email_verified %}
-                <span class="profile-status-pill profile-status-pill--verified">Email verified</span>
-                {% else %}
-                <span class="profile-status-pill profile-status-pill--unverified">Email not verified yet</span>
-                <a href="{% url 'verify_email_sent' %}" class="profile-status-link">Resend verification instructions →</a>
-                {% endif %}
-            </p>
             <form method="post" action="{% url 'profile' %}" class="auth-form" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% if form.non_field_errors %}
                 <div class="auth-error">{{ form.non_field_errors }}</div>
                 {% endif %}
                 <div class="form-row profile-avatar-row">
-                    <label>Profile photo</label>
+                    <label for="{{ form.avatar.id_for_label }}">Profile photo</label>
                     <div class="profile-avatar-wrap">
-                        {% if profile.avatar %}
-                        <img src="{{ profile.avatar.url }}" alt="Your avatar" class="profile-avatar-img">
-                        {% else %}
-                        <div class="profile-avatar-placeholder" aria-hidden="true">{{ user.username|slice:":1"|upper }}</div>
-                        {% endif %}
+                        {# Minimal SVG data URL so <img> is valid before JS sets preview #}
+                        <img id="profile-avatar-preview" class="profile-avatar-img{% if not profile.avatar %} is-hidden{% endif %}"
+                             src="{% if profile.avatar %}{{ profile.avatar.url }}{% else %}data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E{% endif %}"
+                             alt="Your profile photo preview">
+                        <div id="profile-avatar-placeholder" class="profile-avatar-placeholder{% if profile.avatar %} is-hidden{% endif %}" aria-hidden="true">{{ user.username|slice:":1"|upper }}</div>
                     </div>
-                    <input type="file" name="avatar" id="id_avatar" class="form-input" accept="image/*">
+                    {{ form.avatar }}
+                    <p class="profile-avatar-hint">After you choose a photo, a preview appears and the image is saved automatically.</p>
                     {% if form.avatar.errors %}<span class="auth-field-error">{{ form.avatar.errors.0 }}</span>{% endif %}
                 </div>
                 <div class="form-row">
@@ -108,4 +108,45 @@
         </div>
     </div>
 </section>
+<script>
+(function () {
+    var input = document.getElementById('id_avatar');
+    var preview = document.getElementById('profile-avatar-preview');
+    var placeholder = document.getElementById('profile-avatar-placeholder');
+    var form = document.querySelector('.profile-card form.auth-form');
+    if (!input || !preview || !placeholder || !form) return;
+
+    var maxBytes = 2 * 1024 * 1024;
+
+    function showPreview(dataUrl) {
+        preview.src = dataUrl;
+        preview.classList.remove('is-hidden');
+        placeholder.classList.add('is-hidden');
+    }
+
+    input.addEventListener('change', function () {
+        var file = this.files && this.files[0];
+        if (!file) return;
+        if (!file.type || file.type.indexOf('image/') !== 0) {
+            alert('Please choose an image file.');
+            this.value = '';
+            return;
+        }
+        if (file.size > maxBytes) {
+            alert('Image must be under 2 MB.');
+            this.value = '';
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            showPreview(e.target.result);
+            // Brief pause so the preview paints before navigating away on submit.
+            setTimeout(function () {
+                form.requestSubmit();
+            }, 200);
+        };
+        reader.readAsDataURL(file);
+    });
+})();
+</script>
 {% endblock %}

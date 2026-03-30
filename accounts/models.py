@@ -1,4 +1,4 @@
-"""Profile model (email verification removed)."""
+"""Profile model and email verification state."""
 from django.conf import settings
 from django.db import models
 
@@ -10,7 +10,7 @@ class Profile(models.Model):
         on_delete=models.CASCADE,
         related_name='profile',
     )
-    email_verified = models.BooleanField(default=True)
+    email_verified = models.BooleanField(default=False)
     avatar = models.ImageField(upload_to='avatars/%Y/%m/', blank=True, null=True)
     bio = models.TextField(blank=True)
 
@@ -59,3 +59,23 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"Profile({self.user.username})"
+
+
+class EmailVerificationState(models.Model):
+    """One active verification code per user (hashed)."""
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='email_verification_state',
+    )
+    code_hash = models.CharField(max_length=128)
+    expires_at = models.DateTimeField()
+    last_sent_at = models.DateTimeField()
+    failed_attempts = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'email verification state'
+        verbose_name_plural = 'email verification states'
+
+    def __str__(self):
+        return f'EmailVerificationState({self.user_id})'

@@ -273,6 +273,9 @@ body.is-scrolled .site-header {
 .nav-profile-guest-icon {
   font-size: 1.1rem;
 }
+.nav-profile-menu-label {
+  display: none;
+}
 .btn-header {
   padding: 0.5rem 1.15rem;
   font-size: clamp(0.72rem, 0.5rem + 0.4vw, 0.82rem);
@@ -366,8 +369,55 @@ body.is-scrolled .site-header {
     font-size: 0.9rem;
     border-bottom: none;
   }
+  .nav .nav-profile-icon {
+    order: -2;
+    width: 100%;
+    height: auto;
+    min-height: 48px;
+    border-radius: 8px;
+    padding: 0.85rem 0.5rem;
+    justify-content: flex-start;
+    gap: 0.65rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: visible;
+  }
+  .nav .nav-profile-icon .nav-profile-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .nav .nav-profile-icon .nav-profile-initial {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav .nav-profile-icon .nav-profile-guest-icon {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .nav .nav-link--logout {
+    order: -1;
+  }
+  .nav-profile-menu-label {
+    display: inline;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .nav .nav-profile-icon:hover .nav-profile-menu-label {
+    color: var(--text);
+  }
   .btn-header {
-    margin-top: 1.5rem;
+    margin-top: 0;
     text-align: center;
     font-size: clamp(0.78rem, 2vw, 0.88rem);
   }
@@ -4762,7 +4812,7 @@ body.page-schools {
 }
 .schools-hero {
   min-height: auto !important;
-  padding: 2.5rem 1.5rem 2rem !important;
+  padding: 1.35rem 1.25rem 1.25rem !important;
   display: block;
   align-items: unset;
   justify-content: unset;
@@ -4771,11 +4821,28 @@ body.page-schools {
   max-width: 640px;
   margin: 0 auto;
 }
-.schools-hero .hero-badge { font-size: 0.8rem; margin-bottom: 0.4rem; }
-.schools-hero .block-hero-title { font-size: clamp(1.35rem, 3vw, 1.65rem); margin-bottom: 0.35rem; }
-.schools-hero .block-hero-sub { font-size: 0.95rem; }
+.schools-hero .hero-badge {
+  font-size: 0.75rem;
+  margin-bottom: 0.3rem;
+  padding: 0.2rem 0.55rem;
+}
+.schools-hero .block-hero-title {
+  font-size: clamp(1.25rem, 2.8vw, 1.5rem);
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+.schools-hero .block-hero-sub {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  margin-bottom: 0.75rem;
+}
+.schools-hero .block-hero-buttons {
+  gap: 0.6rem;
+  margin-top: 0;
+}
 @media (max-width: 600px) {
-  .schools-hero { padding: 2rem 1rem 1.5rem !important; }
+  .schools-hero { padding: 1.1rem 1rem 1rem !important; }
+  .schools-hero .block-hero-sub { font-size: 0.85rem; margin-bottom: 0.65rem; }
 }
 .schools-content-section {
   padding: 0;
@@ -4839,6 +4906,9 @@ body.page-schools {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.schools-filter-label-text--compact {
+  display: none;
 }
 .schools-filter-select {
   width: 100%;
@@ -5116,21 +5186,39 @@ body.page-schools {
 @media (max-width: 600px) {
   .schools-content-section .block-inner { padding: 1.5rem 1rem 2rem; }
   .schools-filters {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.28rem;
     margin-bottom: 1rem;
+    align-items: end;
   }
-  .schools-filter-group { gap: 0.15rem; }
+  .schools-filter-group {
+    gap: 0.12rem;
+    min-width: 0;
+  }
   .schools-filter-label {
-    font-size: 0.68rem;
-    letter-spacing: 0.03em;
+    font-size: 0.55rem;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
     white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    display: block;
+  }
+  .schools-filter-label-text--full {
+    display: none;
+  }
+  .schools-filter-label-text--compact {
+    display: inline;
   }
   .schools-filter-select {
-    font-size: 0.82rem;
-    padding: 0.4rem 0.6rem;
-    padding-right: 1.75rem;
-    background-position: right 0.5rem center;
+    font-size: 0.68rem;
+    padding: 0.3rem 0.35rem;
+    padding-right: 1.25rem;
+    background-position: right 0.3rem center;
+    background-size: 9px 9px;
+    line-height: 1.2;
+    min-height: 2rem;
   }
   .schools-results-bar {
     flex-direction: column;
