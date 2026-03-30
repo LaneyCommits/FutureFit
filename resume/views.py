@@ -6,6 +6,7 @@ Sections:
   - API: template HTML, cover letter HTML, PDF generation
   - AI API: Gemini-backed endpoints for gap analysis, enhancement, review, etc.
 """
+import base64
 import io
 import json
 import logging
@@ -238,16 +239,41 @@ def _build_cover_letter_html(template, major_key=None):
 @csrf_exempt
 @require_POST
 def resume_pdf_view(request):
-    """Generate a PDF from the resume HTML content. Uses WeasyPrint for selectable text and proper formatting."""
+    """Export the editor content as PDF, DOCX, or plain text."""
     try:
         body = json.loads(request.body)
         html_content = body.get('html', '').strip()
-        filename = body.get('filename', 'resume.pdf')
+        base_name = body.get('filename', 'document')
+        fmt = body.get('format', 'pdf').strip().lower()
         if not html_content:
             return JsonResponse({'error': 'No HTML content provided.'}, status=400)
     except (json.JSONDecodeError, ValueError):
         return JsonResponse({'error': 'Invalid request.'}, status=400)
 
+    safe_base = re.sub(r'[^\w\-]', '_', re.sub(r'\.\w+$', '', base_name))
+
+    if fmt == 'txt':
+        from bs4 import BeautifulSoup
+        text = BeautifulSoup(html_content, 'html.parser').get_text('\n', strip=True)
+        filename = f'{safe_base}.txt'
+        response = HttpResponse(text, content_type='text/plain; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+
+    if fmt == 'docx':
+        try:
+            prepared = _prepare_resume_html(html_content)
+            docx_bytes = _html_to_docx_bytes(prepared)
+        except Exception as e:
+            return JsonResponse({'error': f'Word export failed: {e}'}, status=500)
+        filename = f'{safe_base}.docx'
+        mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        response = HttpResponse(docx_bytes, content_type=mime)
+        response['Content-Length'] = str(len(docx_bytes))
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+
+    # Default: PDF
     html_content = _prepare_resume_html(html_content)
     full_html = f'''<!DOCTYPE html>
 <html>
@@ -277,12 +303,10 @@ body {{ font-family: Helvetica, Arial, sans-serif; font-size: 11pt; color: #333;
         status = 503 if 'not available' in pdf_err else 500
         return JsonResponse({'error': pdf_err}, status=status)
 
+    filename = f'{safe_base}.pdf'
     response = HttpResponse(pdf_bytes, content_type='application/pdf')
     response['Content-Length'] = str(len(pdf_bytes))
-    safe_name = re.sub(r'[^\w\-\.]', '_', filename)
-    if not safe_name.lower().endswith('.pdf'):
-        safe_name += '.pdf'
-    response['Content-Disposition'] = f'attachment; filename="{safe_name}"'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
 
 
@@ -598,11 +622,16 @@ def ai_tailor_resume_view(request):
     resume = body.get('resume', '').strip()
     job = body.get('job', '').strip()
     mode = body.get('mode', '')
+    gap_context = body.get('gap_context', '')
 
     if not resume or not job:
+        if gap_context == 'admissions':
+            return JsonResponse({'error': 'Please provide both your essay draft and the prompt.'}, status=400)
         return JsonResponse({'error': 'Please provide both resume content and a job description.'}, status=400)
 
     if mode == 'gap_analysis':
+        if gap_context == 'admissions':
+            return _ai_gap_analysis_admissions(resume, job)
         return _ai_gap_analysis(resume, job)
     return _ai_tailor_resume(resume, job)
 
@@ -631,6 +660,57 @@ def _ai_gap_analysis(resume, job):
     if err:
         return JsonResponse({'error': err}, status=502)
     # Parse JSON response
+    cleaned = text.strip().replace('```json', '').replace('```', '').strip()
+    try:
+        parsed = json.loads(cleaned)
+        match_score = parsed.get('match_score', 50)
+        if not isinstance(match_score, (int, float)):
+            match_score = 50
+        match_score = max(0, min(100, int(match_score)))
+        result = {
+            'match_score': match_score,
+            'summary': parsed.get('summary', 'Analysis complete.'),
+            'strengths': parsed.get('strengths', []) if isinstance(parsed.get('strengths'), list) else [],
+            'missing_keywords': parsed.get('missing_keywords', []) if isinstance(parsed.get('missing_keywords'), list) else [],
+            'suggestions': parsed.get('suggestions', []) if isinstance(parsed.get('suggestions'), list) else [],
+        }
+        return JsonResponse({'result': result})
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'result': {
+                'match_score': 50,
+                'summary': cleaned[:500] if cleaned else 'Analysis complete.',
+                'strengths': [],
+                'missing_keywords': [],
+                'suggestions': [cleaned] if cleaned else ['Could not parse structured analysis.']
+            }
+        })
+
+
+def _ai_gap_analysis_admissions(essay, prompt_text):
+    """Compare an admissions essay draft to the essay prompt; same JSON shape as resume gap analysis."""
+    prompt = (
+        'You are an expert college admissions counselor. Analyze how well the following essay draft responds to '
+        'and aligns with the admissions prompt. Return your analysis as a JSON object with EXACTLY this structure '
+        '(no markdown, no code fences, ONLY raw JSON):\n'
+        '{\n'
+        '  "match_score": <number 0-100 representing how well the draft addresses the prompt>,\n'
+        '  "summary": "<1-2 sentence overview>",\n'
+        '  "strengths": ["<strength 1>", "<strength 2>", ...],\n'
+        '  "missing_keywords": ["<theme, phrase, or expectation from the prompt that is missing or weak in the draft>", ...],\n'
+        '  "suggestions": ["<actionable suggestion 1>", "<actionable suggestion 2>", ...]\n'
+        '}\n\n'
+        'Rules:\n'
+        '- match_score should reflect alignment with the prompt (most drafts score 35-75)\n'
+        '- strengths: 2-4 things the draft already does well relative to the prompt\n'
+        '- missing_keywords: 4-8 ideas, themes, or specifics implied by the prompt that the draft should develop more\n'
+        '- suggestions: 3-5 concrete edits or additions to better answer the prompt\n'
+        '- Return ONLY the JSON object, nothing else\n\n'
+        f'--- ESSAY DRAFT ---\n{essay}\n\n--- PROMPT ---\n{prompt_text}'
+    )
+    text, err = _call_gemini(prompt)
+    if err:
+        return JsonResponse({'error': err}, status=502)
     cleaned = text.strip().replace('```json', '').replace('```', '').strip()
     try:
         parsed = json.loads(cleaned)
@@ -1012,6 +1092,17 @@ body { font-family: Helvetica, Arial, sans-serif; font-size: 11pt; color: #333; 
     return full_html, safe_name, None
 
 
+def _json_payload_with_file(editor_html, safe_name, file_bytes, mime, filename):
+    """Single JSON response for AI resume: downloadable file + HTML for templates editor."""
+    return JsonResponse({
+        'ok': True,
+        'editor_html': editor_html,
+        'mime': mime,
+        'filename': filename,
+        'file_base64': base64.b64encode(file_bytes).decode('ascii'),
+    })
+
+
 @csrf_exempt
 @require_POST
 def resume_generate_pdf_view(request):
@@ -1020,6 +1111,8 @@ def resume_generate_pdf_view(request):
         body = json.loads(request.body)
     except (json.JSONDecodeError, ValueError):
         return JsonResponse({'error': 'Invalid request.'}, status=400)
+
+    want_json = bool(body.get('return_editor_payload'))
 
     fmt = (body.get('format') or 'pdf').strip().lower()
     if fmt in ('jpg', 'jpeg'):
@@ -1036,12 +1129,19 @@ def resume_generate_pdf_view(request):
         if err_resp is not None:
             return err_resp
 
+        editor_html = _extract_body_inner_html(full_html)
+
         if fmt_key == 'pdf':
             pdf_bytes, pdf_err = _html_to_pdf(full_html)
             if pdf_err:
                 status = 503 if 'not available' in pdf_err else 500
                 return JsonResponse({'error': pdf_err}, status=status)
             filename = f'{safe_name}-resume.pdf'
+            if want_json:
+                return _json_payload_with_file(
+                    editor_html, safe_name, pdf_bytes,
+                    'application/pdf', filename,
+                )
             response = HttpResponse(pdf_bytes, content_type='application/pdf')
             response['Content-Length'] = str(len(pdf_bytes))
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
@@ -1055,10 +1155,10 @@ def resume_generate_pdf_view(request):
                 logger.exception('DOCX generation failed')
                 return JsonResponse({'error': f'Word export failed: {e}'}, status=500)
             filename = f'{safe_name}-resume.docx'
-            response = HttpResponse(
-                docx_bytes,
-                content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            )
+            mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            if want_json:
+                return _json_payload_with_file(editor_html, safe_name, docx_bytes, mime, filename)
+            response = HttpResponse(docx_bytes, content_type=mime)
             response['Content-Length'] = str(len(docx_bytes))
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
             return response
@@ -1078,6 +1178,8 @@ def resume_generate_pdf_view(request):
         else:
             filename = f'{safe_name}-resume.jpg'
             ct = 'image/jpeg'
+        if want_json:
+            return _json_payload_with_file(editor_html, safe_name, img_bytes, ct, filename)
         response = HttpResponse(img_bytes, content_type=ct)
         response['Content-Length'] = str(len(img_bytes))
         response['Content-Disposition'] = f'attachment; filename="{filename}"'

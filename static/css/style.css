@@ -244,53 +244,6 @@ body.is-scrolled .site-header {
   font-weight: 600;
   background: rgba(40, 215, 255, 0.1);
 }
-/* Create link: light blue glow behind the letters */
-.nav-link--create {
-  color: var(--text);
-  text-shadow: 0 0 12px rgba(40, 215, 255, 0.5), 0 0 24px rgba(40, 215, 255, 0.25);
-}
-.nav-link--create:hover {
-  text-shadow: 0 0 14px rgba(40, 215, 255, 0.6), 0 0 28px rgba(40, 215, 255, 0.3);
-}
-
-.nav-dropdown {
-  position: relative;
-  display: inline-flex;
-}
-.nav-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin: 0.25rem 0 0;
-  padding: 0.35rem 0;
-  list-style: none;
-  background: var(--surface-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
-  min-width: 160px;
-  z-index: 50;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-.nav-dropdown:hover .nav-dropdown-menu {
-  opacity: 1;
-  visibility: visible;
-}
-.nav-dropdown-link {
-  display: block;
-  padding: 0.45rem 1rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: color 0.15s ease, background 0.15s ease;
-}
-.nav-dropdown-link:hover {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.06);
-}
-
 .btn-header {
   padding: 0.5rem 1.15rem;
   font-size: clamp(0.72rem, 0.5rem + 0.4vw, 0.82rem);
@@ -358,30 +311,6 @@ body.is-scrolled .site-header {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
   .nav-link:last-of-type {
-    border-bottom: none;
-  }
-  .nav-dropdown {
-    flex-direction: column;
-    align-items: stretch;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-  .nav-dropdown .nav-link--create {
-    border-bottom: none;
-  }
-  .nav-dropdown-menu {
-    position: static;
-    margin: 0;
-    padding: 0 0 0.5rem;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    min-width: 0;
-    opacity: 1;
-    visibility: visible;
-  }
-  .nav-dropdown-link {
-    padding: 0.5rem 1rem 0.5rem 1.5rem;
-    font-size: 0.9rem;
     border-bottom: none;
   }
   /* Profile / log in first in the drawer */
@@ -820,6 +749,13 @@ body.is-scrolled .site-header {
   color: var(--text-muted);
   margin: 0.35rem 0 0;
   line-height: 1.35;
+}
+.profile-section-label {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.25rem;
 }
 .profile-quiz-section {
   margin-top: 1.5rem;
@@ -2995,6 +2931,147 @@ body.is-scrolled .site-header {
   flex: 1;
   min-height: 0;
 }
+
+/* Templates editor — quick tools live in sidebar (see .academic-quick-options--sidebar) */
+.academic-quick-options {
+  flex-shrink: 0;
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.academic-sidebar-tools {
+  width: 100%;
+}
+.academic-quick-options--sidebar {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.academic-quick-options-grid--sidebar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+  width: 100%;
+  max-width: none;
+}
+.academic-quick-options--sidebar .academic-quick-options-grid--single {
+  grid-template-columns: 1fr;
+  max-width: none;
+}
+.page-academic-writing .academic-sidebar .academic-quick-option-card {
+  padding: 0.45rem 0.5rem;
+}
+.page-academic-writing .academic-sidebar .academic-quick-option-card--heading-only .resume-option-title {
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+@media (max-width: 900px) {
+  .academic-sidebar-tools {
+    flex: 1 1 100%;
+  }
+}
+.academic-quick-options-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  margin: 0 0 0.45rem;
+}
+.academic-quick-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 0.6rem;
+  align-items: stretch;
+}
+@media (max-width: 480px) {
+  .academic-quick-options-grid {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+}
+.page-academic-writing .academic-quick-option-card {
+  padding: 0.55rem 0.65rem;
+  min-height: 0;
+  gap: 0.2rem;
+  border-width: 1px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+.page-academic-writing .academic-quick-option-card:hover {
+  transform: translateY(-2px);
+}
+.page-academic-writing .academic-quick-option-card .resume-option-icon {
+  font-size: 1.25rem;
+  min-height: 1.35rem;
+  margin-bottom: 0;
+}
+.page-academic-writing .academic-quick-option-card .resume-option-icon--plus svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.page-academic-writing .academic-quick-option-card .resume-option-title {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+.page-academic-writing .academic-quick-option-card--heading-only {
+  padding: 0.5rem 0.65rem;
+  min-height: auto;
+  align-items: flex-start;
+}
+.page-academic-writing button.academic-quick-option-card--heading-only {
+  appearance: none;
+  border: 1px solid rgba(127, 175, 157, 0.3);
+  background: var(--surface);
+  font: inherit;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  color: inherit;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+.page-academic-writing button.academic-quick-option-card--heading-only:hover {
+  border-color: var(--teal-accent);
+  transform: translateY(-2px);
+}
+.academic-quick-options-grid--single {
+  grid-template-columns: minmax(0, 18rem);
+}
+.page-academic-writing .academic-quick-option-card .resume-option-desc {
+  font-size: 0.68rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.page-academic-writing .academic-quick-option-card .resume-option-cta {
+  font-size: 0.68rem;
+  margin-top: 0.2rem;
+  font-weight: 600;
+}
+#academic-majors-anchor {
+  scroll-margin-top: 0.75rem;
+}
+
+/* Gap analysis embedded on resume templates */
+.page-academic-writing .academic-gap-panel-section {
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+.page-academic-writing .academic-gap-panel-section .gap-analysis-card {
+  margin-bottom: 1.25rem;
+}
+.page-academic-writing .academic-gap-panel-section .gap-analysis-heading {
+  font-size: 1.1rem;
+}
+.page-academic-writing .academic-gap-panel-section .gap-analysis-desc {
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
 .academic-main-header {
   text-align: center;
   margin-bottom: 1rem;
@@ -3151,9 +3228,22 @@ body.is-scrolled .site-header {
   display: flex;
   flex-direction: column;
 }
+/* Quill font-family classes */
+.ql-font-times-new-roman { font-family: 'Times New Roman', Times, serif; }
+.ql-font-arial { font-family: Arial, Helvetica, sans-serif; }
+.ql-font-georgia { font-family: Georgia, serif; }
+.ql-font-garamond { font-family: Garamond, 'EB Garamond', serif; }
+.ql-font-cambria { font-family: Cambria, serif; }
+.ql-font-palatino { font-family: 'Palatino Linotype', Palatino, serif; }
+.ql-font-calibri { font-family: Calibri, 'Gill Sans', sans-serif; }
+.ql-font-verdana { font-family: Verdana, Geneva, sans-serif; }
+.ql-font-tahoma { font-family: Tahoma, Geneva, sans-serif; }
+.ql-font-trebuchet-ms { font-family: 'Trebuchet MS', Helvetica, sans-serif; }
+.ql-font-courier-new { font-family: 'Courier New', Courier, monospace; }
+
 .academic-document-paper .rp-editor .ql-container {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 10pt;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
   border: none;
   flex: 1;
   min-height: 0;
@@ -3168,7 +3258,7 @@ body.is-scrolled .site-header {
   min-height: 0;
   padding: 0 0.25in;
   line-height: 1.6;
-  font-size: 10pt;
+  font-size: 12pt;
   pointer-events: auto;
   -webkit-user-select: text;
   user-select: text;
@@ -3231,6 +3321,39 @@ body.is-scrolled .site-header {
 }
 .academic-toolbar-actions {
   margin-left: auto;
+}
+.academic-download-wrap {
+  position: relative;
+  display: inline-block;
+}
+.academic-download-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  z-index: 50;
+  min-width: 160px;
+  padding: 0.25rem 0;
+}
+.academic-download-option {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.academic-download-option:hover {
+  background: rgba(40, 215, 255, 0.1);
 }
 .academic-toolbar-download {
   padding: 0.45rem 0.9rem;
@@ -3571,6 +3694,52 @@ body.is-scrolled .site-header {
   font-weight: 700;
   font-size: 0.95rem;
   margin-top: 0.5rem;
+}
+
+/* Resume Create hub (/resume/) — extra space between sections and option cards */
+.page-resume-home .resume-hero {
+  margin-bottom: 0;
+  padding-bottom: 4rem !important;
+}
+@media (min-width: 769px) {
+  .page-resume-home .resume-hero {
+    padding-bottom: 4.5rem !important;
+  }
+}
+.page-resume-home .block.block--dark {
+  padding-top: 5.5rem;
+  padding-bottom: 5.5rem;
+  margin-top: 0;
+}
+.page-resume-home .block.block--cream {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+.page-resume-home .block--dark .block-inner,
+.page-resume-home .block--cream .block-inner {
+  padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
+}
+.page-resume-home .resume-options-grid--3 {
+  gap: 2rem 2.25rem;
+  margin-top: 0.5rem;
+}
+@media (min-width: 901px) {
+  .page-resume-home .resume-options-grid--3 {
+    gap: 2.5rem 2.5rem;
+    max-width: 1080px;
+  }
+}
+.page-resume-home .resume-home-section-heading {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+.page-resume-home .resume-home-section-intro {
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Resume AI generate form */

@@ -8,7 +8,7 @@
     <div class="chat-page-inner">
         <p class="hero-badge chat-badge">Brainstorm & ask questions</p>
         <h1 class="block-hero-title">Chat</h1>
-        <p class="block-hero-sub">Ask academic questions, brainstorm ideas, or get help.{% if user.is_authenticated %} Your <a href="{% url 'personalization' %}">personalization</a> shapes how the AI responds.{% else %} <a href="{% url 'login' %}">Sign in</a> to personalize how the AI responds.{% endif %}</p>
+        <p class="block-hero-sub">Ask academic questions, brainstorm ideas, or get help.{% if user.is_authenticated %} Your <a href="{% url 'profile' %}#customize-ai">profile settings</a> shape how the AI responds.{% else %} <a href="{% url 'login' %}">Sign in</a> to personalize how the AI responds.{% endif %}</p>
 
         <div class="chat-layout">
             <aside class="chat-saved-sidebar" id="chat-saved-sidebar">

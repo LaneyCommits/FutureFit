@@ -62,6 +62,15 @@
       .then(parseGapResponse);
   }
 
+  function analyzeGapAdmissions(essay, promptText) {
+    return callServer(SERVER_ENDPOINTS.tailor, {
+      resume: essay,
+      job: promptText,
+      mode: 'gap_analysis',
+      gap_context: 'admissions',
+    }).then(parseGapResponse);
+  }
+
   function parseGapResponse(data) {
     if (typeof data === 'object' && data.match_score !== undefined) return data;
     return {
@@ -341,6 +350,7 @@
     createSkillsSuggester: createSkillsSuggester,
     createJobTailor: createJobTailor,
     analyzeGap: analyzeGap,
+    analyzeGapAdmissions: analyzeGapAdmissions,
     reviewResume: reviewResume,
     formatMarkdown: formatMarkdown,
   };

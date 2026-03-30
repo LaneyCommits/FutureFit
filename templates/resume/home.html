@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Create – ExploringU{% endblock %}
-{% block body_class %}page-resume{% endblock %}
+{% block body_class %}page-resume page-resume-home{% endblock %}
 
 {% block content %}
 <!-- Hero banner -->
@@ -49,8 +49,8 @@
 <!-- Options: Create new or improve existing -->
 <section class="block block--dark">
     <div class="block-inner">
-        <h2 class="block-title block-title--light reveal" style="text-align:center; margin-bottom: 0.5rem;">What would you like to do?</h2>
-        <p class="block-desc block-desc--light reveal" style="text-align:center; margin-bottom: 2.5rem;">Whether you're starting fresh or polishing what you have, we'll help you stand out.</p>
+        <h2 class="block-title block-title--light resume-home-section-heading reveal">What would you like to do?</h2>
+        <p class="block-desc block-desc--light resume-home-section-intro reveal">Whether you're starting fresh or polishing what you have, we'll help you stand out.</p>
         <div class="resume-options-grid resume-options-grid--3">
             <a href="{% url 'resume_generate' %}" class="resume-option-card reveal">
                 <span class="resume-option-icon">✨</span>

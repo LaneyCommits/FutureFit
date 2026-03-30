@@ -22,7 +22,7 @@
             {% endif %}
             <p class="hero-badge">Profile</p>
             <h1 class="block-hero-title">Your profile</h1>
-            <p class="block-hero-sub">Update your photo and a short bio.</p>
+            <p class="block-hero-sub">Photo, bio, job preferences, and how AI tools respond to you.</p>
             <form method="post" action="{% url 'profile' %}" class="auth-form" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% if form.non_field_errors %}
@@ -87,10 +87,24 @@
                     </div>
                 </div>
 
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:1.5rem 0 1rem;" id="customize-ai">
+                <p class="profile-section-label">Customize AI responses</p>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin:0 0 1rem;">Used by the chatbot and AI writing tools.</p>
+                <div class="form-row">
+                    <label for="{{ form.base_style.id_for_label }}">{{ form.base_style.label }}</label>
+                    {{ form.base_style }}
+                    {% if form.base_style.errors %}<span class="auth-field-error">{{ form.base_style.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="form-row">
+                    <label for="{{ form.custom_instructions.id_for_label }}">{{ form.custom_instructions.label }}</label>
+                    {{ form.custom_instructions }}
+                    <span class="form-hint">Tell the AI how you want it to write (tone, style, what to avoid).</span>
+                    {% if form.custom_instructions.errors %}<span class="auth-field-error">{{ form.custom_instructions.errors.0 }}</span>{% endif %}
+                </div>
+
                 <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Save profile</button>
             </form>
-            <p class="auth-switch" style="margin-top:1rem;"><a href="{% url 'personalization' %}">Customize AI responses →</a></p>
-            <p class="auth-switch"><a href="{% url 'logout' %}">Log out of your account →</a></p>
+            <p class="auth-switch" style="margin-top:1rem;"><a href="{% url 'logout' %}">Log out of your account →</a></p>
         </div>
 
         <div class="profile-quiz-section auth-form-card">

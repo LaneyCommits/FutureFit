@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.http import require_http_methods, require_POST
 
 from .email_verification import (
@@ -19,7 +19,7 @@ from .email_verification import (
     seconds_until_resend_allowed,
     RESEND_COOLDOWN_SECONDS,
 )
-from .forms import CustomUserCreationForm, ProfileUpdateForm, PersonalizationForm
+from .forms import CustomUserCreationForm, ProfileUpdateForm
 from .models import Profile
 
 User = get_user_model()
@@ -186,7 +186,7 @@ class CustomLogoutView(LogoutView):
 
 @login_required
 def profile_view(request):
-    """View and edit profile: avatar, bio, job preferences."""
+    """View and edit profile: avatar, bio, job preferences, AI personalization."""
     profile, _created = Profile.objects.get_or_create(user=request.user)
     quiz_labels = []
     try:
@@ -209,17 +209,6 @@ def profile_view(request):
 
 
 @login_required
-def personalization_view(request):
-    """View and edit AI personalization: base style, custom instructions."""
-    profile, _created = Profile.objects.get_or_create(user=request.user)
-    if request.method == 'POST':
-        form = PersonalizationForm(request.POST, instance=profile)
-        if form.is_valid():
-            form.save()
-            return redirect('personalization')
-    else:
-        form = PersonalizationForm(instance=profile)
-    return render(request, 'accounts/personalization.html', {
-        'profile': profile,
-        'form': form,
-    })
+def personalization_redirect_view(request):
+    """Old URL /accounts/profile/personalization/ → profile (AI settings live there)."""
+    return redirect(f"{reverse('profile')}#customize-ai")

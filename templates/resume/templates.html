@@ -29,7 +29,32 @@
                 </nav>
             </div>
 
-            <div class="academic-sidebar-section academic-majors-section">
+            <div class="academic-sidebar-section academic-sidebar-tools">
+                <p class="academic-sidebar-label">{% if doc_type == 'admissions_essay' %}Essay tools{% else %}Writing tools{% endif %}</p>
+                <div class="academic-quick-options academic-quick-options--sidebar" aria-label="{% if doc_type == 'admissions_essay' %}Essay tools{% else %}Writing tools{% endif %}">
+                    <div class="academic-quick-options-grid academic-quick-options-grid--sidebar{% if doc_type != 'resume' %} academic-quick-options-grid--single{% endif %}">
+                        {% if doc_type != 'admissions_essay' %}
+                        <a href="{% url 'resume_generate' %}" class="resume-option-card academic-quick-option-card academic-quick-option-card--heading-only">
+                            <span class="resume-option-icon" aria-hidden="true">✨</span>
+                            <h3 class="resume-option-title">AI-generated resume</h3>
+                        </a>
+                        {% endif %}
+                        {% if doc_type == 'resume' %}
+                        <button type="button" class="resume-option-card academic-quick-option-card academic-quick-option-card--heading-only" id="gapAnalysisOpenBtn">
+                            <span class="resume-option-icon" aria-hidden="true">📊</span>
+                            <h3 class="resume-option-title">Perform Resume Gap Analysis</h3>
+                        </button>
+                        {% elif doc_type == 'admissions_essay' %}
+                        <button type="button" class="resume-option-card academic-quick-option-card academic-quick-option-card--heading-only" id="gapAnalysisOpenBtnAdmissions">
+                            <span class="resume-option-icon" aria-hidden="true">📊</span>
+                            <h3 class="resume-option-title">Essay vs prompt analysis</h3>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="academic-sidebar-section academic-majors-section" id="academic-majors-anchor">
                 <p class="academic-sidebar-label">By major</p>
                 <div class="academic-search-wrap academic-search-wrap--sidebar">
                     <span class="academic-search-icon" aria-hidden="true">🔍</span>
@@ -104,6 +129,15 @@
     <!-- Main content area -->
     <main class="academic-main">
         <div class="academic-main-inner">
+            {% if doc_type == 'resume' %}
+            <section class="academic-gap-panel-section" id="academicGapPanel" hidden>
+                {% include 'resume/partials/gap_analysis_panel.html' %}
+            </section>
+            {% elif doc_type == 'admissions_essay' %}
+            <section class="academic-gap-panel-section academic-gap-panel-section--admissions" id="academicGapPanelAdmissions" hidden>
+                {% include 'resume/partials/gap_analysis_panel_admissions.html' %}
+            </section>
+            {% endif %}
             <div class="academic-toolbar-wrapper" style="position:relative">
             <div class="academic-toolbar" id="academicToolbar">
                 <button type="button" class="academic-toolbar-ai" id="futureBotTrigger" title="FutureBot — AI writing assistant">
@@ -124,16 +158,21 @@
                 <span class="academic-toolbar-group">
                     <span class="academic-toolbar-label">Font</span>
                     <select class="academic-toolbar-select" id="academicToolbarFont" title="Font">
-                        <option value="">—</option>
+                        <option value="'Times New Roman', Times, serif" selected>Times New Roman</option>
                         <option value="Arial, Helvetica, sans-serif">Arial</option>
-                        <option value="'Times New Roman', Times, serif">Times New Roman</option>
                         <option value="Georgia, serif">Georgia</option>
+                        <option value="Garamond, 'EB Garamond', serif">Garamond</option>
+                        <option value="Cambria, serif">Cambria</option>
+                        <option value="'Palatino Linotype', Palatino, serif">Palatino</option>
+                        <option value="Calibri, 'Gill Sans', sans-serif">Calibri</option>
+                        <option value="Verdana, Geneva, sans-serif">Verdana</option>
+                        <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+                        <option value="'Trebuchet MS', Helvetica, sans-serif">Trebuchet MS</option>
+                        <option value="'Courier New', Courier, monospace">Courier New</option>
                     </select>
-                    <span class="academic-toolbar-label">Size</span>
                     <select class="academic-toolbar-select academic-toolbar-size" id="academicToolbarSize" title="Size">
-                        <option value="">Size</option>
                         <option value="1">10pt</option>
-                        <option value="2">12pt</option>
+                        <option value="2" selected>12pt</option>
                         <option value="3">14pt</option>
                         <option value="4">18pt</option>
                         <option value="5">24pt</option>
@@ -167,9 +206,16 @@
                     <button type="button" class="academic-toolbar-btn" data-cmd="removeFormat" title="Clear formatting">✕</button>
                 </span>
                 <div class="academic-toolbar-actions">
-                    <button type="button" class="academic-toolbar-download" id="academicDownloadPdf" title="Download as PDF">
-                        <span aria-hidden="true">↓</span> Download PDF
-                    </button>
+                    <div class="academic-download-wrap" id="academicDownloadWrap">
+                        <button type="button" class="academic-toolbar-download" id="academicDownloadBtn" title="Download">
+                            <span aria-hidden="true">↓</span> Download
+                        </button>
+                        <div class="academic-download-menu" id="academicDownloadMenu" style="display:none;">
+                            <button type="button" class="academic-download-option" data-format="pdf">PDF (.pdf)</button>
+                            <button type="button" class="academic-download-option" data-format="docx">Word (.docx)</button>
+                            <button type="button" class="academic-download-option" data-format="txt">Plain text (.txt)</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- FutureBot pop-up (moveable, fixed position) -->
@@ -231,6 +277,7 @@
     sidebarCollapse.addEventListener('click', collapseSidebar);
     sidebarExpand.addEventListener('click', expandSidebar);
   }
+
 
   // Search — filter sidebar majors only
   var search = document.getElementById('academicSearch');
@@ -514,46 +561,58 @@
     rpEditor.addEventListener('focusout', checkPlaceholder);
   }
 
-  // Download PDF
-  var downloadBtn = document.getElementById('academicDownloadPdf');
-  if (downloadBtn && paper) {
-    downloadBtn.addEventListener('click', function() {
-      var htmlToSend = paper.outerHTML;
-      var qlEditor = paper.querySelector('.rp-editor .ql-editor');
-      if (qlEditor) {
-        var rpEditor = paper.querySelector('.rp-editor');
-        if (rpEditor) {
-          var clone = paper.cloneNode(true);
-          var cloneEditor = clone.querySelector('.rp-editor');
-          if (cloneEditor) {
-            cloneEditor.innerHTML = qlEditor.innerHTML;
+  // Download (PDF / DOCX / TXT)
+  var downloadBtn = document.getElementById('academicDownloadBtn');
+  var downloadMenu = document.getElementById('academicDownloadMenu');
+  var downloadWrap = document.getElementById('academicDownloadWrap');
+  if (downloadBtn && downloadMenu && paper) {
+    downloadBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      downloadMenu.style.display = downloadMenu.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function(e) {
+      if (!downloadWrap.contains(e.target)) downloadMenu.style.display = 'none';
+    });
+    downloadMenu.querySelectorAll('.academic-download-option').forEach(function(opt) {
+      opt.addEventListener('click', function() {
+        var fmt = this.getAttribute('data-format');
+        downloadMenu.style.display = 'none';
+        var htmlToSend = paper.outerHTML;
+        var qlEditor = paper.querySelector('.rp-editor .ql-editor');
+        if (qlEditor) {
+          var rpEd = paper.querySelector('.rp-editor');
+          if (rpEd) {
+            var clone = paper.cloneNode(true);
+            var cloneEditor = clone.querySelector('.rp-editor');
+            if (cloneEditor) cloneEditor.innerHTML = qlEditor.innerHTML;
+            htmlToSend = clone.outerHTML;
           }
-          htmlToSend = clone.outerHTML;
         }
-      }
-      var label = paper.getAttribute('data-template-label');
-      var filename = (label ? label.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'academic-document') + '-exploringu.pdf';
-      downloadBtn.disabled = true;
-      downloadBtn.innerHTML = '<span class="academic-btn-spinner"></span> Generating...';
-      fetch('/resume/api/pdf/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ html: htmlToSend, filename: filename })
-      }).then(function(r) {
-        if (!r.ok) return Promise.reject(new Error(r.status));
-        return r.blob();
-      }).then(function(blob) {
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
-      }).catch(function() {
-        alert('PDF generation failed. Please try again.');
-      }).finally(function() {
-        downloadBtn.disabled = false;
-        downloadBtn.innerHTML = '<span aria-hidden="true">↓</span> Download PDF';
+        var label = paper.getAttribute('data-template-label');
+        var baseName = (label ? label.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'document') + '-exploringu';
+        downloadBtn.disabled = true;
+        downloadBtn.innerHTML = '<span class="academic-btn-spinner"></span> Generating...';
+        fetch('/resume/api/pdf/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ html: htmlToSend, filename: baseName, format: fmt })
+        }).then(function(r) {
+          if (!r.ok) return Promise.reject(new Error(r.status));
+          return r.blob();
+        }).then(function(blob) {
+          var ext = fmt === 'docx' ? '.docx' : fmt === 'txt' ? '.txt' : '.pdf';
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = baseName + ext;
+          a.click();
+          URL.revokeObjectURL(url);
+        }).catch(function() {
+          alert('Export failed. Please try again.');
+        }).finally(function() {
+          downloadBtn.disabled = false;
+          downloadBtn.innerHTML = '<span aria-hidden="true">↓</span> Download';
+        });
       });
     });
   }
@@ -563,9 +622,31 @@
 <script>
 (function() {
   if (typeof Quill === 'undefined') return;
+
+  var Font = Quill.import('formats/font');
+  Font.whitelist = [
+    'times-new-roman', 'arial', 'georgia', 'garamond', 'cambria',
+    'palatino', 'calibri', 'verdana', 'tahoma', 'trebuchet-ms', 'courier-new'
+  ];
+  Quill.register(Font, true);
+
   var paper = document.getElementById('academicDocumentPaper');
   var canvas = document.getElementById('academicCanvas');
   if (!paper || !canvas) return;
+
+  var FONT_CSS_MAP = {
+    'times-new-roman': "'Times New Roman', Times, serif",
+    'arial': "Arial, Helvetica, sans-serif",
+    'georgia': "Georgia, serif",
+    'garamond': "Garamond, 'EB Garamond', serif",
+    'cambria': "Cambria, serif",
+    'palatino': "'Palatino Linotype', Palatino, serif",
+    'calibri': "Calibri, 'Gill Sans', sans-serif",
+    'verdana': "Verdana, Geneva, sans-serif",
+    'tahoma': "Tahoma, Geneva, sans-serif",
+    'trebuchet-ms': "'Trebuchet MS', Helvetica, sans-serif",
+    'courier-new': "'Courier New', Courier, monospace"
+  };
 
   var quillInstance = null;
 
@@ -644,10 +725,8 @@
     var fontSelect = document.getElementById('academicToolbarFont');
     var sizeSelect = document.getElementById('academicToolbarSize');
     if (q && fontSelect && format.font) {
-      var opts = fontSelect.querySelectorAll('option');
-      for (var i = 0; i < opts.length; i++) {
-        if (opts[i].value === format.font) { fontSelect.value = format.font; break; }
-      }
+      var cssVal = FONT_CSS_MAP[format.font];
+      if (cssVal) fontSelect.value = cssVal;
     }
     if (q && sizeSelect && format.size) {
       sizeSelect.value = String(format.size);
@@ -656,6 +735,44 @@
 
   // Init Quill on rp-editor (single full-page typing area)
   initEditorQuill();
+
+  // After AI resume generator: paste stored HTML into the writing area
+  (function pasteAiResumeFromStorage() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('from_ai') !== '1') return;
+      var html = null;
+      try {
+        html = sessionStorage.getItem('aiResumeEditorHtml');
+      } catch (e) {}
+      if (!html) return;
+      try {
+        sessionStorage.removeItem('aiResumeEditorHtml');
+      } catch (e) {}
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+      var editor = document.getElementById('rpEditor');
+      if (!editor) return;
+      var q = quillInstance && quillInstance.quill;
+      if (q) {
+        try {
+          var delta = q.clipboard.convert(html);
+          q.setContents(delta, 'user');
+        } catch (e2) {
+          q.setContents([{ insert: '\n' }]);
+          q.clipboard.dangerouslyPasteHTML(0, html, 'user');
+        }
+      } else {
+        editor.innerHTML = html;
+        initAllQuills();
+      }
+      editor.removeAttribute('data-placeholder');
+      if (paper) paper.setAttribute('data-template-label', 'AI-generated resume');
+    } catch (e) {
+      console.error('pasteAiResumeFromStorage', e);
+    }
+  })();
 
   // Click anywhere on paper/wrap to focus editor (Word-like)
   var docWrap = document.querySelector('.academic-document-wrap');
@@ -725,9 +842,13 @@
     });
     var fontSelect = document.getElementById('academicToolbarFont');
     var sizeSelect = document.getElementById('academicToolbarSize');
+    var CSS_TO_QUILL_FONT = {};
+    Object.keys(FONT_CSS_MAP).forEach(function(qf) { CSS_TO_QUILL_FONT[FONT_CSS_MAP[qf]] = qf; });
+
     if (fontSelect) fontSelect.addEventListener('change', function() {
       var q = getFocusedQuill();
-      if (q && this.value) q.format('font', this.value);
+      var quillFont = CSS_TO_QUILL_FONT[this.value];
+      if (q && quillFont) q.format('font', quillFont);
     });
     if (sizeSelect) sizeSelect.addEventListener('change', function() {
       var q = getFocusedQuill();
@@ -737,4 +858,8 @@
 
 })();
 </script>
+{% if doc_type == 'resume' or doc_type == 'admissions_essay' %}
+<script src="{% static 'js/resume-ai.js' %}"></script>
+<script src="{% static 'js/gap-analysis-panel.js' %}"></script>
+{% endif %}
 {% endblock %}

@@ -77,12 +77,15 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
-    """Profile avatar, bio, and job preferences."""
+    """Profile avatar, bio, job preferences, and AI personalization."""
 
     class Meta:
         model = Profile
-        fields = ('avatar', 'bio', 'major_key', 'preferred_job_type',
-                  'preferred_remote', 'preferred_location', 'min_salary')
+        fields = (
+            'avatar', 'bio', 'major_key', 'preferred_job_type',
+            'preferred_remote', 'preferred_location', 'min_salary',
+            'base_style', 'custom_instructions',
+        )
         widgets = {
             'avatar': forms.FileInput(attrs={
                 'class': 'form-input profile-avatar-file',
@@ -95,6 +98,14 @@ class ProfileUpdateForm(forms.ModelForm):
                 'placeholder': 'e.g. 50000',
                 'min': '0',
             }),
+            'custom_instructions': forms.Textarea(attrs={
+                'rows': 4,
+                'class': 'form-input',
+                'placeholder': (
+                    'e.g. Write like a real human. Stay professional but casual. '
+                    'Avoid buzzwords and jargon.'
+                ),
+            }),
         }
         labels = {
             'major_key': 'Major',
@@ -102,6 +113,8 @@ class ProfileUpdateForm(forms.ModelForm):
             'preferred_remote': 'Work setting',
             'preferred_location': 'Preferred location',
             'min_salary': 'Minimum salary ($)',
+            'base_style': 'Base style and tone',
+            'custom_instructions': 'Custom instructions',
         }
 
     def __init__(self, *args, **kwargs):
@@ -109,6 +122,7 @@ class ProfileUpdateForm(forms.ModelForm):
         from career_quiz.quiz_data import MAJORS
         major_choices = [('', 'Not set')] + [(m[0], m[1]) for m in MAJORS]
         self.fields['major_key'].widget = forms.Select(choices=major_choices)
+        self.fields['base_style'].widget.attrs.setdefault('class', 'form-input')
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
@@ -117,15 +131,3 @@ class ProfileUpdateForm(forms.ModelForm):
         return avatar
 
 
-class PersonalizationForm(forms.ModelForm):
-    """AI style and custom instructions."""
-
-    class Meta:
-        model = Profile
-        fields = ('base_style', 'custom_instructions')
-        widgets = {
-            'custom_instructions': forms.Textarea(attrs={
-                'rows': 4,
-                'placeholder': 'e.g. Write like a real human. Stay professional but casual. Avoid buzzwords and jargon.',
-            }),
-        }

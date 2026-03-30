@@ -8,5 +8,5 @@ urlpatterns = [
     path('verify-email/resend/', views.resend_verification_view, name='verify_email_resend'),
     path('logout/', views.CustomLogoutView.as_view(), name='logout'),
     path('profile/', views.profile_view, name='profile'),
-    path('profile/personalization/', views.personalization_view, name='personalization'),
+    path('profile/personalization/', views.personalization_redirect_view, name='personalization'),
 ]
