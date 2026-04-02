@@ -19,7 +19,7 @@ from .email_verification import (
     seconds_until_resend_allowed,
     RESEND_COOLDOWN_SECONDS,
 )
-from .forms import CustomUserCreationForm, ProfileUpdateForm
+from .forms import CustomAuthenticationForm, CustomUserCreationForm, ProfileUpdateForm
 from .models import Profile
 
 User = get_user_model()
@@ -56,6 +56,7 @@ def _get_pending_user(request):
 class CustomLoginView(LoginView):
     template_name = 'accounts/login.html'
     redirect_authenticated_user = True
+    authentication_form = CustomAuthenticationForm
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')

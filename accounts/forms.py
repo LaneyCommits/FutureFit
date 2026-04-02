@@ -2,7 +2,7 @@
 import re
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
 
 from .models import Profile
@@ -55,6 +55,18 @@ class CustomUserCreationForm(UserCreationForm):
             existing.delete()
         return username
 
+    def clean_password1(self):
+        """
+        Make passwords case-insensitive by normalizing to lowercase.
+        Note: existing users will need to reset/recreate their accounts for this to take effect.
+        """
+        pw1 = self.cleaned_data.get('password1')
+        return pw1.lower() if pw1 is not None else pw1
+
+    def clean_password2(self):
+        pw2 = self.cleaned_data.get('password2')
+        return pw2.lower() if pw2 is not None else pw2
+
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
         for u in User.objects.filter(email__iexact=email):
@@ -74,6 +86,16 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
             self.save_m2m()
         return user
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    """
+    Login form that normalizes the password to lowercase so login is case-insensitive.
+    """
+
+    def clean_password(self):
+        pw = self.cleaned_data.get('password')
+        return pw.lower() if pw is not None else pw
 
 
 class ProfileUpdateForm(forms.ModelForm):
