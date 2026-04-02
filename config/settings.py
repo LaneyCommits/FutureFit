@@ -43,6 +43,44 @@ if _extra_csrf.strip():
         if _o and _o not in CSRF_TRUSTED_ORIGINS:
             CSRF_TRUSTED_ORIGINS.append(_o)
 
+
+def _add_host_and_csrf_from_public_url(url: str) -> None:
+    """Add www / apex variants so login CSRF works whether users hit www or bare domain."""
+    raw = (url or "").strip().rstrip("/")
+    if not raw:
+        return
+    if raw not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(raw)
+    if not raw.startswith(("http://", "https://")):
+        return
+    try:
+        from urllib.parse import urlparse
+        p = urlparse(raw)
+        host = (p.hostname or "").lower()
+        if not host:
+            return
+        port = f":{p.port}" if p.port else ""
+        scheme = p.scheme or "https"
+        if host.startswith("www."):
+            apex_host = host[4:]
+            if apex_host and apex_host not in ALLOWED_HOSTS:
+                ALLOWED_HOSTS.append(apex_host)
+            apex_origin = f"{scheme}://{apex_host}{port}"
+            if apex_origin not in CSRF_TRUSTED_ORIGINS:
+                CSRF_TRUSTED_ORIGINS.append(apex_origin)
+        else:
+            www_host = f"www.{host}"
+            if www_host not in ALLOWED_HOSTS:
+                ALLOWED_HOSTS.append(www_host)
+            www_origin = f"{scheme}://{www_host}{port}"
+            if www_origin not in CSRF_TRUSTED_ORIGINS:
+                CSRF_TRUSTED_ORIGINS.append(www_origin)
+    except Exception:
+        pass
+
+
+_add_host_and_csrf_from_public_url(SITE_PUBLIC_URL)
+
 # Optional: Google Search Console HTML tag verification (content token only).
 GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "").strip()
 
@@ -178,5 +216,7 @@ if (
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'true').lower() in ('true', '1', 'yes')
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    # HTTPS on production: keep True. For rare HTTP tests (e.g. local prod build), set DJANGO_SECURE_COOKIES=false
+    _secure_cookies = os.environ.get('DJANGO_SECURE_COOKIES', 'true').lower() in ('true', '1', 'yes')
+    SESSION_COOKIE_SECURE = _secure_cookies
+    CSRF_COOKIE_SECURE = _secure_cookies
