@@ -13,7 +13,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+from config import seo_views
+
 urlpatterns = [
+    path('robots.txt', seo_views.robots_txt),
+    path('sitemap.xml', seo_views.sitemap_xml),
     path('admin/', admin.site.urls),
     path('', include('resume_analysis.urls')),
     path('career-quiz/', include('career_quiz.urls')),

@@ -21,7 +21,7 @@
             </ul>
             {% endif %}
             <p class="hero-badge">Profile</p>
-            <h1 class="block-hero-title">Your profile</h1>
+            <h1 class="block-hero-title">Hi, {{ user.username }}</h1>
             <p class="block-hero-sub">Photo, bio, job preferences, and how AI tools respond to you.</p>
             <form method="post" action="{% url 'profile' %}" class="auth-form" enctype="multipart/form-data">
                 {% csrf_token %}

@@ -225,34 +225,44 @@
                         <h3 class="futurebot-title" id="futureBotTitle"><span class="futurebot-sparkle" aria-hidden="true">✦</span> FutureBot</h3>
                         <button type="button" class="futurebot-close" id="futureBotClose" title="Close" aria-label="Close">&times;</button>
                     </div>
-                    <p class="futurebot-prompt">Describe your writing task</p>
-                    <div class="futurebot-input-row">
-                        <input type="text" class="futurebot-input" id="futureBotInput" placeholder="e.g. Write a professional summary for a software engineering internship" autocomplete="off">
-                        <button type="button" class="futurebot-generate-btn" id="futureBotGenerate" title="Generate">Generate</button>
+                    <div class="futurebot-messages" id="futureBotMessages">
+                        <div class="futurebot-msg futurebot-msg--bot">
+                            <span class="futurebot-msg-role">FutureBot</span>
+                            <div class="futurebot-msg-content">What can I help you write? Try a suggestion below or type your own request.</div>
+                        </div>
                     </div>
-                    <div class="futurebot-suggestions">
+                    <div class="futurebot-suggestions" id="futureBotSuggestions">
                         <button type="button" class="futurebot-suggestion" data-task="Case Study">Case Study</button>
                         <button type="button" class="futurebot-suggestion" data-task="Business Proposal">Business Proposal</button>
                         <button type="button" class="futurebot-suggestion" data-task="Resume Summary">Resume Summary</button>
                         <button type="button" class="futurebot-suggestion" data-task="Cover Letter">Cover Letter</button>
                     </div>
-                    <p class="futurebot-status" id="futureBotStatusInline" aria-live="polite" style="display:none;"></p>
-                    <div class="futurebot-output-wrap" id="futureBotOutputWrap" style="display:none;">
-                        <div class="futurebot-output" id="futureBotOutput"></div>
-                        <button type="button" class="futurebot-insert-btn" id="futureBotInsertBtn" title="Insert into document">Insert into document</button>
+                    <div class="futurebot-input-row">
+                        <textarea class="futurebot-input" id="futureBotInput" rows="2" placeholder="Type your request..." autocomplete="off"></textarea>
+                        <button type="button" class="futurebot-generate-btn" id="futureBotGenerate" title="Send">Send</button>
                     </div>
                 </div>
-                <div class="futurebot-resize-handle" id="futureBotResizeHandle" title="Drag to resize"></div>
+                <div class="futurebot-edge futurebot-edge--n" data-edge="n"></div>
+                <div class="futurebot-edge futurebot-edge--s" data-edge="s"></div>
+                <div class="futurebot-edge futurebot-edge--e" data-edge="e"></div>
+                <div class="futurebot-edge futurebot-edge--w" data-edge="w"></div>
+                <div class="futurebot-edge futurebot-edge--ne" data-edge="ne"></div>
+                <div class="futurebot-edge futurebot-edge--nw" data-edge="nw"></div>
+                <div class="futurebot-edge futurebot-edge--se" data-edge="se"></div>
+                <div class="futurebot-edge futurebot-edge--sw" data-edge="sw"></div>
             </div>
             </div>
 
             <div class="academic-document-wrap">
-                <div class="academic-document-paper" id="academicDocumentPaper">
-                    <div class="resume-paper" id="academicCanvas">
-                        <div class="rp-editor" id="rpEditor" contenteditable="true" data-placeholder="Pick a major from the sidebar to load a template, or click anywhere to start typing.">
-                            <p><br></p>
+                <div class="academic-document-stage">
+                    <div class="academic-document-paper" id="academicDocumentPaper">
+                        <div class="resume-paper" id="academicCanvas">
+                            <div class="rp-editor" id="rpEditor" contenteditable="true" data-placeholder="Pick a major from the sidebar to load a template, or click anywhere to start typing.">
+                                <p><br></p>
+                            </div>
                         </div>
                     </div>
+                    {% include 'resume/partials/adsense_create_rail.html' %}
                 </div>
             </div>
         </div>
@@ -328,12 +338,13 @@
     });
   }
 
-  // FutureBot pop-up — connect with AI inline, moveable
+  // FutureBot pop-up — chat-style AI assistant
   var futureBotTrigger = document.getElementById('futureBotTrigger');
   var futureBotPopup = document.getElementById('futureBotPopup');
   var futureBotClose = document.getElementById('futureBotClose');
   var futureBotInput = document.getElementById('futureBotInput');
   var futureBotDragHandle = document.getElementById('futureBotDragHandle');
+  var futureBotMessages = document.getElementById('futureBotMessages');
   if (futureBotTrigger && futureBotPopup) {
     function getCsrfToken() {
       var name = 'csrftoken';
@@ -344,6 +355,79 @@
       }
       return '';
     }
+
+    function fbEscapeHtml(text) {
+      var div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    function fbFormatContent(text) {
+      var escaped = fbEscapeHtml(text);
+      escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      escaped = escaped.replace(/\n/g, '<br>');
+      return escaped;
+    }
+
+    function fbAddMessage(role, content, opts) {
+      opts = opts || {};
+      var div = document.createElement('div');
+      div.className = 'futurebot-msg futurebot-msg--' + role;
+      var roleLabel = document.createElement('span');
+      roleLabel.className = 'futurebot-msg-role';
+      roleLabel.textContent = role === 'user' ? 'You' : 'FutureBot';
+      var contentEl = document.createElement('div');
+      contentEl.className = 'futurebot-msg-content';
+      if (role === 'bot') {
+        contentEl.innerHTML = fbFormatContent(content);
+      } else {
+        contentEl.textContent = content;
+      }
+      div.appendChild(roleLabel);
+      div.appendChild(contentEl);
+      if (opts.insertBtn && content) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'futurebot-insert-btn';
+        btn.textContent = 'Insert into document';
+        var resultText = content;
+        btn.addEventListener('click', function() {
+          fbInsertText(resultText);
+        });
+        div.appendChild(btn);
+      }
+      futureBotMessages.appendChild(div);
+      futureBotMessages.scrollTop = futureBotMessages.scrollHeight;
+      return div;
+    }
+
+    function fbAddLoading() {
+      var div = document.createElement('div');
+      div.className = 'futurebot-msg futurebot-msg--bot futurebot-msg--loading';
+      var roleLabel = document.createElement('span');
+      roleLabel.className = 'futurebot-msg-role';
+      roleLabel.textContent = 'FutureBot';
+      var contentEl = document.createElement('div');
+      contentEl.className = 'futurebot-msg-content';
+      contentEl.innerHTML = 'Thinking<span class="chat-loading-dot">.</span><span class="chat-loading-dot">.</span><span class="chat-loading-dot">.</span>';
+      div.appendChild(roleLabel);
+      div.appendChild(contentEl);
+      futureBotMessages.appendChild(div);
+      futureBotMessages.scrollTop = futureBotMessages.scrollHeight;
+      return div;
+    }
+
+    function fbInsertText(text) {
+      if (!text) return;
+      var firstContent = document.querySelector('#academicCanvas .rp-editor .ql-editor');
+      var q = (typeof window.getFocusedQuill === 'function') ? window.getFocusedQuill() : null;
+      if (!q && typeof Quill !== 'undefined' && Quill.find && firstContent) q = Quill.find(firstContent);
+      if (q) {
+        q.insertText(q.getLength(), '\n\n' + text, 'user');
+      } else if (firstContent) {
+        firstContent.innerHTML += (firstContent.innerText ? '<p><br></p><p>' : '<p>') + text.replace(/\n/g, '</p><p>') + '</p>';
+      }
+    }
+
     function positionPopupDefault() {
       var rect = futureBotTrigger ? futureBotTrigger.getBoundingClientRect() : { left: 20, bottom: 0 };
       futureBotPopup.style.left = (typeof rect.left === 'number' ? Math.max(20, rect.left) : 20) + 'px';
@@ -354,25 +438,8 @@
       futureBotPopup.style.display = 'block';
       futureBotPopup.setAttribute('aria-hidden', 'false');
       if (!futureBotPopup.style.left || futureBotPopup.style.left === '0px') positionPopupDefault();
-      var statusInline = document.getElementById('futureBotStatusInline');
-      if (statusInline) { statusInline.style.display = 'none'; statusInline.textContent = ''; }
       if (futureBotInput) futureBotInput.focus();
     });
-    var futureBotInsertBtn = document.getElementById('futureBotInsertBtn');
-    if (futureBotInsertBtn) {
-      futureBotInsertBtn.addEventListener('click', function() {
-        var text = window._futureBotLastResult;
-        if (!text) return;
-        var firstContent = document.querySelector('#academicCanvas .rp-editor .ql-editor');
-        var q = (typeof window.getFocusedQuill === 'function') ? window.getFocusedQuill() : null;
-        if (!q && typeof Quill !== 'undefined' && Quill.find && firstContent) q = Quill.find(firstContent);
-        if (q) {
-          q.insertText(q.getLength(), '\n\n' + text, 'user');
-        } else if (firstContent) {
-          firstContent.innerHTML += (firstContent.innerText ? '<p><br></p><p>' : '<p>') + text.replace(/\n/g, '</p><p>') + '</p>';
-        }
-      });
-    }
     if (futureBotClose) futureBotClose.addEventListener('click', function() {
       futureBotPopup.style.display = 'none';
       futureBotPopup.setAttribute('aria-hidden', 'true');
@@ -397,56 +464,64 @@
       document.addEventListener('mousemove', function(e) {
         if (!dragging) return;
         var dx = e.clientX - startX, dy = e.clientY - startY;
-        var newLeft = startLeft + dx;
-        var newTop = startTop + dy;
-        futureBotPopup.style.left = newLeft + 'px';
-        futureBotPopup.style.top = newTop + 'px';
+        futureBotPopup.style.left = (startLeft + dx) + 'px';
+        futureBotPopup.style.top = (startTop + dy) + 'px';
       });
       document.addEventListener('mouseup', function() { dragging = false; });
     }
-    var futureBotResizeHandle = document.getElementById('futureBotResizeHandle');
-    if (futureBotResizeHandle && futureBotPopup) {
-      var resizing = false, startX, startW;
-      futureBotResizeHandle.addEventListener('mousedown', function(e) {
-        resizing = true;
-        startX = e.clientX;
-        var inner = futureBotPopup.querySelector('.futurebot-popup-inner');
-        startW = inner ? (parseInt(getComputedStyle(inner).width, 10) || 380) : 380;
-        e.preventDefault();
+    (function initEdgeResize() {
+      var edges = futureBotPopup.querySelectorAll('.futurebot-edge[data-edge]');
+      if (!edges.length) return;
+      var activeEdge = null, sx, sy, sr;
+      edges.forEach(function(el) {
+        el.addEventListener('mousedown', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          activeEdge = el.getAttribute('data-edge');
+          sx = e.clientX;
+          sy = e.clientY;
+          sr = {
+            l: parseInt(futureBotPopup.style.left, 10) || futureBotPopup.getBoundingClientRect().left,
+            t: parseInt(futureBotPopup.style.top, 10) || futureBotPopup.getBoundingClientRect().top,
+            w: futureBotPopup.offsetWidth,
+            h: futureBotPopup.offsetHeight
+          };
+          futureBotPopup.classList.add('is-resizing');
+        });
       });
       document.addEventListener('mousemove', function(e) {
-        if (!resizing) return;
-        var inner = futureBotPopup.querySelector('.futurebot-popup-inner');
-        if (!inner) return;
-        var dw = e.clientX - startX;
-        var w = Math.max(280, Math.min(560, startW + dw));
-        inner.style.width = w + 'px';
-        inner.style.maxWidth = w + 'px';
-        inner.style.minWidth = w + 'px';
+        if (!activeEdge) return;
+        var dx = e.clientX - sx, dy = e.clientY - sy;
+        var nl = sr.l, nt = sr.t, nw = sr.w, nh = sr.h;
+        if (activeEdge.indexOf('e') !== -1) nw = sr.w + dx;
+        if (activeEdge.indexOf('w') !== -1) { nw = sr.w - dx; nl = sr.l + dx; }
+        if (activeEdge.indexOf('s') !== -1) nh = sr.h + dy;
+        if (activeEdge.indexOf('n') !== -1) { nh = sr.h - dy; nt = sr.t + dy; }
+        nw = Math.max(260, Math.min(window.innerWidth * 0.9, nw));
+        nh = Math.max(200, Math.min(window.innerHeight * 0.9, nh));
+        futureBotPopup.style.width = nw + 'px';
+        futureBotPopup.style.height = nh + 'px';
+        futureBotPopup.style.left = nl + 'px';
+        futureBotPopup.style.top = nt + 'px';
       });
-      document.addEventListener('mouseup', function() { resizing = false; });
-    }
-    function generateAndInsert(promptText, task) {
-      var canvas = document.getElementById('academicCanvas');
-      var statusInline = document.getElementById('futureBotStatusInline');
-      if (!canvas) return;
-      if (!promptText && !task) {
-        if (statusInline) { statusInline.textContent = 'Describe your task or choose a suggestion.'; statusInline.style.display = 'block'; statusInline.className = 'futurebot-status futurebot-status--error'; }
-        return;
-      }
-      function showStatus(msg, isError) {
-        if (statusInline) {
-          statusInline.textContent = msg;
-          statusInline.style.display = 'block';
-          statusInline.className = 'futurebot-status' + (isError ? ' futurebot-status--error' : '');
+      document.addEventListener('mouseup', function() {
+        if (activeEdge) {
+          activeEdge = null;
+          futureBotPopup.classList.remove('is-resizing');
         }
-      }
-      function hideStatus() {
-        if (statusInline) { statusInline.style.display = 'none'; statusInline.textContent = ''; }
-      }
-      showStatus('Generating…', false);
+      });
+    })();
+
+    function sendFutureBotMessage(promptText, task) {
+      var canvas = document.getElementById('academicCanvas');
+      if (!canvas) return;
+      var displayText = promptText || task || '';
+      if (!displayText) return;
+      fbAddMessage('user', displayText);
+      if (futureBotInput) futureBotInput.value = '';
       var genBtn = document.getElementById('futureBotGenerate');
       if (genBtn) genBtn.disabled = true;
+      var loadingEl = fbAddLoading();
       var headers = { 'Content-Type': 'application/json' };
       var csrf = getCsrfToken();
       if (csrf) headers['X-CSRFToken'] = csrf;
@@ -472,37 +547,32 @@
         });
       }).then(function(data) {
         done();
-        hideStatus();
+        if (loadingEl && loadingEl.parentNode) loadingEl.remove();
         var text = (data && data.result) ? String(data.result).trim() : '';
         if (!text) {
-          showStatus('No content was generated. Try a different prompt.', true);
+          fbAddMessage('bot', 'No content was generated. Try a different prompt.');
           return;
         }
-        var outputWrap = document.getElementById('futureBotOutputWrap');
-        var outputEl = document.getElementById('futureBotOutput');
-        if (outputEl) {
-          outputEl.textContent = text;
-          outputEl.style.whiteSpace = 'pre-wrap';
-        }
-        if (outputWrap) outputWrap.style.display = 'block';
-        window._futureBotLastResult = text;
+        fbAddMessage('bot', text, { insertBtn: true });
       }).catch(function(err) {
         done();
-        hideStatus();
-        var msg = 'Request failed. ';
-        if (err.name === 'AbortError') msg = 'Request timed out (60s). Try again.';
-        else if (err.message) msg = err.message;
-        else if (err && String(err)) msg = String(err);
-        showStatus(msg, true);
+        if (loadingEl && loadingEl.parentNode) loadingEl.remove();
+        var msg = 'Sorry, something went wrong: ';
+        if (err.name === 'AbortError') msg = 'Request timed out (60s). Please try again.';
+        else if (err.message) msg += err.message;
+        else msg += 'Please try again.';
+        fbAddMessage('bot', msg);
       });
     }
+
     function runFutureBotFromInput() {
       var promptText = futureBotInput ? futureBotInput.value.trim() : '';
-      generateAndInsert(promptText, '');
+      if (!promptText) return;
+      sendFutureBotMessage(promptText, '');
     }
     if (futureBotInput) {
       futureBotInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           e.stopPropagation();
           runFutureBotFromInput();
@@ -519,8 +589,7 @@
     document.querySelectorAll('.futurebot-suggestion').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var task = this.getAttribute('data-task');
-        var promptText = futureBotInput ? futureBotInput.value.trim() : '';
-        generateAndInsert(promptText, task);
+        sendFutureBotMessage('', task);
       });
     });
   }

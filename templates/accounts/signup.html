@@ -50,13 +50,19 @@
                 </div>
                 <div class="form-row">
                     <label for="id_password1">Password</label>
-                    <input type="password" name="password1" id="id_password1" class="form-input" required autocomplete="new-password" placeholder="Choose a password">
+                    <div class="password-field-wrap">
+                        <input type="password" name="password1" id="id_password1" class="form-input" required autocomplete="new-password" placeholder="Choose a password">
+                        {% include 'accounts/partials/password_toggle_button.html' %}
+                    </div>
                     {% if form.password1.errors %}<span class="auth-field-error">{{ form.password1.errors.0 }}</span>{% endif %}
                     {% if form.password1.help_text %}<span class="form-hint">{{ form.password1.help_text }}</span>{% endif %}
                 </div>
                 <div class="form-row">
                     <label for="id_password2">Confirm password</label>
-                    <input type="password" name="password2" id="id_password2" class="form-input" required autocomplete="new-password" placeholder="Confirm your password">
+                    <div class="password-field-wrap">
+                        <input type="password" name="password2" id="id_password2" class="form-input" required autocomplete="new-password" placeholder="Confirm your password">
+                        {% include 'accounts/partials/password_toggle_button.html' %}
+                    </div>
                     {% if form.password2.errors %}<span class="auth-field-error">{{ form.password2.errors.0 }}</span>{% endif %}
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Create account</button>
@@ -65,4 +71,5 @@
         </div>
     </div>
 </section>
+<script src="{% static 'js/password-toggle.js' %}"></script>
 {% endblock %}

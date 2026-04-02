@@ -668,6 +668,44 @@ body.is-scrolled .site-header {
   box-shadow: 0 0 0 2px rgba(40, 215, 255, 0.15);
 }
 .page-auth .auth-form .form-input::placeholder { color: var(--text-muted); opacity: 0.8; }
+.page-auth .password-field-wrap {
+  position: relative;
+}
+.page-auth .password-field-wrap .form-input {
+  padding-right: 2.75rem;
+}
+.page-auth .password-toggle-btn {
+  position: absolute;
+  right: 0.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.35rem;
+  height: 2.35rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.page-auth .password-toggle-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+}
+.page-auth .password-toggle-btn:focus-visible {
+  outline: 2px solid var(--teal-accent);
+  outline-offset: 2px;
+}
+.page-auth .password-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
 .page-auth .auth-error {
   background: rgba(200, 80, 80, 0.15);
   border: 1px solid rgba(200, 80, 80, 0.3);
@@ -2546,6 +2584,7 @@ body.is-scrolled .site-header {
   background: var(--surface);
   padding-top: 2rem;
 }
+
 .academic-sidebar {
   width: 280px;
   max-width: 280px;
@@ -3193,7 +3232,45 @@ body.is-scrolled .site-header {
   display: flex;
   flex-direction: column;
   overflow: auto;
+  align-items: stretch;
+}
+/* Row: flexible left gutter | white page | AdSense in the right dark gutter (wide screens) */
+.academic-document-stage {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  width: 100%;
+  min-height: 0;
+}
+.academic-document-stage .academic-ad-rail {
+  display: none;
+}
+@media (min-width: 1200px) {
+  .academic-document-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(160px, 300px);
+    gap: 0 1.25rem;
+    align-items: start;
+  }
+  .academic-document-stage .academic-document-paper {
+    grid-column: 2;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .academic-document-stage .academic-ad-rail {
+    grid-column: 3;
+    display: block;
+    padding: 0;
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+  }
+}
+.academic-ad-rail-inner {
+  position: sticky;
+  top: 0.5rem;
+  width: 100%;
+  max-width: 300px;
 }
 .academic-document-paper {
   background: #fff;
@@ -4237,20 +4314,25 @@ body.is-scrolled .site-header {
   border-radius: var(--radius);
   box-shadow: var(--shadow-hover);
   border: 1px solid var(--border);
-  padding: 0.85rem 1rem;
-  max-width: 380px;
-  border-bottom: 3px solid transparent;
-  border-image: linear-gradient(90deg, var(--primary-btn), var(--primary-btn-hover)) 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 .futurebot-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 .futurebot-title {
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text);
   margin: 0;
@@ -4275,61 +4357,81 @@ body.is-scrolled .site-header {
 .futurebot-close:hover {
   color: var(--text);
 }
-.futurebot-prompt {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin: 0 0 0.4rem;
-}
-.futurebot-input-row {
-  display: flex;
-  gap: 0.4rem;
-  margin-bottom: 0.65rem;
-}
-.futurebot-input {
+
+/* Chat messages area */
+.futurebot-messages {
   flex: 1;
-  min-width: 0;
-  padding: 0.45rem 0.65rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-  font-family: inherit;
-  background: var(--bg);
-  color: var(--text);
+  overflow-y: auto;
+  padding: 0.85rem 1rem;
+  min-height: 0;
 }
-.futurebot-input:focus {
-  outline: none;
-  border-color: var(--primary-btn);
-  box-shadow: 0 0 0 2px rgba(40, 215, 255, 0.2);
+.futurebot-msg {
+  margin-bottom: 0.75rem;
 }
-.futurebot-input::placeholder {
+.futurebot-msg-role {
+  font-size: 0.7rem;
+  font-weight: 600;
   color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.2rem;
 }
-.futurebot-generate-btn {
-  flex-shrink: 0;
-  padding: 0.45rem 0.75rem;
+.futurebot-msg--user .futurebot-msg-content {
+  background: rgba(40, 215, 255, 0.1);
+  border: 1px solid rgba(40, 215, 255, 0.2);
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.futurebot-msg--bot .futurebot-msg-content {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.futurebot-msg--bot .futurebot-msg-content strong {
+  color: var(--text);
+  font-weight: 700;
+}
+.futurebot-msg--loading .futurebot-msg-content {
+  color: var(--text-muted);
+  font-style: italic;
+}
+.futurebot-msg .futurebot-insert-btn {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(40, 215, 255, 0.12);
+  border: 1px solid var(--primary-btn);
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary-btn);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.futurebot-msg .futurebot-insert-btn:hover {
   background: var(--primary-btn);
   color: var(--navy);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
 }
-.futurebot-generate-btn:hover {
-  background: var(--primary-btn-hover);
-}
+
+/* Suggestions bar */
 .futurebot-suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.3rem;
+  padding: 0.5rem 0.85rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
 }
 .futurebot-suggestion {
-  padding: 0.3rem 0.6rem;
+  padding: 0.25rem 0.55rem;
   background: rgba(40, 215, 255, 0.1);
   border: 1px solid rgba(40, 215, 255, 0.3);
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 500;
   color: var(--text);
   cursor: pointer;
@@ -4339,49 +4441,53 @@ body.is-scrolled .site-header {
   background: rgba(40, 215, 255, 0.2);
   border-color: var(--primary-btn);
 }
-.futurebot-status {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  margin: 0.5rem 0 0;
-}
-.futurebot-status--error {
-  color: #c23;
-}
-.futurebot-output-wrap {
-  margin-top: 0.65rem;
-  padding-top: 0.5rem;
+
+/* Input row at bottom */
+.futurebot-input-row {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.65rem 0.85rem;
   border-top: 1px solid var(--border);
+  flex-shrink: 0;
 }
-.futurebot-output {
-  max-height: 160px;
-  overflow-y: auto;
-  padding: 0.5rem 0.6rem;
-  background: var(--surface-elevated);
+.futurebot-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.7rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
-  line-height: 1.5;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text);
-  margin-bottom: 0.4rem;
-  white-space: pre-wrap;
-  word-break: break-word;
+  resize: none;
 }
-.futurebot-insert-btn {
-  display: block;
-  width: 100%;
-  padding: 0.4rem 0.6rem;
-  background: rgba(40, 215, 255, 0.12);
-  border: 1px solid var(--primary-btn);
-  border-radius: var(--radius-sm);
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--primary-btn);
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+.futurebot-input:focus {
+  outline: none;
+  border-color: var(--teal-accent);
 }
-.futurebot-insert-btn:hover {
+.futurebot-input::placeholder {
+  color: var(--text-muted);
+}
+.futurebot-generate-btn {
+  flex-shrink: 0;
+  align-self: flex-end;
+  padding: 0.5rem 0.85rem;
   background: var(--primary-btn);
   color: var(--navy);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.futurebot-generate-btn:hover {
+  background: var(--primary-btn-hover);
+}
+.futurebot-generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .futurebot-popup--academic {
   position: absolute;
@@ -4393,8 +4499,13 @@ body.is-scrolled .site-header {
 .futurebot-popup--draggable {
   position: fixed !important;
   margin-top: 0;
-  width: auto;
-  max-width: 380px;
+  width: 380px;
+  height: 480px;
+  min-width: 280px;
+  min-height: 260px;
+  max-width: 90vw;
+  max-height: 90vh;
+  padding: 0;
 }
 .futurebot-drag-handle {
   cursor: move;
@@ -4403,28 +4514,35 @@ body.is-scrolled .site-header {
 .futurebot-drag-handle:active {
   cursor: grabbing;
 }
-.futurebot-resize-handle {
+/* Edge resize zones */
+.futurebot-edge {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 16px;
-  height: 16px;
-  cursor: nwse-resize;
-  z-index: 1;
+  z-index: 2;
 }
-.futurebot-resize-handle::after {
+.futurebot-edge--n { top: -4px; left: 8px; right: 8px; height: 8px; cursor: n-resize; }
+.futurebot-edge--s { bottom: -4px; left: 8px; right: 8px; height: 8px; cursor: s-resize; }
+.futurebot-edge--e { right: -4px; top: 8px; bottom: 8px; width: 8px; cursor: e-resize; }
+.futurebot-edge--w { left: -4px; top: 8px; bottom: 8px; width: 8px; cursor: w-resize; }
+.futurebot-edge--ne { top: -4px; right: -4px; width: 12px; height: 12px; cursor: ne-resize; }
+.futurebot-edge--nw { top: -4px; left: -4px; width: 12px; height: 12px; cursor: nw-resize; }
+.futurebot-edge--se { bottom: -4px; right: -4px; width: 16px; height: 16px; cursor: nwse-resize; }
+.futurebot-edge--sw { bottom: -4px; left: -4px; width: 12px; height: 12px; cursor: nesw-resize; }
+.futurebot-edge--se::after {
   content: '';
   position: absolute;
-  right: 4px;
-  bottom: 4px;
+  right: 6px;
+  bottom: 6px;
   width: 8px;
   height: 8px;
   border-right: 2px solid var(--text-muted);
   border-bottom: 2px solid var(--text-muted);
-  opacity: 0.5;
+  opacity: 0.4;
 }
-.futurebot-resize-handle:hover::after {
-  opacity: 1;
+.futurebot-edge--se:hover::after { opacity: 1; }
+
+.futurebot-popup.is-resizing,
+.futurebot-popup.is-resizing * {
+  user-select: none !important;
 }
 
 /* Toolbar tooltips — pop up on hover */
@@ -5866,6 +5984,25 @@ body.page-schools {
   border-top: none;
   padding: 3rem 1.5rem 2rem;
 }
+.site-ad-footer {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem 1.25rem;
+  text-align: center;
+}
+.site-ad-footer .site-ad--responsive {
+  margin: 0 auto;
+  max-width: min(100%, 728px);
+}
+/* Create page: rail shows on wide screens — hide duplicate footer ad there only */
+@media (min-width: 1200px) {
+  .page-academic-writing .site-ad-footer {
+    display: none;
+  }
+}
+.academic-ad-rail-inner .site-ad--responsive {
+  max-width: 100%;
+}
 .footer-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -6121,13 +6258,14 @@ body.page-schools {
   color: var(--text-muted);
   font-style: italic;
 }
-.chat-loading-dots .chat-loading-dot {
+.chat-loading-dots .chat-loading-dot,
+.chat-loading-dot {
   animation: chat-dot 1.2s ease-in-out infinite;
   display: inline-block;
 }
-.chat-loading-dots .chat-loading-dot:nth-child(2) { animation-delay: 0.15s; }
-.chat-loading-dots .chat-loading-dot:nth-child(3) { animation-delay: 0.3s; }
-.chat-loading-dots .chat-loading-dot:nth-child(4) { animation-delay: 0.45s; }
+.chat-loading-dot:nth-child(2) { animation-delay: 0.15s; }
+.chat-loading-dot:nth-child(3) { animation-delay: 0.3s; }
+.chat-loading-dot:nth-child(4) { animation-delay: 0.45s; }
 @keyframes chat-dot {
   0%, 60%, 100% { opacity: 0.35; }
   30% { opacity: 1; }

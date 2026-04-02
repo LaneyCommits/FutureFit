@@ -43,7 +43,10 @@
                 </div>
                 <div class="form-row">
                     <label for="id_password">Password</label>
-                    <input type="password" name="password" id="id_password" class="form-input" required autocomplete="current-password" placeholder="Your password">
+                    <div class="password-field-wrap">
+                        <input type="password" name="password" id="id_password" class="form-input" required autocomplete="current-password" placeholder="Your password">
+                        {% include 'accounts/partials/password_toggle_button.html' %}
+                    </div>
                     {% if form.password.errors %}<span class="auth-field-error">{{ form.password.errors.0 }}</span>{% endif %}
                 </div>
                 <input type="hidden" name="next" value="{{ next }}">
@@ -53,4 +56,5 @@
         </div>
     </div>
 </section>
+<script src="{% static 'js/password-toggle.js' %}"></script>
 {% endblock %}
