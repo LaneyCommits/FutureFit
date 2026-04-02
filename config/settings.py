@@ -128,6 +128,9 @@ STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 if not DEBUG:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+else:
+    # Gunicorn/Docker dev: serve /static/ from STATICFILES_DIRS without collectstatic
+    WHITENOISE_USE_FINDERS = True
 
 
 MEDIA_URL = 'media/'

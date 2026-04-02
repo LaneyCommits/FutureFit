@@ -7,3 +7,5 @@ services:
       - .:/app
     environment:
       - DJANGO_DEBUG=True
+      # Match Dockerfile CMD (gunicorn binds to PORT; default 8080 would not match 8000:8000)
+      - PORT=8000
