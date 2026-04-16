@@ -48,7 +48,7 @@ export default function Register({ onAuth, user }) {
       </section>
 
       <section className="auth-gate-form-wrap">
-        <h2 className="auth-title">Continue your profile</h2>
+        <h2 className="auth-title">Create your profile</h2>
         <form onSubmit={handleSubmit} className="auth-form">
           {error && <div className="error-banner">{error}</div>}
           <div className="form-group">
@@ -90,7 +90,7 @@ export default function Register({ onAuth, user }) {
         <p className="auth-switch">
           Already have an account?{" "}
           <Link to="/login" state={{ pendingQuiz, summary }}>
-            Continue your profile
+            Sign in
           </Link>
         </p>
       </section>

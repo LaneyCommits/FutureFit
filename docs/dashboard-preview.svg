@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">ExploringU Thinking Profile Dashboard Preview</title>
+  <desc id="desc">Stylized preview of the Thinking Profile Dashboard with tabs, cards, and analytics.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7faf8"/>
+      <stop offset="100%" stop-color="#edf4f0"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#1f2a24" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect x="36" y="28" width="1208" height="664" rx="22" fill="#ffffff" stroke="#dde6e2" filter="url(#shadow)"/>
+
+  <text x="76" y="78" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="34" font-weight="700" fill="#1f2a24">ExploringU</text>
+  <text x="76" y="112" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="18" fill="#6c7a74">Thinking Profile Dashboard</text>
+
+  <rect x="76" y="146" width="1128" height="54" rx="27" fill="#f2f7f4" stroke="#d8e5de"/>
+  <rect x="84" y="154" width="170" height="38" rx="19" fill="#7c9a8e"/>
+  <text x="134" y="178" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="16" font-weight="600" fill="#ffffff">Overview</text>
+  <text x="298" y="178" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="16" fill="#6c7a74">Path</text>
+  <text x="388" y="178" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="16" fill="#6c7a74">Compare</text>
+  <text x="506" y="178" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="16" fill="#6c7a74">Growth</text>
+
+  <rect x="76" y="224" width="352" height="416" rx="16" fill="#ffffff" stroke="#dde6e2"/>
+  <text x="100" y="262" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="13" letter-spacing="1" fill="#7c9a8e">YOUR THINKING PROFILE</text>
+  <text x="100" y="300" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="34" font-weight="700" fill="#1f2a24">Creative Builder</text>
+  <text x="100" y="334" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="16" fill="#6c7a74">+ People Strategist</text>
+  <rect x="100" y="358" width="304" height="1" fill="#e9efec"/>
+  <text x="100" y="395" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="14" fill="#2c3a33">Thinking Pattern Analytics</text>
+  <rect x="100" y="414" width="230" height="10" rx="5" fill="#eff4f1"/>
+  <rect x="100" y="414" width="196" height="10" rx="5" fill="#7fb7b2"/>
+  <rect x="100" y="438" width="230" height="10" rx="5" fill="#eff4f1"/>
+  <rect x="100" y="438" width="170" height="10" rx="5" fill="#8ea8bf"/>
+  <rect x="100" y="462" width="230" height="10" rx="5" fill="#eff4f1"/>
+  <rect x="100" y="462" width="126" height="10" rx="5" fill="#7c9a8e"/>
+
+  <rect x="452" y="224" width="752" height="128" rx="16" fill="#ffffff" stroke="#dde6e2"/>
+  <text x="478" y="264" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="26" font-weight="700" fill="#1f2a24">Your Path Isn't Random</text>
+  <text x="478" y="296" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="17" fill="#6c7a74">Personalized guidance based on how you naturally make decisions.</text>
+
+  <rect x="452" y="372" width="240" height="268" rx="16" fill="#f8fbf9" stroke="#dde6e2"/>
+  <text x="474" y="408" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="18" font-weight="700" fill="#1f2a24">Start Here</text>
+  <text x="474" y="438" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="14" fill="#6c7a74">Build one portfolio piece this week.</text>
+
+  <rect x="708" y="372" width="240" height="268" rx="16" fill="#f8fbf9" stroke="#dde6e2"/>
+  <text x="730" y="408" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="18" font-weight="700" fill="#1f2a24">Compare</text>
+  <text x="730" y="438" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="14" fill="#6c7a74">Similarity score and alignment bars.</text>
+
+  <rect x="964" y="372" width="240" height="268" rx="16" fill="#f8fbf9" stroke="#dde6e2"/>
+  <text x="986" y="408" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="18" font-weight="700" fill="#1f2a24">Growth</text>
+  <text x="986" y="438" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="14" fill="#6c7a74">Strengths, blind spots, and fit environments.</text>
+</svg>

@@ -5,6 +5,8 @@ A structured career clarity assessment that maps your thinking patterns to real 
 - **Live:** [exploringu.com](https://exploringu.com)
 - **Source:** [github.com/LaneyCommits/FutureFit](https://github.com/LaneyCommits/FutureFit)
 
+![Thinking Profile Dashboard Preview](docs/dashboard-preview.svg)
+
 ## Tech stack
 
 | Layer    | Technology                                |

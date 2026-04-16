@@ -6,8 +6,6 @@ export default function Login({ onAuth, user }) {
   const location = useLocation();
   const navigate = useNavigate();
   const pendingQuiz = location.state?.pendingQuiz || null;
-  const summary =
-    location.state?.summary || "Save your thinking profile so you do not lose it.";
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -35,20 +33,9 @@ export default function Login({ onAuth, user }) {
   }
 
   return (
-    <div className="auth-gate-page">
-      <section className="auth-gate-context">
-        <h1 className="auth-gate-title">Save your thinking profile</h1>
-        <p className="auth-gate-copy">{summary}</p>
-        <ul className="auth-gate-points">
-          <li>Save your results</li>
-          <li>Unlock your full thinking report</li>
-          <li>See how your path compares</li>
-          <li>Continue your profile</li>
-        </ul>
-      </section>
-
+    <div className="auth-gate-page auth-gate-page--single">
       <section className="auth-gate-form-wrap">
-        <h2 className="auth-title">Continue your profile</h2>
+        <h2 className="auth-title">Sign in</h2>
         <form onSubmit={handleSubmit} className="auth-form">
           {error && <div className="error-banner">{error}</div>}
           <div className="form-group">
@@ -88,7 +75,7 @@ export default function Login({ onAuth, user }) {
         </form>
         <p className="auth-switch">
           Don&apos;t have an account?{" "}
-          <Link to="/register" state={{ pendingQuiz, summary }}>
+          <Link to="/register" state={{ pendingQuiz }}>
             Unlock full analysis
           </Link>
         </p>
