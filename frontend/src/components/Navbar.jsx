@@ -9,6 +9,15 @@ export default function Navbar({ user, onLogout }) {
           <Logo layout="horizontal" wordmarkSize="sm" />
         </Link>
         <nav className="navbar-nav">
+          <Link to="/quiz" className="btn btn-sm btn-ghost">
+            Quiz
+          </Link>
+          <Link to="/about" className="btn btn-sm btn-ghost">
+            About
+          </Link>
+          <Link to="/careers" className="btn btn-sm btn-ghost">
+            Careers
+          </Link>
           {user ? (
             <>
               <span className="navbar-user">{user.username}</span>
