@@ -3,7 +3,7 @@
 A structured career clarity assessment that maps your thinking patterns to real academic majors and career paths.
 
 - **Live:** [exploringu.com](https://exploringu.com)
-- **Source:** [github.com/LaneyCommits/exploringu](https://github.com/LaneyCommits/exploringu)
+- **Source:** [github.com/LaneyCommits/FutureFit](https://github.com/LaneyCommits/FutureFit)
 
 ## Tech stack
 
@@ -91,7 +91,7 @@ Use any managed Postgres (e.g. [Neon](https://neon.tech)) and copy the connectio
 ### 2. Create the app
 
 1. In **App Platform**, choose **Create App** and connect GitHub.
-2. Select repo **`LaneyCommits/exploringu`**, branch **`main`**.
+2. Select repo **`LaneyCommits/FutureFit`**, branch **`main`**.
 3. DigitalOcean can build from the **`Dockerfile`**; you can optionally use the checked-in **`.do/app.yaml`** as a starting spec.
 4. Set **HTTP port** to **8080** (the `Dockerfile` exposes this; Gunicorn binds `0.0.0.0:${PORT:-8080}`).
 

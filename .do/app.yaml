@@ -1,11 +1,11 @@
-name: exploringu
+name: futurefit
 region: nyc
 
 services:
   - name: web
     dockerfile_path: Dockerfile
     github:
-      repo: LaneyCommits/exploringu
+      repo: LaneyCommits/FutureFit
       branch: main
       deploy_on_push: true
     http_port: 8080
