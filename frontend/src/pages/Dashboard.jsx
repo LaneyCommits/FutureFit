@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getDashboard } from "../api/client";
+import DashboardCompanion from "../components/dashboard/DashboardCompanion";
 
 const ARCHETYPE_META = [
   { key: "systems_thinker", label: "Systems", tone: "sage" },
@@ -315,10 +316,6 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [expandedPathCard, setExpandedPathCard] = useState("start");
-  const [compareType, setCompareType] = useState("major");
-  const [selectedCompareTarget, setSelectedCompareTarget] = useState("");
-  const [animatedScore, setAnimatedScore] = useState(0);
-  const [compareRevealReady, setCompareRevealReady] = useState(false);
   const [chartReady, setChartReady] = useState(false);
   const [visibleTab, setVisibleTab] = useState("overview");
   const [transitionPhase, setTransitionPhase] = useState("idle");
@@ -365,17 +362,11 @@ export default function Dashboard() {
   const steps = (NEXT_STEPS[primaryKey] || NEXT_STEPS.systems_thinker).slice(0, 4);
   const growth = GROWTH_MAP[primaryKey] || GROWTH_MAP.systems_thinker;
   const compare = compareInsight(primaryKey, scoreRows, fallbackMajorName);
-  const compareTargets =
-    compareType === "major"
-      ? majors.map((m) => m.name)
-      : [careerSeed.analytical, careerSeed.creative, careerSeed.structured];
-  const compareFinalScore =
-    Math.min(96, Math.max(61, Math.round((scoreRows[0]?.percent || 65) * 0.65 + 32)));
-  const compareBars = [
-    { label: "Thinking Pattern Fit", value: Math.min(98, compareFinalScore + 2) },
-    { label: "Decision Style Match", value: Math.max(52, compareFinalScore - 8) },
-    { label: "Environment Alignment", value: Math.max(48, compareFinalScore - 12) },
-  ];
+  const companionCareerNames = [
+    careerSeed.analytical,
+    careerSeed.creative,
+    careerSeed.structured,
+  ].filter(Boolean);
 
   useEffect(() => {
     if (!scoreRows.length) return;
@@ -385,37 +376,6 @@ export default function Dashboard() {
     });
     return () => cancelAnimationFrame(raf1);
   }, [primaryKey, scoreRows.length]);
-
-  useEffect(() => {
-    if (!selectedCompareTarget) {
-      setAnimatedScore(0);
-      setCompareRevealReady(false);
-      return;
-    }
-    setAnimatedScore(0);
-    setCompareRevealReady(false);
-    let rafId = null;
-    let start = null;
-    const duration = 420;
-
-    const tick = (ts) => {
-      if (!start) start = ts;
-      const elapsed = ts - start;
-      const progress = Math.min(1, elapsed / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = Math.round(compareFinalScore * eased);
-      setAnimatedScore(current);
-      if (progress < 1) {
-        rafId = requestAnimationFrame(tick);
-      } else {
-        setCompareRevealReady(true);
-      }
-    };
-    rafId = requestAnimationFrame(tick);
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [selectedCompareTarget, compareFinalScore]);
 
   function handleTabSwitch(tabId) {
     if (tabId === visibleTab || transitionPhase === "exit") return;
@@ -541,6 +501,13 @@ export default function Dashboard() {
       </aside>
 
       <main className="dashboard-report-content">
+        <DashboardCompanion
+          latest={latest}
+          userId={data?.user?.id ?? 0}
+          majorNames={majors.map((m) => m.name)}
+          careerNames={companionCareerNames}
+        />
+
         <section className="dashboard-tabs-shell">
           <div className="dashboard-tabs" role="tablist" aria-label="Dashboard views" ref={tabListRef}>
             <span
@@ -554,7 +521,6 @@ export default function Dashboard() {
             {[
               { id: "overview", label: "Overview" },
               { id: "path", label: "Path" },
-              { id: "compare", label: "Compare" },
               { id: "growth", label: "Growth" },
             ].map((tab) => (
               <button
@@ -696,81 +662,6 @@ export default function Dashboard() {
                   </p>
                 </div>
               </article>
-            </div>
-          </section>
-        )}
-
-        {visibleTab === "compare" && (
-          <section className="dashboard-soft-card dashboard-tab-content">
-            <h2 className="dashboard-section-title">Compare</h2>
-            <div className="dashboard-compare-controls">
-              <div className="dashboard-toggle-row">
-                <button
-                  type="button"
-                  className={`dashboard-toggle ${compareType === "major" ? "is-active" : ""}`}
-                  onClick={() => {
-                    setCompareType("major");
-                    setSelectedCompareTarget("");
-                  }}
-                >
-                  Compare vs Majors
-                </button>
-                <button
-                  type="button"
-                  className={`dashboard-toggle ${compareType === "career" ? "is-active" : ""}`}
-                  onClick={() => {
-                    setCompareType("career");
-                    setSelectedCompareTarget("");
-                  }}
-                >
-                  Compare vs Careers
-                </button>
-              </div>
-              <div className="dashboard-target-grid">
-                {compareTargets.map((target) => (
-                  <button
-                    type="button"
-                    key={target}
-                    className={`dashboard-target-chip ${
-                      selectedCompareTarget === target ? "is-active" : ""
-                    }`}
-                    onClick={() => setSelectedCompareTarget(target)}
-                  >
-                    {target}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className={`dashboard-compare-overlay ${selectedCompareTarget ? "is-open" : ""}`}>
-              <div className="dashboard-compare-score">
-                <span className="dashboard-score-kicker">Similarity Score</span>
-                <strong>{animatedScore}%</strong>
-                <p>{selectedCompareTarget || "Select a target to compare your profile."}</p>
-              </div>
-              <div className="dashboard-compare-bars">
-                {compareBars.map((bar, idx) => (
-                  <div
-                    key={bar.label}
-                    className={`dashboard-compare-bar-row ${
-                      compareRevealReady ? "is-revealed" : ""
-                    }`}
-                    style={{ transitionDelay: `${idx * 80}ms` }}
-                  >
-                    <span>{bar.label}</span>
-                    <div className="dashboard-compare-bar-track">
-                      <i
-                        className="dashboard-compare-bar-fill"
-                        style={{ width: `${compareRevealReady ? bar.value : 0}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className={`dashboard-compare-insights ${compareRevealReady ? "is-visible" : ""}`}>
-                <p>{compare.major}</p>
-                <p>{compare.secondary}</p>
-              </div>
             </div>
           </section>
         )}

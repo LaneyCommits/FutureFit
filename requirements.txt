@@ -6,3 +6,4 @@ dj-database-url>=2.1
 psycopg2-binary>=2.9
 gunicorn>=21.0
 whitenoise>=6.5
+google-genai>=1.0.0

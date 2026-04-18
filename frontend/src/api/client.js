@@ -62,3 +62,17 @@ export function getMe() {
 export function getDashboard() {
   return request("/api/users/dashboard/");
 }
+
+/** Authenticated POST to /api/insights/<path>/ */
+export function postInsight(path, body) {
+  const safe = String(path || "").replace(/^\/+|\/+$/g, "");
+  return request(`/api/insights/${safe}/`, {
+    method: "POST",
+    body: JSON.stringify(body ?? {}),
+  });
+}
+
+export function getCareerJobs(limit = 80) {
+  const n = Math.max(1, Math.min(200, Number(limit) || 80));
+  return request(`/api/careers/jobs/?limit=${n}`);
+}

@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://exploringu.com/sitemap.xml

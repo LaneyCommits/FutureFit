@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "apps.quiz",
     "apps.careers",
     "apps.users",
+    "apps.insights",
 ]
 
 # ---------------------------------------------------------------------------

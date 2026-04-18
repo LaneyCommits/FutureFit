@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useMediaQuery from "../hooks/useMediaQuery";
 import Logo from "../components/brand/Logo";
 import InsightCarousel from "../components/ui/InsightCarousel";
@@ -24,11 +24,11 @@ export default function Landing({ user }) {
             <div className="ld-split-content">
               <Logo layout="horizontal" wordmarkSize="md" />
               <h1 className="ld-split-title">
-                Find Career Paths That Match Your Strengths
+                Before you choose a path, understand how you think
               </h1>
               <p className="ld-split-sub">
-                A structured 5-minute career quiz for students that maps your thinking
-                patterns to real academic majors and career paths.
+                A structured 5-minute assessment that maps your thinking patterns
+                to real academic majors and career paths.
               </p>
               <button
                 type="button"
@@ -54,29 +54,6 @@ export default function Landing({ user }) {
             </div>
           </div>
         </div>
-        <section className="landing-seo-sections">
-          <article>
-            <h2>Career Quiz for Students</h2>
-            <p>
-              ExploringU gives students a fast, personalized career path assessment that helps
-              answer "what career fits me?" without guessing.
-            </p>
-          </article>
-          <article>
-            <h2>What is ExploringU?</h2>
-            <p>
-              ExploringU connects strengths, tendencies, and decision style to practical major
-              and career options you can explore with confidence.
-            </p>
-          </article>
-          <article>
-            <h2>How it works</h2>
-            <p>
-              Start the quiz, review your profile, then explore recommendations and next-step
-              actions. Learn more on the <Link to="/about">about page</Link>.
-            </p>
-          </article>
-        </section>
         <InsightCarousel />
       </div>
     );
@@ -97,11 +74,11 @@ export default function Landing({ user }) {
         <div className="landing-content">
           <Logo layout="stacked" wordmarkSize="lg" />
           <h1 className="landing-title">
-            Find Career Paths That Match Your Strengths
+            Before you choose a path, understand how you think
           </h1>
           <p className="landing-subtitle">
-            A structured 5-minute career quiz for students that maps your thinking
-            patterns to real academic majors and career paths.
+            A structured 5-minute assessment that maps your thinking patterns to
+            real academic majors and career paths.
           </p>
           <div className="landing-cta">
             <button
@@ -119,29 +96,6 @@ export default function Landing({ user }) {
           </div>
         </div>
       </div>
-      <section className="landing-seo-sections">
-        <article>
-          <h2>Career Quiz for Students</h2>
-          <p>
-            ExploringU helps students discover career directions and college majors that align
-            with how they naturally think and work.
-          </p>
-        </article>
-        <article>
-          <h2>What is ExploringU?</h2>
-          <p>
-            It is a strengths-based assessment designed to make early career and major decisions
-            feel clear, practical, and personalized.
-          </p>
-        </article>
-        <article>
-          <h2>How it works</h2>
-          <p>
-            Take the quiz, review your report, and move into action with next-step guidance. You can
-            also explore <Link to="/careers">career pathways</Link>.
-          </p>
-        </article>
-      </section>
       <InsightCarousel />
     </div>
   );

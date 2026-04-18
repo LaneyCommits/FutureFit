@@ -8,6 +8,19 @@ from .serializers import JobSerializer, MajorSerializer, PersonalityTypeSerializ
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
+def jobs_list_view(request):
+    """GET /api/careers/jobs/?limit=80 — titles for dashboard exploration."""
+    try:
+        limit = int(request.query_params.get("limit", "80"))
+    except (TypeError, ValueError):
+        limit = 80
+    limit = max(1, min(limit, 200))
+    jobs = Job.objects.order_by("title")[:limit]
+    return Response(JobSerializer(jobs, many=True).data)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def types_view(request):
     """GET /api/careers/types/ -- list all personality types."""
     types = PersonalityType.objects.all()
